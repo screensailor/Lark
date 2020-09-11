@@ -6,38 +6,33 @@ class KeyedSubject™: Hopes {
     private var bag: Bag = []
     
     func test() {
-        let o = KeyedSubject<String, Error>()
-        let x = Sink.Result<String, Error>("")
-        x ...= o / bag
+        let o = KeyedSubject<String, String>()
+        let x = Sink.Result(String?.none)
+        x ...= o["World!"] / bag
         
-        o.send("Hello world!")
+        o.send("Hello", to: "World!")
         
-        hope(x.value) == "Hello world!"
+        hope(x.value) == "Hello"
     }
 }
 
-private class KeyedSubject<Output, Failure>: Subject where Failure: Error {
+private class KeyedSubject<Key, Value> where Key: Hashable {
     
-    let subject = PassthroughSubject<Output, Failure>()
+    private(set) var state: [Key: Value]
+    private(set) var subscriptions: [Key: CurrentValueSubject<Value?, Never>] = [:]
     
-    func send(_ value: Output) {
-        subject.send(value)
+    init(_ state: [Key: Value] = [:]) {
+        self.state = state
     }
     
-    func send(completion: Subscribers.Completion<Failure>) {
-        subject.send(completion: completion)
+    subscript(key: Key) -> CurrentValueSubject<Value?, Never> {
+        let o = CurrentValueSubject<Value?, Never>(state[key])
+        subscriptions[key] = o
+        return o
     }
     
-    func send(subscription: Subscription) {
-        subject.send(subscription: subscription)
-    }
-    
-    func receive<S>(subscriber: S)
-    where
-        S: Subscriber,
-        Failure == S.Failure,
-        Output == S.Input
-    {
-        subject.receive(subscriber: subscriber)
+    func send(_ value: Value, to key: Key) {
+        state[key] = value
+        subscriptions[key]?.send(value)
     }
 }
