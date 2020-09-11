@@ -1,5 +1,3 @@
-infix operator ...= : BitwiseShiftPrecedence
-
 extension Publisher {
     
     @inlinable public func filter<A>(_: A.Type = A.self) -> Publishers.CompactMap<Self, A> {
@@ -12,9 +10,8 @@ extension Publisher {
 
     public func sink(_ sink: Sink.Result<Output, Failure>) -> AnyCancellable {
         self.sink { completion in
-            switch completion {
-            case .finished: break
-            case .failure(let o): sink.result = .failure(o)
+            if case .failure(let o) = completion {
+                sink.result = .failure(o)
             }
         } receiveValue: { output in
             sink.result = .success(output)
@@ -45,8 +42,6 @@ extension Cancellable {
         lhs.store(in: &rhs)
     }
 }
-
-// MARK: Sink
 
 public enum Sink {}
     

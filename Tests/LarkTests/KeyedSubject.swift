@@ -6,18 +6,19 @@ class KeyedSubject™: Hopes {
     private var bag: Bag = []
     
     func test() {
-        let o = KeyedSubject<String>()
-        o.print().in(&bag)
+        let o = KeyedSubject<String, Error>()
+        let x = Sink.Result<String, Error>("")
+        x ...= o / bag
         
-        o.send("Hello world❗️")
+        o.send("Hello world!")
+        
+        hope(x.value) == "Hello world!"
     }
 }
 
-private class KeyedSubject<Output>: Subject {
+private class KeyedSubject<Output, Failure>: Subject where Failure: Error {
     
-    typealias Failure = Error
-    
-    let subject = PassthroughSubject<Output, Error>()
+    let subject = PassthroughSubject<Output, Failure>()
     
     func send(_ value: Output) {
         subject.send(value)
