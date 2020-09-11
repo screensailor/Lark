@@ -8,3 +8,24 @@ class Lark™: Hopes {
     }
 }
 
+private protocol KeyedSubject {
+    
+}
+
+private protocol Scope {
+    
+}
+
+private protocol InputFunction {
+    
+}
+
+private protocol OutputFunction {
+    
+}
+
+private protocol NeuralNode {
+    
+}
+
+
