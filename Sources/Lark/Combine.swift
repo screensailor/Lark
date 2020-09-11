@@ -7,6 +7,10 @@ extension Publisher {
     @inlinable public func filter<Root, Property>(_ k: KeyPath<Root, Property>) -> Publishers.CompactMap<Self, Property> {
         compactMap{ ($0 as? Root)?[keyPath: k] }
     }
+    
+    @inlinable public func compacted<A>() -> Publishers.CompactMap<Self, A> where Output == A? {
+        compactMap{ $0 }
+    }
 
     public func sink(_ sink: Sink.Result<Output, Failure>) -> AnyCancellable {
         self.sink { completion in
@@ -75,7 +79,7 @@ public enum Sink {}
 
 extension Sink {
     public final class Var<Value> {
-        public fileprivate(set) var value: Value?
+        @Published public fileprivate(set) var value: Value?
         public init(_ value: Value){ self.value = value }
         public init(){}
     }
@@ -83,7 +87,7 @@ extension Sink {
 
 extension Sink {
     public final class Result<Success, Failure: Error> {
-        public fileprivate(set) var result: Swift.Result<Success, Failure>
+        @Published public fileprivate(set) var result: Swift.Result<Success, Failure>
         public init(_ result: Swift.Result<Success, Failure>){ self.result = result }
     }
 }

@@ -1,6 +1,18 @@
 import Lark
 import Hope
 
+// Lark
+
+infix operator ...= : BitwiseShiftPrecedence
+
+// Peek
+
+infix operator ¶ : TernaryPrecedence
+
+// Hope
+
+infix operator ± : RangeFormationPrecedence
+
 class Lark™: Hopes {
     
     func test_() {
