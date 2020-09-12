@@ -1,4 +1,5 @@
 public protocol JSONLeaf: Codable {}
+
 extension Bool: JSONLeaf {}
 extension Int: JSONLeaf {}
 extension Double: JSONLeaf {}
@@ -6,8 +7,16 @@ extension String: JSONLeaf {}
 
 public typealias JSON = Tree<String, JSONLeaf>
 
+extension JSON: ExpressibleByBooleanLiteral {
+    @inlinable public init(booleanLiteral value: BooleanLiteralType) { self.init(.leaf(value)) }
+}
+
 extension JSON: ExpressibleByIntegerLiteral {
     @inlinable public init(integerLiteral value: IntegerLiteralType) { self.init(.leaf(value)) }
+}
+
+extension JSON: ExpressibleByFloatLiteral {
+    @inlinable public init(floatLiteral value: FloatLiteralType) { self.init(.leaf(value)) }
 }
 
 extension JSON: ExpressibleByStringLiteral {
