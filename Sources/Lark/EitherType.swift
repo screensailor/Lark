@@ -12,20 +12,28 @@ extension EitherType {
 }
 
 extension EitherType {
-    public var a: A? { if case let .a(o) = value { return o} else { return nil } }
-    public var b: B? { if case let .b(o) = value { return o} else { return nil } }
+    @inlinable public var a: A? { if case let .a(o) = value { return o} else { return nil } }
+    @inlinable public var b: B? { if case let .b(o) = value { return o} else { return nil } }
+}
+
+extension EitherType {
+    
+    @inlinable public subscript(type: A.Type = A.self) -> A? { a }
+    @inlinable public subscript(type: B.Type = B.self) -> B? { b }
+    
+    @inlinable public func cast<T>(to: T.Type = T.self) -> T? { a as? T ?? b as? T }
 }
 
 extension EitherType.Value: Equatable where A: Equatable, B: Equatable {}
 
 extension EitherType: Equatable where A: Equatable, B: Equatable {
-    public static func == (lhs: Self, rhs: Self) -> Bool {
+    @inlinable public static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.value == rhs.value
     }
 }
 
 extension EitherType.Value: Hashable where A: Hashable, B: Hashable {
-    public func hash(into hasher: inout Hasher) {
+    @inlinable public func hash(into hasher: inout Hasher) {
         switch self {
         case let .a(o): hasher.combine(o)
         case let .b(o): hasher.combine(o)

@@ -68,15 +68,34 @@ extension Tree {
         set { self[path] = newValue }
     }
     
-    @inlinable public subscript(path: [Index], default o: Self) -> Self {
+    @inlinable public subscript<Path>(path: Path, default o: Self) -> Self
+    where Path: Collection, Path.Element == Index
+    {
         self[path] ?? o
     }
     
-    public subscript(path: [Index]) -> Self? {
+    public subscript<Path>(path: Path) -> Self?
+    where Path: Collection, Path.Element == Index
+    {
         get {
-            if path.isEmpty { return self }
-            
-            return  nil
+            guard let first = path.first else { return self }
+            switch self
+            {
+            case .leaf:
+                return self
+                
+            case let .array(o):
+                guard let i = first[Int.self], o.indices.contains(i) else {
+                    return nil
+                }
+                return o[i][path.dropFirst()]
+                
+            case let .dictionary(o):
+                guard let key = first[Key.self] else {
+                    return nil
+                }
+                return o[key]?[path.dropFirst()]
+            }
         }
         set {
             guard !path.isEmpty else {
