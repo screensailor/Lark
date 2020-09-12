@@ -1,15 +1,22 @@
 @_exported import Combine
 @_exported import Foundation
 
-// Lark
+// Hope
 
-infix operator ...= : BitwiseShiftPrecedence
+infix operator ± : RangeFormationPrecedence
 
 // Peek
 
 infix operator ¶ : TernaryPrecedence
 
-// Hope
+// Lark
 
-infix operator ± : RangeFormationPrecedence
+infix operator ...= : BitwiseShiftPrecedence
+
+// TODO: 
+private protocol Concept {}        // neural node
+private protocol Lexicon {}        // neural network
+private protocol InputFunction {}  // input transform (weight)
+private protocol OutputFunction {} // action potential
+
 

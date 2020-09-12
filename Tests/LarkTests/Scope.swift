@@ -19,7 +19,10 @@ class Scope™: Hopes {
         
         hope(o.value) == "c"
     }
+    
+    func test_1() {
+        
+    }
 }
-
 
 

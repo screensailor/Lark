@@ -1,9 +1,9 @@
 import Lark
 import Hope
 
-class Lark™: Hopes {
+class Concept™: Hopes {
     
-    func test_() {
+    func test() {
         
     }
 }
