@@ -93,9 +93,48 @@ extension Tree {
             }
         }
         set {
-            guard !path.isEmpty else {
-                self = newValue ?? .empty
+            let new = newValue ?? .empty
+            guard let first = path.first else {
+                self = new
                 return
+            }
+            switch self
+            {
+            case .leaf:
+                switch first.value {
+                case let .a(i):
+                    var o = Array(repeating: Self.empty, count: i)
+                    o.append(new)
+                    self = .array(o)
+                    
+                case let .b(key):
+                    self = .dictionary([key: new])
+                }
+                
+            case var .array(o):
+                switch first.value {
+                case let .a(i):
+                    o.append(
+                        contentsOf: Array(repeating: Self.empty, count: max(0, 1 + i - o.count))
+                    )
+                    o[i] = new
+                    self = .array(o)
+                    
+                case let .b(key):
+                    self = .dictionary([key: new])
+                }
+
+            case var .dictionary(o):
+                switch first.value {
+                case let .a(i):
+                    var o = Array(repeating: Self.empty, count: i)
+                    o.append(new)
+                    self = .array(o)
+
+                case let .b(key):
+                    o[key] = new
+                    self = .dictionary(o)
+                }
             }
         }
     }
