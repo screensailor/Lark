@@ -22,23 +22,3 @@ private class KeyPathSubject<Store> {
 }
 
 
-//private extension Dictionary where Value == Any {
-//
-//    subscript(path: IntOrString...) -> JSON? {
-//        get { self[path] }
-//        set { self[path] = newValue }
-//    }
-//
-//    subscript(path: Path) -> JSON? {
-//        get {
-//            if path.isEmpty { return self }
-//            fatalError()
-//        }
-//        set {
-//            guard !path.isEmpty else {
-//                value = newValue?.value ?? JSONNull
-//                return
-//            }
-//        }
-//    }
-//}
