@@ -52,13 +52,6 @@ extension Tree: BoxedAny {
 
 extension Tree {
     
-    public init(_ value: Any) throws {
-        throw Error()
-    }
-}
-
-extension Tree {
-    
     public typealias Index = EitherType<Int, Key>
     
     @inlinable public subscript(path: Index..., default o: Self) -> Self {
@@ -131,7 +124,7 @@ extension Tree {
             _ file: String = #file,
             _ line: Int = #line
         ){
-            self.description = "Tree.Error(\(description) at: \(CodeLocation(function, file, line)))"
+            self.description = "Tree.Error(\(description) at: \(here(function, file, line)))"
         }
     }
 }
