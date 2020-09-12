@@ -30,7 +30,7 @@ class JSON™: Hopes {
     
     func test_subscript_default() {
         let o: JSON = .empty
-        hope(o["a", default: 1]) == 1
+        hope(o["a", 2, default: 3]) == 3
     }
 
     func test_any() throws {

@@ -1,7 +1,7 @@
 import Lark
 import Hope
 
-class KeyPathSubject™: Hopes {
+class Scope™: Hopes {
     
     private var bag: Bag = []
     
@@ -11,7 +11,7 @@ class KeyPathSubject™: Hopes {
         
         let o = Sink.Var(0 as JSON)
         
-        o ...= store.map(\.["a", 1]).compacted() / bag
+        o ...= store.map(\.["a", 1]).compacted().removeDuplicates() / bag
         
         hope(o.value) == 0
         
