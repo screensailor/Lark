@@ -58,16 +58,25 @@ extension Tree {
 extension Tree {
     
     public typealias Index = EitherType<Int, Key>
+    
+    @inlinable public subscript(path: Index..., default o: Self) -> Self {
+        self[path] ?? o
+    }
 
     @inlinable public subscript(path: Index...) -> Self? {
         get { self[path] }
         set { self[path] = newValue }
     }
     
+    @inlinable public subscript(path: [Index], default o: Self) -> Self {
+        self[path] ?? o
+    }
+    
     public subscript(path: [Index]) -> Self? {
         get {
             if path.isEmpty { return self }
-            fatalError()
+            
+            return  nil
         }
         set {
             guard !path.isEmpty else {

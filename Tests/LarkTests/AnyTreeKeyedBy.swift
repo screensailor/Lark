@@ -16,7 +16,8 @@ class AnyTree™: Hopes {
         hope(o[]) == 5
     }
     
-    func test_subscript() {
-        
+    func test_subscript_default() {
+        let o: JSON = .empty
+        hope(o["a", default: 1]) == 1
     }
 }
