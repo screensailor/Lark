@@ -11,11 +11,13 @@ class Scope™: Hopes {
         
         let o = Sink.Var(0 as JSON)
         
-        o ...= $json.map(\.["a", 1]) / bag
+        let path: [JSON.Index] = ["a", "b", 3]
+        
+        o ...= $json.map(\.[path]) / bag
         
         hope(o.value) == nil
         
-        json["a", 1] = "c"
+        json[path] = "c"
         
         hope(o.value) == "c"
     }

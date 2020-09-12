@@ -1,10 +1,18 @@
 import Peek
 
+@dynamicMemberLookup
 public indirect enum Tree<Key, Leaf> where Key: Hashable {
     case leaf(Leaf)
     case array([Tree])
     case dictionary([Key: Tree])
 }
+
+extension JSON {
+    public subscript(dynamicMember string: String) -> Self? {
+        self[.init(string)] // TODO: set
+    }
+}
+
     
 extension Tree {
     
