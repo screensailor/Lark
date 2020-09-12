@@ -21,9 +21,16 @@ class JSON™: Hopes {
         hope(o["a", default: 1]) == 1
     }
     
-    func test_subscript() {
+    func test_subscript_get() {
         let o: JSON = ["a": ["b": 2, "c": [3, 4, ["d": "😅"]]]]
         hope(o["a", "b"]) == 2
         hope(o["a", "c", 2, "d"]) == "😅"
+    }
+    
+    func test_any() throws {
+        let o: JSON = ["a": ["c": [3, 4, ["d": "😅"]]]]
+        let json1 = try JSONSerialization.data(withJSONObject: o.any, options: [])
+        let json2 = try JSONSerialization.data(withJSONObject: ["a": ["c": [3, 4, ["d": "😅"]]]], options: [])
+        hope(json1) == json2
     }
 }

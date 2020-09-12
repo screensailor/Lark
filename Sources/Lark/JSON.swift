@@ -5,6 +5,20 @@ public enum JSONLeaf: Equatable {
     case string(String)
 }
 
+extension JSONLeaf: BoxedAny {
+    
+    @inlinable public var any: Any { unboxedAny }
+    
+    public var unboxedAny: Any {
+        switch self {
+        case .null: return NSNull()
+        case let .boolean(o): return o
+        case let .number(o): return o
+        case let .string(o): return o
+        }
+    }
+}
+
 public typealias JSON = Tree<String, JSONLeaf>
 
 extension JSON: ExpressibleByBooleanLiteral {

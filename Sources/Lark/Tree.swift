@@ -25,13 +25,15 @@ extension Tree: ExpressibleByDictionaryLiteral {
     @inlinable public init(dictionaryLiteral elements: (Key, Tree)...) { self = .dictionary(.init(uniqueKeysWithValues: elements)) }
 }
 
-extension Tree {
+extension Tree: BoxedAny {
     
-    public var any: Any {
+    @inlinable public var any: Any { unboxedAny }
+    
+    public var unboxedAny: Any {
         switch self {
-        case let .leaf(o): return o
-        case let .array(o): return o
-        case let .dictionary(o): return o
+        case let .leaf(o): return (o as? BoxedAny)?.unboxedAny ?? o
+        case let .array(o): return o.map(\.any)
+        case let .dictionary(o): return o.mapValues(\.any)
         }
     }
     
