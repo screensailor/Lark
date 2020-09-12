@@ -1,15 +1,17 @@
-public enum IntOrString: Hashable {
-    case int(Int)
-    case string(String)
+public typealias IntOrString = EitherType<Int, String>
+
+extension IntOrString {
+    @inlinable public var int: Int? { a }
+    @inlinable public var string: String? { b }
 }
 
 extension IntOrString: Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         do {
-            self = .int(try container.decode(Int.self))
+            self.init(try container.decode(Int.self))
         } catch {
-            self = try .string(container.decode(String.self))
+            self.init(try container.decode(String.self))
         }
     }
 }
@@ -17,42 +19,54 @@ extension IntOrString: Decodable {
 extension IntOrString: Encodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
-        switch self {
-        case let .int(o): try container.encode(o)
-        case let .string(o): try container.encode(o)
+        switch value {
+        case let .a(o): try container.encode(o)
+        case let .b(o): try container.encode(o)
         }
     }
 }
 
-extension IntOrString: CustomDebugStringConvertible {
+extension IntOrString {
     public var debugDescription: String {
-        switch self {
-        case let .int(o): return String(describing: o)
-        case let .string(o): return o
+        switch value {
+        case let .a(o): return String(describing: o)
+        case let .b(o): return o
         }
     }
+}
+
+extension IntOrString: CustomStringConvertible {
+    @inlinable public var description: String { debugDescription }
 }
 
 extension IntOrString: CodingKey {
     
     @inlinable public var stringValue: String { debugDescription }
-    @inlinable public init?(stringValue: String) { self = .string(stringValue) }
+    @inlinable public init?(stringValue: String) { self.init(stringValue) }
     
-    @inlinable public var intValue: Int? { if case let .int(o) = self { return o } else  { return nil } }
-    @inlinable public init?(intValue: Int) { self = .int(intValue) }
-}
-
-extension IntOrString: ExpressibleByStringLiteral {
-    @inlinable public init(stringLiteral value: String) { self = .string(value) }
+    @inlinable public var intValue: Int? { a }
+    @inlinable public init?(intValue: Int) { self.init(intValue) }
 }
 
 extension IntOrString: ExpressibleByIntegerLiteral {
-    @inlinable public init(integerLiteral value: IntegerLiteralType) { self = .int(value) }
+    @inlinable public init(integerLiteral value: IntegerLiteralType) { self.init(value) }
+}
+
+extension IntOrString: ExpressibleByStringLiteral {
+    @inlinable public init(stringLiteral value: String) { self.init(value) }
+}
+
+extension IntOrString: ExpressibleByUnicodeScalarLiteral {
+    @inlinable public init(unicodeScalarLiteral value: String) { self.init(value) }
+}
+
+extension IntOrString: ExpressibleByExtendedGraphemeClusterLiteral {
+    @inlinable public init(extendedGraphemeClusterLiteral value: String) { self.init(value) }
 }
 
 extension Collection where Element == IntOrString {
     
     @inlinable public func joined(separator: String = ".") -> String {
-        map(\.debugDescription).joined(separator: separator)
+        lazy.map(\.debugDescription).joined(separator: separator)
     }
 }

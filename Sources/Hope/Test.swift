@@ -23,7 +23,7 @@ extension Test {
     
     @inlinable
     public static func == <U>(l: Test, r: @autoclosure () -> U) where T: Equatable {
-        guard let r = r() as? T else { return XCTFail("\(U.self) != \(T.self)", file: l.file, line: l.line) }
+        guard let r = r() as? T else { return XCTFail("\(T.self) != \(U.self)", file: l.file, line: l.line) }
         XCTAssertEqual(try l.value(), r, file: l.file, line: l.line)
     }
     
@@ -35,7 +35,7 @@ extension Test {
     
     @inlinable
     public static func == <U>(l: Test, r: @autoclosure () -> U) where U: Equatable {
-        guard let lhs = (try? l.value()) as? U else { return XCTFail("\(U.self) != \(T.self)", file: l.file, line: l.line) }
+        guard let lhs = (try? l.value()) as? U else { return XCTFail("\(T.self) != \(U.self)", file: l.file, line: l.line) }
         XCTAssertEqual(lhs, r(), file: l.file, line: l.line)
     }
     
