@@ -1,3 +1,5 @@
+import Peek
+
 public protocol JSONLeaf: Codable {}
 
 extension Bool: JSONLeaf {}
@@ -8,75 +10,45 @@ extension String: JSONLeaf {}
 public typealias JSON = Tree<String, JSONLeaf>
 
 extension JSON: ExpressibleByBooleanLiteral {
-    @inlinable public init(booleanLiteral value: BooleanLiteralType) { self.init(.leaf(value)) }
+    @inlinable public init(booleanLiteral value: BooleanLiteralType) { self = .leaf(value) }
 }
 
 extension JSON: ExpressibleByIntegerLiteral {
-    @inlinable public init(integerLiteral value: IntegerLiteralType) { self.init(.leaf(value)) }
+    @inlinable public init(integerLiteral value: IntegerLiteralType) { self = .leaf(value) }
 }
 
 extension JSON: ExpressibleByFloatLiteral {
-    @inlinable public init(floatLiteral value: FloatLiteralType) { self.init(.leaf(value)) }
+    @inlinable public init(floatLiteral value: FloatLiteralType) { self = .leaf(value) }
 }
 
 extension JSON: ExpressibleByStringLiteral {
-    public init(stringLiteral value: String) { self.init(.leaf(value)) }
+    public init(stringLiteral value: String) { self = .leaf(value) }
 }
 
 extension JSON: ExpressibleByUnicodeScalarLiteral {
-    public init(unicodeScalarLiteral value: String) { self.init(.leaf(value)) }
+    public init(unicodeScalarLiteral value: String) { self = .leaf(value) }
 }
 
 extension JSON: ExpressibleByExtendedGraphemeClusterLiteral {
-    public init(extendedGraphemeClusterLiteral value: String) { self.init(.leaf(value)) }
+    public init(extendedGraphemeClusterLiteral value: String) { self = .leaf(value) }
 }
 
-public struct Tree<Key, Leaf> where Key: Hashable {
+public indirect enum Tree<Key, Leaf> where Key: Hashable {
+    case leaf(Leaf)
+    case array([Tree])
+    case dictionary([Key: Tree])
+}
+    
+extension Tree {
     
     public typealias Index = EitherType<Int, Key>
     
-    private var stored: AnyTreeKeyedBy<Key> = .init()
+    public static var empty: Tree { .dictionary([:]) }
     
-    public init() {}
-    
-    public init(_ value: Value) { self.value = value }
+    public init() { self = .empty }
     
     public init(_ value: Any) throws {
         throw Error()
-    }
-}
-
-extension Tree {
-    
-    public struct Error: Swift.Error, CustomStringConvertible, CustomDebugStringConvertible {
-        @inlinable public var debugDescription: String { "Tree.Error" }
-        @inlinable public var description: String { debugDescription }
-    }
-}
-
-extension Tree {
-    
-    public indirect enum Value {
-        case leaf(Leaf)
-        case array([Value])
-        case dictionary([Key: Value])
-    }
-
-    public var value: Value {
-        get {
-            switch stored.value {
-            case let o as [Key: Any]: return .dictionary(o as! [Key: Value])
-            case let o as [Any]: return .array(o as! [Value])
-            case let o: return .leaf(o as! Leaf)
-            }
-        }
-        set {
-            switch newValue {
-            case let .leaf(o): stored = .init(o)
-            case let .array(o): stored = .init(o)
-            case let .dictionary(o): stored = .init(o)
-            }
-        }
     }
 }
 
@@ -85,12 +57,53 @@ extension Tree: ExpressibleByNilLiteral {
 }
 
 extension Tree: ExpressibleByArrayLiteral {
-    @inlinable public init(arrayLiteral elements: Value...) { self.init(.array(elements)) }
+    @inlinable public init(arrayLiteral elements: Tree...) { self = .array(elements) }
 }
 
 extension Tree: ExpressibleByDictionaryLiteral {
-    @inlinable public init(dictionaryLiteral elements: (Key, Value)...) { self.init(.dictionary(Dictionary(elements){ $1 })) }
+    @inlinable public init(dictionaryLiteral elements: (Key, Tree)...) { self = .dictionary(.init(uniqueKeysWithValues: elements)) }
 }
+
+extension Tree {
+    
+    public var any: Any {
+        switch self {
+        case let .leaf(o): return o
+        case let .array(o): return o
+        case let .dictionary(o): return o
+        }
+    }
+    
+    public func cast<T>(
+        to: T.Type = T.self,
+        function: String = #function,
+        file: String = #file,
+        line: Int = #line
+    ) throws -> T {
+        guard let t = any as? T else {
+            throw Error("\(any) is not \(T.self)", function, file, line)
+        }
+        return t
+    }
+}
+
+extension Tree {
+    
+    public struct Error: Swift.Error, CustomStringConvertible, CustomDebugStringConvertible {
+        public var description: String
+        @inlinable public var debugDescription: String { description }
+        @inlinable init(
+            _ description: String = "",
+            _ function: String = #function,
+            _ file: String = #file,
+            _ line: Int = #line
+        ){
+            self.description = "Tree.Error(\(description) at: \(CodeLocation(function, file, line)))"
+        }
+    }
+}
+
+// MARK: - AnyTreeKeyedBy<Key>
 
 public struct AnyTreeKeyedBy<Key> where Key: Hashable {
     
