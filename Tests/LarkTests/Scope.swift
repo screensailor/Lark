@@ -11,9 +11,9 @@ class Scope™: Hopes {
         
         let o = Sink.Var(0 as JSON)
         
-        o ...= $json.map(\.["a", 1]).compacted().removeDuplicates() / bag
+        o ...= $json.map(\.["a", 1]) / bag
         
-        hope(o.value) == 0
+        hope(o.value) == nil
         
         json["a", 1] = "c"
         
