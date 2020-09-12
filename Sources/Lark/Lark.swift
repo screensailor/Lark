@@ -13,9 +13,9 @@ infix operator ¶ : TernaryPrecedence
 
 infix operator ...= : BitwiseShiftPrecedence
 
-// TODO: 
-private protocol Concept {}        // neural node
-private protocol Lexicon {}        // neural network
+// TODO: handwritten recurrent neural networks
+private protocol Concept {}        // node
+private protocol Lexicon {}        // network
 private protocol InputFunction {}  // input transform (weight)
 private protocol OutputFunction {} // action potential
 
