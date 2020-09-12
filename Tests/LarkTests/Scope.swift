@@ -5,17 +5,17 @@ class Scope™: Hopes {
     
     private var bag: Bag = []
     
+    @Published private var json: JSON = .empty
+    
     func test() {
-        
-        let store: CurrentValueSubject<JSON, Never> = .init(.empty)
         
         let o = Sink.Var(0 as JSON)
         
-        o ...= store.map(\.["a", 1]).compacted().removeDuplicates() / bag
+        o ...= $json.map(\.["a", 1]).compacted().removeDuplicates() / bag
         
         hope(o.value) == 0
         
-        store.send(["a": ["b", "c", "d"]])
+        json["a", 1] = "c"
         
         hope(o.value) == "c"
     }
