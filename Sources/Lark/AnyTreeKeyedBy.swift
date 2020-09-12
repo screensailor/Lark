@@ -1,36 +1,36 @@
 import Peek
 
-public protocol JSONLeaf: Codable {}
-
-extension Bool: JSONLeaf {}
-extension Int: JSONLeaf {}
-extension Double: JSONLeaf {}
-extension String: JSONLeaf {}
+public enum JSONLeaf: Equatable {
+    case null
+    case boolean(Bool)
+    case number(Double)
+    case string(String)
+}
 
 public typealias JSON = Tree<String, JSONLeaf>
 
 extension JSON: ExpressibleByBooleanLiteral {
-    @inlinable public init(booleanLiteral value: BooleanLiteralType) { self = .leaf(value) }
+    @inlinable public init(booleanLiteral value: Bool) { self = .leaf(.boolean(value)) }
 }
 
 extension JSON: ExpressibleByIntegerLiteral {
-    @inlinable public init(integerLiteral value: IntegerLiteralType) { self = .leaf(value) }
+    @inlinable public init(integerLiteral value: Int) { self = .leaf(.number(Double(value))) }
 }
 
 extension JSON: ExpressibleByFloatLiteral {
-    @inlinable public init(floatLiteral value: FloatLiteralType) { self = .leaf(value) }
+    @inlinable public init(floatLiteral value: Double) { self = .leaf(.number(value)) }
 }
 
 extension JSON: ExpressibleByStringLiteral {
-    public init(stringLiteral value: String) { self = .leaf(value) }
+    public init(stringLiteral value: String) { self = .leaf(.string(value)) }
 }
 
 extension JSON: ExpressibleByUnicodeScalarLiteral {
-    public init(unicodeScalarLiteral value: String) { self = .leaf(value) }
+    public init(unicodeScalarLiteral value: String) { self = .leaf(.string(value)) }
 }
 
 extension JSON: ExpressibleByExtendedGraphemeClusterLiteral {
-    public init(extendedGraphemeClusterLiteral value: String) { self = .leaf(value) }
+    public init(extendedGraphemeClusterLiteral value: String) { self = .leaf(.string(value)) }
 }
 
 public indirect enum Tree<Key, Leaf> where Key: Hashable {
@@ -46,10 +46,6 @@ extension Tree {
     public static var empty: Tree { .dictionary([:]) }
     
     public init() { self = .empty }
-    
-    public init(_ value: Any) throws {
-        throw Error()
-    }
 }
 
 extension Tree: ExpressibleByNilLiteral {
@@ -84,6 +80,43 @@ extension Tree {
             throw Error("\(any) is not \(T.self)", function, file, line)
         }
         return t
+    }
+}
+
+extension Tree {
+    
+    public init(_ value: Any) throws {
+        throw Error()
+    }
+
+    @inlinable public subscript(path: Index...) -> Self? {
+        get { self[path] }
+        set { self[path] = newValue }
+    }
+    
+    public subscript(path: [Index]) -> Self? {
+        get {
+            if path.isEmpty { return self }
+            fatalError()
+        }
+        set {
+            guard !path.isEmpty else {
+                self = newValue ?? .empty
+                return
+            }
+        }
+    }
+}
+
+extension Tree: Equatable where Leaf: Equatable {
+    
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        switch (lhs, rhs) {
+        case let (.leaf(l), .leaf(r)): return l == r
+        case let (.array(l), .array(r)): return l == r
+        case let (.dictionary(l), .dictionary(r)): return l == r
+        default: return false
+        }
     }
 }
 
