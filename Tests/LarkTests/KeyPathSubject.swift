@@ -3,22 +3,23 @@ import Hope
 
 class KeyPathSubject™: Hopes {
     
+    private var bag: Bag = []
+    
     func test() {
         
-        let store: CurrentValueSubject<[String: Any], Never> = .init([:])
+        let store: CurrentValueSubject<JSON, Never> = .init(.empty)
         
-//        let o1 = store.map(\.["a", 1])
+        let o = Sink.Var(0 as JSON)
         
+        o ...= store.map(\.["a", 1]).compacted() / bag
         
+        hope(o.value) == 0
+        
+        store.send(["a": ["b", "c", "d"]])
+        
+        hope(o.value) == "c"
     }
 }
 
-private class KeyPathSubject<Store> {
-    
-    private let store: CurrentValueSubject<Store, Never>
-    
-    init(_ store: Store) { self.store = .init(store) }
-    
-}
 
 

@@ -101,7 +101,8 @@ extension Tree {
             switch self
             {
             case .leaf:
-                switch first.value {
+                switch first.value
+                {
                 case let .a(i):
                     var o = Array(repeating: Self.empty, count: i)
                     o.append(new)
@@ -112,7 +113,8 @@ extension Tree {
                 }
                 
             case var .array(o):
-                switch first.value {
+                switch first.value
+                {
                 case let .a(i):
                     o.append(
                         contentsOf: Array(repeating: Self.empty, count: max(0, 1 + i - o.count))
@@ -125,7 +127,8 @@ extension Tree {
                 }
 
             case var .dictionary(o):
-                switch first.value {
+                switch first.value
+                {
                 case let .a(i):
                     var o = Array(repeating: Self.empty, count: i)
                     o.append(new)
