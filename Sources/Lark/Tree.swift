@@ -7,9 +7,9 @@ public indirect enum Tree<Key, Leaf> where Key: Hashable {
     case dictionary([Key: Tree])
 }
 
-extension JSON {
-    public subscript(dynamicMember string: String) -> Self? {
-        self[.init(string)] // TODO: set
+extension Tree where Key: ExpressibleByStringLiteral {
+    public subscript(dynamicMember key: Key) -> Self? {
+        self[[Tree.Index(key)]] // TODO: set
     }
 }
 
@@ -52,7 +52,7 @@ extension Tree: BoxedAny {
         line: Int = #line
     ) throws -> T {
         guard let t = any as? T else {
-            throw Error("\(any) is not \(T.self)", function, file, line)
+            throw Error("\(any) is not \(T.self)", function, file, line).peek()
         }
         return t
     }
