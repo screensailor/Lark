@@ -19,30 +19,16 @@ extension Test {
     }
 }
 
-extension Test {
+extension Test where T: Equatable {
     
     @inlinable
-    public static func == <U>(l: Test, r: @autoclosure () -> U) where T: Equatable {
-        guard let r = r() as? T else { return XCTFail("\(T.self) != \(U.self)", file: l.file, line: l.line) }
-        XCTAssertEqual(try l.value(), r, file: l.file, line: l.line)
+    public static func == (l: Test, r: @autoclosure () throws -> T) {
+        XCTAssertEqual(try l.value(), try r(), file: l.file, line: l.line)
     }
     
     @inlinable
-    public static func != <U>(l: Test, r: @autoclosure () -> U) where T: Equatable {
-        guard let r = r() as? T else { return }
-        XCTAssertNotEqual(try l.value(), r, file: l.file, line: l.line)
-    }
-    
-    @inlinable
-    public static func == <U>(l: Test, r: @autoclosure () -> U) where U: Equatable {
-        guard let lhs = (try? l.value()) as? U else { return XCTFail("\(T.self) != \(U.self)", file: l.file, line: l.line) }
-        XCTAssertEqual(lhs, r(), file: l.file, line: l.line)
-    }
-    
-    @inlinable
-    public static func != <U>(l: Test, r: @autoclosure () -> U) where U: Equatable {
-        guard let lhs = (try? l.value()) as? U else { return }
-        XCTAssertNotEqual(lhs, r(), file: l.file, line: l.line)
+    public static func != (l: Test, r: @autoclosure () throws -> T) {
+        XCTAssertNotEqual(try l.value(), try r(), file: l.file, line: l.line)
     }
 }
 

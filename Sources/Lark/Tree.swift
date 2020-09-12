@@ -8,8 +8,6 @@ public indirect enum Tree<Key, Leaf> where Key: Hashable {
     
 extension Tree {
     
-    public typealias Index = EitherType<Int, Key>
-    
     public static var empty: Tree { .dictionary([:]) }
     
     public init() { self = .empty }
@@ -55,6 +53,11 @@ extension Tree {
     public init(_ value: Any) throws {
         throw Error()
     }
+}
+
+extension Tree {
+    
+    public typealias Index = EitherType<Int, Key>
 
     @inlinable public subscript(path: Index...) -> Self? {
         get { self[path] }

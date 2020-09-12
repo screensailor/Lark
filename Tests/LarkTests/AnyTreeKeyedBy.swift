@@ -5,18 +5,18 @@ class AnyTree™: Hopes {
     
     private var bag: Bag = []
     
-    func test_1() {
+    func test_return_self() {
         let o = 4 as JSON
-        hope(o[]) == 4 as JSON
+        hope(o[]) == 4
     }
     
-    func test_2() {
+    func test_set_self() {
         var o = 4 as JSON
         o[] = 5
-        hope(o[]) == 5 as JSON
+        hope(o[]) == 5
     }
     
-    func test_3() {
+    func test_subscript() {
         
     }
 }
