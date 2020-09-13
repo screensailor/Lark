@@ -1,19 +1,22 @@
 public enum Sink {}
 
 extension Sink {
-    public final class Var<Value> {
+    public final class Optional<A> {
         public var bag: Bag = []
-        @Published public fileprivate(set) var value: Value?
-        public init(_ value: Value){ self.value = value }
+        @Published public fileprivate(set) var value: A?
+        public init(_ value: A){ self.value = value }
         public init(){}
     }
 }
 
 extension Sink {
-    public final class Result<Success, Failure: Error> {
+    public final class Result<A> {
         public var bag: Bag = []
-        @Published public fileprivate(set) var result: Swift.Result<Success, Failure>
-        public init(_ result: Swift.Result<Success, Failure>){ self.result = result }
+        @Published public fileprivate(set) var result: Swift.Result<A, Error>
+        @inlinable public var value: A? { result.value }
+        @inlinable public var error: Error? { result.error }
+        public init(_ result: Swift.Result<A, Error>){ self.result = result }
+        public init(_ result: A){ self.result = .success(result) }
     }
 }
 
@@ -24,8 +27,12 @@ extension Result {
 
 extension Publisher {
     
-    @discardableResult
-    public func sink(_ sink: Sink.Result<Output, Failure>) -> Sink.Result<Output, Failure> {
+    @inlinable
+    public static func ...= (lhs: Sink.Result<Output>, rhs: Self) {
+        rhs.sink(lhs)
+    }
+
+    public func sink(_ sink: Sink.Result<Output>) {
         self.sink { completion in
             if case .failure(let o) = completion {
                 sink.result = .failure(o)
@@ -33,11 +40,14 @@ extension Publisher {
         } receiveValue: { output in
             sink.result = .success(output)
         }.in(&sink.bag)
-        return sink
     }
 
-    @discardableResult
-    public func sink(_ sink: Sink.Var<Output>) -> Sink.Var<Output> {
+    @inlinable
+    public static func ...= (lhs: Sink.Optional<Output>, rhs: Self) {
+        rhs.sink(lhs)
+    }
+
+    public func sink(_ sink: Sink.Optional<Output>) {
         self.sink { completion in
             if case .failure = completion {
                 sink.value = nil
@@ -45,11 +55,14 @@ extension Publisher {
         } receiveValue: { output in
             sink.value = output
         }.in(&sink.bag)
-        return sink
     }
 
-    @discardableResult
-    public func sink<A>(_ sink: Sink.Var<A>) -> Sink.Var<A> where Output == A? {
+    @inlinable
+    public static func ...= <A>(lhs: Sink.Optional<A>, rhs: Self) where Output == A? {
+        rhs.sink(lhs)
+    }
+
+    public func sink<A>(_ sink: Sink.Optional<A>) where Output == A? {
         self.sink { completion in
             if case .failure = completion {
                 sink.value = nil
@@ -57,24 +70,5 @@ extension Publisher {
         } receiveValue: { output in
             sink.value = output
         }.in(&sink.bag)
-        return sink
-    }
-
-    @inlinable
-    @discardableResult
-    public static func ...= (lhs: Sink.Result<Output, Failure>, rhs: Self) -> Sink.Result<Output, Failure> {
-        rhs.sink(lhs)
-    }
-
-    @inlinable
-    @discardableResult
-    public static func ...= (lhs: Sink.Var<Output>, rhs: Self) -> Sink.Var<Output> {
-        rhs.sink(lhs)
-    }
-
-    @inlinable
-    @discardableResult
-    public static func ...= <A>(lhs: Sink.Var<A>, rhs: Self) -> Sink.Var<A> where Output == A? {
-        rhs.sink(lhs)
     }
 }

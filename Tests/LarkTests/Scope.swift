@@ -3,15 +3,13 @@ import Hope
 
 class Scope™: Hopes {
     
-    private var bag: Bag = []
-    
     @Published private var json: JSON = .empty
     
     func test() {
         
-        let o = Sink.Var(0 as JSON)
+        let o = Sink.Optional(0 as JSON)
         
-        let x: [JSON.Index] = ["a", "b", 3]
+        let x: JSON.Path = ["a", "b", 3]
         
         o ...= $json.map(\.[x])
         
@@ -24,10 +22,10 @@ class Scope™: Hopes {
     
     func test_1() {
         
-        let result = Sink.Var(0.0)
+        let result = Sink.Optional(0.0)
         
-        let x: [JSON.Index] = ["a", "b", 3]
-        let y: [JSON.Index] = [3, 2, 1]
+        let x: JSON.Path = ["a", "b", 3]
+        let y: JSON.Path = [3, 2, 1]
 
         let x$ = $json.map(\.[x]).tryCompactMap{ try $0?.cast(to: Double.self) }
         let y$ = $json.map(\.[y]).tryCompactMap{ try $0?.cast(to: Double.self) }

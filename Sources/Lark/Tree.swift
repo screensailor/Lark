@@ -61,7 +61,8 @@ extension Tree: BoxedAny {
 extension Tree {
     
     public typealias Index = EitherType<Int, Key>
-    
+    public typealias Path = [Index]
+
     @inlinable public subscript(path: Index..., default o: Self) -> Self {
         self[path] ?? o
     }
