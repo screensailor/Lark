@@ -1,4 +1,4 @@
-import Lark
+@testable import Lark
 import Hope
 
 class Scope™: Hopes {
@@ -51,43 +51,5 @@ class Scope™: Hopes {
         let concept = Concept<String, JSON>(action: Identity.self)
         
         brain["concept"] = concept
-    }
-}
-
-private protocol InputFunction {}
-private protocol OutputFunction {}
-
-private struct Concept<Lemma, Signal> where Lemma: Hashable {
-    let input: [Lemma: InputFunction] = [:]
-    let action: OutputFunction.Type
-}
-
-private class Brain<Lemma, Signal> where Lemma: Hashable {
-    
-    typealias Lexicon = [Lemma: Concept<Lemma, Signal>]
-    typealias Network = [Lemma: Node]
-    
-    @Published var lexicon: Lexicon = [:]
-    
-    var network: Network = [:]
-    
-    subscript(lemma: Lemma) -> Concept<Lemma, Signal>? {
-        get {
-            network[lemma]?.concept
-        }
-        set {
-            guard let concept = newValue else {
-                network.removeValue(forKey: lemma)
-                return
-            }
-            network[lemma] = Node(concept: concept)
-        }
-    }
-}
-
-private extension Brain {
-    
-    struct Node {
-        let concept: Concept<Lemma, Signal>
     }
 }

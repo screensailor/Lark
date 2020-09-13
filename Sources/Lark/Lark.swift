@@ -15,21 +15,42 @@ infix operator ¶ : TernaryPrecedence
 
 infix operator ...= : BitwiseShiftPrecedence
 
-// TODO:
+protocol InputFunction {}
+protocol OutputFunction {}
 
-private protocol Lemma {}          // ontology
-private protocol Signal {}         // i/o value
-private protocol Concept {}        // node
-private protocol Lexicon {}        // network
-private protocol InputFunction {}  // input transform (weight)
-private protocol OutputFunction {} // action potential transform
+struct Concept<Lemma, Signal> where Lemma: Hashable {
+    let input: [Lemma: InputFunction] = [:]
+    let action: OutputFunction.Type
+}
 
-private func example() {
+class Brain<Lemma, Signal> where Lemma: Hashable {
     
-    class Lexicon<Lemma, Signal> where Lemma: Hashable {}
-
-    struct Concept<Lemma, Signal> where Lemma: Hashable {
-        let input: [Lemma: InputFunction]
-        let action: OutputFunction
+    typealias Lexicon = [Lemma: Concept<Lemma, Signal>]
+    typealias Network = [Lemma: Node]
+    
+    @Published var lexicon: Lexicon = [:]
+    
+    var network: Network = [:]
+    
+    subscript(lemma: Lemma) -> Concept<Lemma, Signal>? {
+        get {
+            network[lemma]?.concept
+        }
+        set {
+            guard let concept = newValue else {
+                network.removeValue(forKey: lemma)
+                return
+            }
+            // TODO: do nothing if the concept did not change
+            network[lemma] = Node(
+                concept: concept,
+                subject: network[lemma]?.subject ?? .init(.empty)
+            )
+        }
+    }
+    
+    struct Node {
+        let concept: Concept<Lemma, Signal>
+        let subject: CurrentValueSubject<JSON, Error>
     }
 }
