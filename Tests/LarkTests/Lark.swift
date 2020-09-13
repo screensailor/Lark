@@ -42,22 +42,23 @@ class Lark™: Hopes {
     }
     
     func test_2() {
-        let lexicon = Lexicon<String, JSON>()
-        let brain = Brain<String, JSON>(lexicon)
+        typealias Lexicon = Lark.Lexicon<String, JSON>
+        typealias Concept = Lexicon.Concept
+        typealias Brain = Lexicon.Brain
         
-        let o = Sink.Optional(0)
+        let lexicon = Lexicon()
+        let brain = Brain(lexicon)
         
-        o ...= brain["some concept"]
-    }
-}
-
-extension Brain {
+        let o = Sink.Optional<JSON>()
         
-    subscript<T>(lemma: Lemma, default t: T) -> CurrentValueSubject<T, Error> {
-        .init(t)
-    }
-    
-    subscript<T>(lemma: Lemma, as: T.Type = T.self) -> CurrentValueSubject<T?, Error> {
-        .init(nil)
+        o ...= brain["some concept", default: 0]
+        
+        brain.lexicon.book["some concept"] = Concept(
+            connections: ["x": "", "y": ""],
+            action: "+"
+        )
+        
+        brain.lexicon.book["x"] = Concept(connections: [:], action: "")
+        brain.lexicon.book["y"] = Concept(connections: [:], action: "")
     }
 }

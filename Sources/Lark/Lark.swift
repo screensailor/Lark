@@ -29,7 +29,7 @@ class Brain<Lemma, Signal> where Lemma: Hashable {
     
     struct Node {
         let concept: Concept
-        let subject: Subject?
+        let subject: Subject
     }
     
     struct Connection {
@@ -45,7 +45,16 @@ class Brain<Lemma, Signal> where Lemma: Hashable {
         case ƒ3((Signal, Signal, Signal) throws -> Signal)
     }
     
-    init(_ lexicon: Lexicon) {}
+    var lexicon: Lexicon
+    var network: Network = [:]
+    
+    init(_ lexicon: Lexicon) {
+        self.lexicon = lexicon
+    }
+    
+    subscript(lemma: Lemma, default o: Signal) -> Subject {
+        .init(o)
+    }
 }
 
 enum OS {
