@@ -8,6 +8,10 @@ infix operator ¶ : TernaryPrecedence
 
 infix operator ...= : BitwiseShiftPrecedence
 
+enum OS {
+    typealias Lemma = String
+}
+
 struct Lexicon<Lemma, Signal> where Lemma: Hashable {
     
     typealias Brain = Lark.Brain<Lemma, Signal>
@@ -25,7 +29,6 @@ class Brain<Lemma, Signal> where Lemma: Hashable {
     typealias Lexicon = Lark.Lexicon<Lemma, Signal>
     typealias Concept = Lexicon.Concept
     typealias Network = [Lemma: Node]
-    typealias Node = CurrentValueSubject<Signal, Error>
     
     struct Connection {
         typealias Name = OS.Lemma
@@ -43,25 +46,52 @@ class Brain<Lemma, Signal> where Lemma: Hashable {
     var connections: [OS.Lemma: Brain.Connection] = [:]
     var functions: [OS.Lemma: Brain.Function] = [:]
     
-    private(set) var lexicon: Lexicon
+    @Published var lexicon: Lexicon = .init()
     private(set) var network: Network = [:]
     
     init(_ lexicon: Lexicon) {
         self.lexicon = lexicon
     }
     
-    subscript(lemma: Lemma) -> Concept? {
-        get { lexicon.book[lemma] }
-        set { lexicon.book[lemma] = newValue }
-    }
-    
-    subscript(lemma: Lemma, default o: Signal) -> Node {
-        let node = CurrentValueSubject<Signal, Error>(o)
+    subscript(lemma: Lemma) -> Node {
+        let node = network[lemma] ?? Node()
         network[lemma] = node
         return node
     }
 }
 
-enum OS {
-    typealias Lemma = String
+extension Brain {
+    
+    class Node: Subject {
+        
+        typealias Output = Signal
+        typealias Failure = Never
+        
+        var signal: Signal? {
+            didSet {
+                guard let signal = signal else { return }
+                subject.send(signal)
+            }
+        }
+        
+        let subject = PassthroughSubject<Signal, Never>()
+        
+        func send(_ value: Signal) {
+            signal = value
+        }
+        
+        func send(completion: Subscribers.Completion<Never>) {
+            subject.send(completion: completion)
+        }
+        
+        func send(subscription: Subscription) {
+            subject.send(subscription: subscription)
+        }
+        
+        func receive<S>(subscriber: S)
+        where S: Subscriber, Failure == S.Failure, Output == S.Input
+        {
+            subject.receive(subscriber: subscriber)
+        }
+    }
 }

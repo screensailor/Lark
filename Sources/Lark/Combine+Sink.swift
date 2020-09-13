@@ -3,6 +3,14 @@ import Peek
 public enum Sink {}
 
 extension Sink {
+    public final class Var<A> {
+        public var bag: Bag = []
+        @Published public fileprivate(set) var value: A
+        public init(_ value: A){ self.value = value }
+    }
+}
+
+extension Sink {
     public final class Optional<A> {
         public var bag: Bag = []
         @Published public fileprivate(set) var value: A?
@@ -30,17 +38,14 @@ extension Result {
 extension Publisher {
     
     @inlinable
-    public static func ...= (lhs: Sink.Result<Output>, rhs: Self) {
+    public static func ...= <A>(lhs: Sink.Var<A>, rhs: Self) where Output == A {
         rhs.sink(lhs)
     }
 
-    public func sink(_ sink: Sink.Result<Output>) {
-        self.sink { completion in
-            if case .failure(let o) = completion {
-                sink.result = .failure(o)
-            }
+    public func sink<A>(_ sink: Sink.Var<A>) where Output == A {
+        self.sink { _ in
         } receiveValue: { output in
-            sink.result = .success(output)
+            sink.value = output
         }.in(&sink.bag)
     }
 
@@ -71,6 +76,21 @@ extension Publisher {
             }
         } receiveValue: { output in
             sink.value = output
+        }.in(&sink.bag)
+    }
+
+    @inlinable
+    public static func ...= (lhs: Sink.Result<Output>, rhs: Self) {
+        rhs.sink(lhs)
+    }
+
+    public func sink(_ sink: Sink.Result<Output>) {
+        self.sink { completion in
+            if case .failure(let o) = completion {
+                sink.result = .failure(o)
+            }
+        } receiveValue: { output in
+            sink.result = .success(output)
         }.in(&sink.bag)
     }
 }

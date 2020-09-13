@@ -19,19 +19,20 @@ extension JSONLeaf: Leaf {
     ) throws -> A {
         switch self
         {
-        case .null where A.self is NSNull.Type: return NSNull() as! A
         case let .boolean(o as A): return o
         case let .number(o as A): return o
         case let .string(o as A): return o
         case let .error(o as A): return o
-
+            
+        case .null where A.self is NSNull.Type:
+            return NSNull() as! A
+            
         case let .number(o) where A.self is Int.Type:
             if let o = Int(exactly: o) { return o as! A }
             
         // TODO: ...
             
-        default:
-            break
+        default: break
         }
         throw "\(self) is not \(A.self)".error(function, file, line)
     }
