@@ -23,22 +23,19 @@ class Scope™: Hopes {
     func test_1() {
         
         let o = Sink.Result(0)
-        
-        let x: JSON.Path = ["a", "b", 3]
-        let y: JSON.Path = ["somewhere", "else"]
 
-        let x$ = $json[x].as(Int.self)
-        let y$ = $json[y].as(Int.self)
+        let x = $json["a", "b", 3].as(Int.self)
+        let y = $json["somewhere", "else"].as(Int.self)
         
-        o ...= x$.combineLatest(y$).map(+) // o = x|Int + y|Int
+        o ...= x.combineLatest(y).map(+) // o = x|Int + y|Int
 
         hope(o.value) == 0
         
-        json[x] = 4
+        json["a", "b", 3] = 4
         
         hope(o.value) == 0
 
-        json[y] = 12
+        json["somewhere", "else"] = 12
 
         hope(o.value) == 16
     }
