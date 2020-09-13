@@ -53,21 +53,15 @@ let t = Publishers.CombineLatest<
     CurrentValueSubject<String, Never>
 >.self
 
-private protocol Concept {} // associated types: Key, Leaf
+private protocol InputFunction {}
+private protocol OutputFunction {}
 
 private extension Publishers {
     
-    class Lexicon<Name, Signal> {}
+    class Lexicon<Name, Signal> where Name: Hashable {}
     
-    struct Concept0: Concept {
-        
-    }
-    
-    struct Concept1: Concept {
-        
-    }
-    
-    struct Concept2: Concept {
-        
+    struct Concept<Name, Signal> where Name: Hashable {
+        let input: [Name: InputFunction]
+        let action: OutputFunction
     }
 }

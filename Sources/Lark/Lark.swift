@@ -14,11 +14,11 @@ infix operator ¶ : TernaryPrecedence
 infix operator ...= : BitwiseShiftPrecedence
 
 // TODO: handwritten recurrent neural networks
-private protocol Name {}           // Key in Tree<Key, Leaf>
-private protocol Signal {}         // Leaf in Tree<Key, Leaf> 
+private protocol Name {}           // ontology
+private protocol Signal {}         // i/o value
 private protocol Concept {}        // node
 private protocol Lexicon {}        // network
 private protocol InputFunction {}  // input transform (weight)
-private protocol OutputFunction {} // action potential
+private protocol OutputFunction {} // action potential transform
 
 
