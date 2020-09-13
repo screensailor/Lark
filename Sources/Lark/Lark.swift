@@ -25,12 +25,7 @@ class Brain<Lemma, Signal> where Lemma: Hashable {
     typealias Lexicon = Lark.Lexicon<Lemma, Signal>
     typealias Concept = Lexicon.Concept
     typealias Network = [Lemma: Node]
-    typealias Subject = CurrentValueSubject<Signal, Error>
-    
-    struct Node {
-        let concept: Concept
-        let subject: Subject
-    }
+    typealias Node = CurrentValueSubject<Signal, Error>
     
     struct Connection {
         typealias Name = OS.Lemma
@@ -45,15 +40,25 @@ class Brain<Lemma, Signal> where Lemma: Hashable {
         case ƒ3((Signal, Signal, Signal) throws -> Signal)
     }
     
-    var lexicon: Lexicon
-    var network: Network = [:]
+    var connections: [OS.Lemma: Brain.Connection] = [:]
+    var functions: [OS.Lemma: Brain.Function] = [:]
+    
+    private(set) var lexicon: Lexicon
+    private(set) var network: Network = [:]
     
     init(_ lexicon: Lexicon) {
         self.lexicon = lexicon
     }
     
-    subscript(lemma: Lemma, default o: Signal) -> Subject {
-        .init(o)
+    subscript(lemma: Lemma) -> Concept? {
+        get { lexicon.book[lemma] }
+        set { lexicon.book[lemma] = newValue }
+    }
+    
+    subscript(lemma: Lemma, default o: Signal) -> Node {
+        let node = CurrentValueSubject<Signal, Error>(o)
+        network[lemma] = node
+        return node
     }
 }
 

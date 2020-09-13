@@ -41,24 +41,36 @@ class Lark™: Hopes {
         hope(o.value) == 16
     }
     
+    typealias Lexicon = Lark.Lexicon<String, JSON>
+    typealias Concept = Lexicon.Concept
+    typealias Brain = Lexicon.Brain
+    
+    let lexicon = Lexicon()
+    
     func test_2() {
-        typealias Lexicon = Lark.Lexicon<String, JSON>
-        typealias Concept = Lexicon.Concept
-        typealias Brain = Lexicon.Brain
-        
-        let lexicon = Lexicon()
         let brain = Brain(lexicon)
         
-        let o = Sink.Optional<JSON>()
+        brain.functions[""] = Brain.Function.ƒ1{ $0 }
+        brain.functions["+"] = Brain.Function.ƒ2{ try JSON($0.cast(to: Int.self) + $1.cast(to: Int.self)) }
         
-        o ...= brain["some concept", default: 0]
-        
-        brain.lexicon.book["some concept"] = Concept(
-            connections: ["x": "", "y": ""],
+        brain["some concept"] = Concept(
+            connections: [
+                "x": "",
+                "y": ""
+            ],
             action: "+"
         )
         
-        brain.lexicon.book["x"] = Concept(connections: [:], action: "")
-        brain.lexicon.book["y"] = Concept(connections: [:], action: "")
+        brain["x"] = Concept(connections: [:], action: "")
+        brain["y"] = Concept(connections: [:], action: "")
+
+        let o = Sink.Optional<JSON>()
+        
+        o ...= brain["some concept", default: 0]
+
+        brain["x", default: 0].send(2)
+        brain["y", default: 0].send(3)
+        
+        // hope(o.value) == 5
     }
 }
