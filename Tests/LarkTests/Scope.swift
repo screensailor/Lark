@@ -27,8 +27,8 @@ class Scope™: Hopes {
         let x: JSON.Path = ["a", "b", 3]
         let y: JSON.Path = ["somewhere", "else"]
 
-        let x$ = $json.map(\.[x]).tryCompactMap{ try $0?.cast(to: Int.self) }
-        let y$ = $json.map(\.[y]).tryCompactMap{ try $0?.cast(to: Int.self) }
+        let x$ = $json.compactMap(\.[x]).tryMap{ o -> Int in try o.cast() }
+        let y$ = $json.compactMap(\.[y]).tryMap{ o -> Int in try o.cast() }
         
         o ...= x$.combineLatest(y$).map(+)
 

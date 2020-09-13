@@ -41,6 +41,9 @@ extension Tree: BoxedAny {
         case let .dictionary(o): return o.mapValues(\.any)
         }
     }
+}
+
+extension Tree { // TODO: Encoder and Decoder
     
     public func cast<T>(
         to: T.Type = T.self,
@@ -55,6 +58,10 @@ extension Tree: BoxedAny {
             
         case let (is Int.Type, o as Double):
             if let o = Int(exactly: o) { return o as! T }
+            
+        // TODO: ...
+        
+        // TODO: betterstill, defer to Leaf
             
         default:
             break
