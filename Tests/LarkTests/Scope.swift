@@ -46,10 +46,6 @@ class Scope™: Hopes {
     func test_2() {
         struct Identity: InputFunction, OutputFunction {}
         
-        let brain = Brain<String, JSON>()
-        
-        let concept = Concept<String, JSON>(action: Identity.self)
-        
-        brain["concept"] = concept
+        let _ = Brain<String, JSON>()
     }
 }
