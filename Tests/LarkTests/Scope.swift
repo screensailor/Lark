@@ -56,12 +56,9 @@ let t = Publishers.CombineLatest<
 private protocol InputFunction {}
 private protocol OutputFunction {}
 
-private extension Publishers {
-    
-    class Lexicon<Name, Signal> where Name: Hashable {}
-    
-    struct Concept<Name, Signal> where Name: Hashable {
-        let input: [Name: InputFunction]
-        let action: OutputFunction
-    }
+private class Lexicon<Lemma, Signal> where Lemma: Hashable {}
+
+private struct Concept<Lemma, Signal> where Lemma: Hashable {
+    let input: [Lemma: InputFunction]
+    let action: OutputFunction
 }
