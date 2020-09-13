@@ -6,6 +6,36 @@ public enum JSONLeaf: Equatable {
     case boolean(Bool)
     case number(Double)
     case string(String)
+    case error(Peek.Error)
+}
+
+extension JSONLeaf: Leaf {
+    
+    public func cast<A>(
+        to: A.Type = A.self,
+        _ function: String = #function,
+        _ file: String = #file,
+        _ line: Int = #line
+    ) throws -> A {
+        switch self
+        {
+        case .null where A.self is NSNull.Type: return NSNull() as! A
+        case let .boolean(o as A): return o
+        case let .number(o as A): return o
+        case let .string(o as A): return o
+        case let .error(o as A): return o
+
+        case let .number(o) where A.self is Int.Type:
+            if let o = Int(exactly: o) { return o as! A }
+            
+        // TODO: ...
+            
+        default:
+            break
+        }
+        throw "\(self) is not \(A.self)".error(function, file, line)
+    }
+
 }
 
 extension JSONLeaf: BoxedAny {
@@ -18,6 +48,7 @@ extension JSONLeaf: BoxedAny {
         case let .boolean(o): return o
         case let .number(o): return o
         case let .string(o): return o
+        case let .error(o): return o
         }
     }
 }

@@ -8,11 +8,11 @@ class Lark™: Hopes {
     
     func test() {
         
-        let o = Sink.Optional(0 as JSON)
+        let o = Sink.Optional<JSON>()
         
         let x: JSON.Path = ["a", "b", 3]
         
-        o ...= $json.map(\.[x])
+        o ...= $json[x]
         
         hope(o.value) == nil
         
@@ -28,7 +28,7 @@ class Lark™: Hopes {
         let x = $json["a", "b", 3].as(Int.self)
         let y = $json["somewhere", "else"].as(Int.self)
         
-        o ...= x.combineLatest(y).map(+) // o = x|Int + y|Int
+        o ...= x.combineLatest(y).map(+)
 
         hope(o.value) == 0
         
@@ -71,6 +71,6 @@ class Lark™: Hopes {
         brain["x", default: 0].send(2)
         brain["y", default: 0].send(3)
         
-        // hope(o.value) == 5
+        hope(o.value) == 5
     }
 }

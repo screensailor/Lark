@@ -5,7 +5,7 @@ class JSON™: Hopes {
     
     private var bag: Bag = []
     
-    func test_subscript() {
+    func test_subscript() {        
         var o: JSON = "👋"
         
         hope(o[]) == "👋"

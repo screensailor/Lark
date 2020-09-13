@@ -1,10 +1,31 @@
 import Peek
 
 @dynamicMemberLookup
-public indirect enum Tree<Key, Leaf> where Key: Hashable {
-    case leaf(Leaf)
+public indirect enum Tree<Key, Value>
+where Key: Hashable, Value: Leaf
+{
+    case leaf(Value)
     case array([Tree])
     case dictionary([Key: Tree])
+}
+
+public protocol Leaf {
+    func cast<A>(to: A.Type, _ function: String, _ file: String, _ line: Int) throws -> A
+}
+
+extension Leaf {
+    
+    public func cast<A>(
+        to: A.Type = A.self,
+        _ function: String = #function,
+        _ file: String = #file,
+        _ line: Int = #line
+    ) throws -> A {
+        guard let a = self as? A else {
+            throw "\(self) is not \(A.self)".error()
+        }
+        return a
+    }
 }
 
 extension Tree where Key: ExpressibleByStringLiteral {
@@ -47,28 +68,40 @@ extension Tree: BoxedAny {
 
 extension Tree { // TODO: Encoder and Decoder
     
-    public func cast<T>(
-        to: T.Type = T.self,
-        function: String = #function,
-        file: String = #file,
-        line: Int = #line
-    ) throws -> T {
-        switch (T.self, any)
-        {
-        case let (_, o as T):
-            return o
-            
-        case let (is Int.Type, o as Double):
-            if let o = Int(exactly: o) { return o as! T }
-            
-        // TODO: ...
-        
-        // TODO: betterstill, defer to Leaf
-            
-        default:
-            break
+    public func cast<A>(
+        to: A.Type = A.self,
+        _ function: String = #function,
+        _ file: String = #file,
+        _ line: Int = #line
+    ) throws -> A {
+        switch self {
+        case let .leaf(o): return try o.cast(to: A.self, function, file, line)
+        case .array, .dictionary: throw "\(self) is not \(A.self)".error(function, file, line)
         }
-        throw "\(any) is not \(T.self)".error()
+    }
+    
+    public func cast<A>(
+        to: [A].Type = [A].self,
+        _ function: String = #function,
+        _ file: String = #file,
+        _ line: Int = #line
+    ) throws -> [A] {
+        switch self {
+        case let .array(o): return try o.map{ try $0.cast(to: A.self, function, file, line) }
+        case .leaf, .dictionary: throw "\(self) is not \([A].self)".error(function, file, line)
+        }
+    }
+    
+    public func cast<A>(
+        to: [Key: A].Type = [Key: A].self,
+        _ function: String = #function,
+        _ file: String = #file,
+        _ line: Int = #line
+    ) throws -> [Key: A] {
+        switch self {
+        case let .dictionary(o): return try o.mapValues{ try $0.cast(to: A.self, function, file, line) }
+        case .leaf, .array: throw "\(self) is not \([Key: A].self)".error(function, file, line)
+        }
     }
 }
 
@@ -166,7 +199,7 @@ extension Tree {
     }
 }
 
-extension Tree: Equatable where Leaf: Equatable {
+extension Tree: Equatable where Value: Equatable {
     
     public static func == (lhs: Self, rhs: Self) -> Bool {
         switch (lhs, rhs) {
