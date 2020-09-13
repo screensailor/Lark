@@ -32,8 +32,14 @@ class Brain<Lemma, Signal> where Lemma: Hashable {
         let subject: Subject?
     }
     
-    struct Function {
-        typealias Name = String
-        let ƒ: ([Signal]) throws -> Signal
+    enum Function {
+        typealias Name = OS.Lemma
+        case ƒ0(() throws -> Signal)
+        case ƒ1((Signal) throws -> Signal)
+        case ƒ2((Signal, Signal) throws -> Signal)
     }
+}
+
+enum OS {
+    typealias Lemma = String
 }
