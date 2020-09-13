@@ -13,7 +13,7 @@ struct Lexicon<Lemma, Signal> where Lemma: Hashable {
     typealias Brain = Lark.Brain<Lemma, Signal>
 
     struct Concept {
-        let input: [Lemma: Brain.Function.Name]
+        let connections: [Lemma: Brain.Connection.Name]
         let action: Brain.Function.Name
     }
     
@@ -32,11 +32,17 @@ class Brain<Lemma, Signal> where Lemma: Hashable {
         let subject: Subject?
     }
     
+    struct Connection {
+        typealias Name = OS.Lemma
+        let ƒ: (Signal) throws -> Signal
+    }
+    
     enum Function {
         typealias Name = OS.Lemma
         case ƒ0(() throws -> Signal)
         case ƒ1((Signal) throws -> Signal)
         case ƒ2((Signal, Signal) throws -> Signal)
+        case ƒ3((Signal, Signal, Signal) throws -> Signal)
     }
 }
 
