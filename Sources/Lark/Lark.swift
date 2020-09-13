@@ -13,8 +13,8 @@ struct Lexicon<Lemma, Signal> where Lemma: Hashable {
     typealias Brain = Lark.Brain<Lemma, Signal>
 
     struct Concept {
-        let input: [Lemma: Brain.Function]
-        let action: Brain.Function
+        let input: [Lemma: Brain.Function.Name]
+        let action: Brain.Function.Name
     }
     
     var book: [Lemma: Concept] = [:]
@@ -33,6 +33,7 @@ class Brain<Lemma, Signal> where Lemma: Hashable {
     }
     
     struct Function {
-        
+        typealias Name = String
+        let ƒ: ([Signal]) throws -> Signal
     }
 }

@@ -30,7 +30,7 @@ class Scope™: Hopes {
         let x$ = $json.compactMap(\.[x]).tryMap{ o -> Int in try o.cast() }
         let y$ = $json.compactMap(\.[y]).tryMap{ o -> Int in try o.cast() }
         
-        o ...= x$.combineLatest(y$).map(+) // o$ = x$ + y$
+        o ...= x$.combineLatest(y$).map(+) // o = x|Int + y|Int
 
         hope(o.value) == 0
         
