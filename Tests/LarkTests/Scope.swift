@@ -42,19 +42,43 @@ class Scope™: Hopes {
 
         hope(o.value) == 16
     }
+    
+    func test_2() {
+        struct Identity: InputFunction, OutputFunction {}
+        
+        let lexicon = Lexicon<String, JSON>()
+        
+        let concept = Concept<String, JSON>(action: Identity.self)
+        
+        lexicon["concept"] = concept
+    }
 }
-
-let t = Publishers.CombineLatest<
-    CurrentValueSubject<Int, Never>,
-    CurrentValueSubject<String, Never>
->.self
 
 private protocol InputFunction {}
 private protocol OutputFunction {}
 
-private class Lexicon<Lemma, Signal> where Lemma: Hashable {}
-
 private struct Concept<Lemma, Signal> where Lemma: Hashable {
-    let input: [Lemma: InputFunction]
-    let action: OutputFunction
+    let input: [Lemma: InputFunction] = [:]
+    let action: OutputFunction.Type
+}
+
+private class Lexicon<Lemma, Signal> where Lemma: Hashable {
+    
+    @Published private var book: [Lemma: Entry] = [:]
+    
+    subscript(lemma: Lemma) -> Concept<Lemma, Signal>? {
+        get {
+            fatalError()
+        }
+        set {
+            
+        }
+    }
+}
+
+private extension Lexicon {
+    
+    struct Entry {
+        let concept: Concept<Lemma, Signal>
+    }
 }
