@@ -11,13 +11,13 @@ class Scope™: Hopes {
         
         let o = Sink.Var(0 as JSON)
         
-        let path: [JSON.Index] = ["a", "b", 3]
+        let x: [JSON.Index] = ["a", "b", 3]
         
-        o ...= $json.map(\.[path]) / bag
+        o ...= $json.map(\.[x])
         
         hope(o.value) == nil
         
-        json[path] = "c"
+        json[x] = "c"
         
         hope(o.value) == "c"
     }
@@ -26,23 +26,21 @@ class Scope™: Hopes {
         
         let result = Sink.Var(0.0)
         
-        let xPath: [JSON.Index] = ["a", "b", 3]
-        let yPath: [JSON.Index] = [3, 2, 1]
+        let x: [JSON.Index] = ["a", "b", 3]
+        let y: [JSON.Index] = [3, 2, 1]
 
-        let x = $json.map(\.[xPath]).tryCompactMap{ try $0?.cast(to: Double.self) }
-        let y = $json.map(\.[yPath]).tryCompactMap{ try $0?.cast(to: Double.self) }
+        let x$ = $json.map(\.[x]).tryCompactMap{ try $0?.cast(to: Double.self) }
+        let y$ = $json.map(\.[y]).tryCompactMap{ try $0?.cast(to: Double.self) }
         
-        let z = x.combineLatest(y).map(+)
-        
-        result ...= z / bag
+        result ...= x$.combineLatest(y$).map(+)
 
         hope(result.value) == 0
         
-        json[xPath] = 4
+        json[x] = 4
         
         hope(result.value) == 0
 
-        json[yPath] = 12
+        json[y] = 12
 
         hope(result.value) == 16
     }
