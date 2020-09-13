@@ -62,6 +62,18 @@ class Lark™: Hopes {
     func test_3() {
         let brain = Brain(lexicon)
         
+        brain["?"].send("Yay!")
+        
+        let x = Sink.Var<JSON>(.empty)
+        
+        x ...= brain["?"]
+        
+        hope(x.value) == "Yay!"
+    }
+
+    func test_4() {
+        let brain = Brain(lexicon)
+        
         brain.functions[""] = Brain.Function.ƒ1{ $0 }
         brain.functions["+"] = Brain.Function.ƒ2{ try JSON($0.cast(to: Int.self) + $1.cast(to: Int.self)) }
         

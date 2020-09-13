@@ -54,8 +54,10 @@ class Brain<Lemma, Signal> where Lemma: Hashable {
     }
     
     subscript(lemma: Lemma) -> Node {
-        let node = network[lemma] ?? Node()
-        network[lemma] = node
+        let node = network[lemma] ?? { o in
+            network[lemma] = o
+            return o
+        }(Node())
         return node
     }
 }
@@ -91,6 +93,7 @@ extension Brain {
         func receive<S>(subscriber: S)
         where S: Subscriber, Failure == S.Failure, Output == S.Input
         {
+            if let signal = signal { _ = subscriber.receive(signal) }
             subject.receive(subscriber: subscriber)
         }
     }
