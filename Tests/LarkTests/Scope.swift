@@ -47,3 +47,27 @@ class Scope™: Hopes {
         hope(result.value) == 16
     }
 }
+
+let t = Publishers.CombineLatest<
+    CurrentValueSubject<Int, Never>,
+    CurrentValueSubject<String, Never>
+>.self
+
+private protocol Concept {} // associated types: Key, Leaf
+
+private extension Publishers {
+    
+    class Lexicon<Name, Signal> {}
+    
+    struct Concept0: Concept {
+        
+    }
+    
+    struct Concept1: Concept {
+        
+    }
+    
+    struct Concept2: Concept {
+        
+    }
+}
