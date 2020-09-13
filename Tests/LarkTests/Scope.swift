@@ -22,13 +22,13 @@ class Scope™: Hopes {
     
     func test_1() {
         
-        let o = Sink.Optional(0)
+        let o = Sink.Result(0)
         
         let x: JSON.Path = ["a", "b", 3]
         let y: JSON.Path = ["somewhere", "else"]
 
-        let x$ = $json.compactMap(\.[x]).tryMap{ o -> Int in try o.cast() }
-        let y$ = $json.compactMap(\.[y]).tryMap{ o -> Int in try o.cast() }
+        let x$ = $json[x].as(Int.self)
+        let y$ = $json[y].as(Int.self)
         
         o ...= x$.combineLatest(y$).map(+) // o = x|Int + y|Int
 
@@ -44,8 +44,8 @@ class Scope™: Hopes {
     }
     
     func test_2() {
-        let _ = Lexicon<String, JSON>()
-        let brain = Brain<String, JSON>()
+        let lexicon = Lexicon<String, JSON>()
+        let brain = Brain<String, JSON>(lexicon)
         
         let o = Sink.Optional(0)
         
@@ -54,8 +54,8 @@ class Scope™: Hopes {
 }
 
 extension Brain {
-    
-    subscript<T>(lemma: Lemma, default t: T, as: T.Type = T.self) -> CurrentValueSubject<T, Error> {
+        
+    subscript<T>(lemma: Lemma, default t: T) -> CurrentValueSubject<T, Error> {
         .init(t)
     }
     

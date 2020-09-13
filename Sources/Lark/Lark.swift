@@ -44,6 +44,8 @@ class Brain<Lemma, Signal> where Lemma: Hashable {
         case ƒ2((Signal, Signal) throws -> Signal)
         case ƒ3((Signal, Signal, Signal) throws -> Signal)
     }
+    
+    init(_ lexicon: Lexicon) {}
 }
 
 enum OS {

@@ -48,3 +48,17 @@ extension JSON: ExpressibleByExtendedGraphemeClusterLiteral {
     public init(extendedGraphemeClusterLiteral value: String) { self = .leaf(.string(value)) }
 }
 
+extension Publisher where Output == JSON {
+    
+    @inlinable public subscript(path: JSON.Index...) -> AnyPublisher<JSON, Failure> {
+        self[path]
+    }
+    
+    public subscript(path: JSON.Path) -> AnyPublisher<JSON, Failure> {
+        compactMap{ $0[path] }.eraseToAnyPublisher()
+    }
+    
+    public func `as`<T>(_ type: T.Type = T.self) -> AnyPublisher<T, Error> {
+        tryMap{ o -> T in try o.cast() }.eraseToAnyPublisher()
+    }
+}
