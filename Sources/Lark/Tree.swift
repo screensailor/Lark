@@ -68,7 +68,7 @@ extension Tree { // TODO: Encoder and Decoder
         default:
             break
         }
-        throw Error("\(any) is not \(T.self)", function, file, line)
+        throw "\(any) is not \(T.self)".error()
     }
 }
 
@@ -174,22 +174,6 @@ extension Tree: Equatable where Leaf: Equatable {
         case let (.array(l), .array(r)): return l == r
         case let (.dictionary(l), .dictionary(r)): return l == r
         default: return false
-        }
-    }
-}
-
-extension Tree {
-    
-    public struct Error: Swift.Error, CustomStringConvertible, CustomDebugStringConvertible {
-        public var description: String
-        @inlinable public var debugDescription: String { description }
-        @inlinable init(
-            _ description: String = "",
-            _ function: String = #function,
-            _ file: String = #file,
-            _ line: Int = #line
-        ){
-            self.description = "Tree.Error(\(description) at: \(function) \(file) \(line)))"
         }
     }
 }

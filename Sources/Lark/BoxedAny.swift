@@ -13,19 +13,7 @@ extension BoxedAny {
         file: String = #file,
         line: Int = #line
     ) throws {
-        throw BoxedAnyError("\(Self.self).init(_: Any) not implemented")
+        throw "\(Self.self).init(_: Any) not implemented".error()
     }
 }
 
-public struct BoxedAnyError: Swift.Error, CustomStringConvertible, CustomDebugStringConvertible {
-    public var description: String
-    @inlinable public var debugDescription: String { description }
-    @inlinable init(
-        _ description: String = "",
-        _ function: String = #function,
-        _ file: String = #file,
-        _ line: Int = #line
-    ){
-        self.description = "BoxedAnyError(\(description) at: \(here(function, file, line)))"
-    }
-}
