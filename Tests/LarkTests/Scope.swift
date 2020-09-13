@@ -44,6 +44,22 @@ class Scope™: Hopes {
     }
     
     func test_2() {
-        let _ = Brain<String, JSON>()
+        let _ = Lexicon<String, JSON>()
+        let brain = Brain<String, JSON>()
+        
+        let o = Sink.Optional(0)
+        
+        o ...= brain["some concept"]
+    }
+}
+
+extension Brain {
+    
+    subscript<T>(lemma: Lemma, default t: T, as: T.Type = T.self) -> CurrentValueSubject<T, Error> {
+        .init(t)
+    }
+    
+    subscript<T>(lemma: Lemma, as: T.Type = T.self) -> CurrentValueSubject<T?, Error> {
+        .init(nil)
     }
 }
