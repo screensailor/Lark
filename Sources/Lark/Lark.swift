@@ -15,14 +15,13 @@ infix operator ¶ : TernaryPrecedence
 
 infix operator ...= : BitwiseShiftPrecedence
 
-protocol InputFunction {}
-protocol OutputFunction {}
-
 struct Lexicon<Lemma, Signal> where Lemma: Hashable {
+    
+    typealias Brain = Lark.Brain<Lemma, Signal>
 
     struct Concept {
-        let input: [Lemma: InputFunction.Type] = [:]
-        let action: OutputFunction.Type
+        let input: [Lemma: Brain.Function]
+        let action: Brain.Function
     }
     
     var book: [Lemma: Concept] = [:]
@@ -39,25 +38,8 @@ class Brain<Lemma, Signal> where Lemma: Hashable {
         let concept: Concept
         let subject: Subject?
     }
-
-    var lexicon: Lexicon = .init()
     
-    var network: Network = [:]
-    
-    subscript(lemma: Lemma) -> Lexicon.Concept? {
-        get {
-            network[lemma]?.concept
-        }
-        set {
-            guard let concept = newValue else {
-                network.removeValue(forKey: lemma)
-                return
-            }
-            // TODO: do nothing if the concept did not change
-            network[lemma] = Node(
-                concept: concept,
-                subject: nil
-            )
-        }
+    struct Function {
+        
     }
 }

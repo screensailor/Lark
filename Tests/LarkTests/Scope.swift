@@ -30,7 +30,7 @@ class Scope™: Hopes {
         let x$ = $json.compactMap(\.[x]).tryMap{ o -> Int in try o.cast() }
         let y$ = $json.compactMap(\.[y]).tryMap{ o -> Int in try o.cast() }
         
-        o ...= x$.combineLatest(y$).map(+)
+        o ...= x$.combineLatest(y$).map(+) // o$ = x$ + y$
 
         hope(o.value) == 0
         
@@ -44,8 +44,6 @@ class Scope™: Hopes {
     }
     
     func test_2() {
-        struct Identity: InputFunction, OutputFunction {}
-        
         let _ = Brain<String, JSON>()
     }
 }
