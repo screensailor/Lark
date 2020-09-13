@@ -1,13 +1,6 @@
-import Peek
-
 @_exported import Combine
-@_exported import Foundation
 
-// Hope
-
-infix operator ± : RangeFormationPrecedence
-
-// Peek
+import Peek
 
 infix operator ¶ : TernaryPrecedence
 

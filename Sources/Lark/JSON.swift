@@ -1,4 +1,5 @@
 import Peek
+import Foundation
 
 public enum JSONLeaf: Equatable {
     case null

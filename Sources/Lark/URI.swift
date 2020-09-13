@@ -1,4 +1,5 @@
 import Peek
+import Foundation
 
 open class URI {
     
