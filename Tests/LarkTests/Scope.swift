@@ -46,13 +46,11 @@ class Scope™: Hopes {
     func test_2() {
         struct Identity: InputFunction, OutputFunction {}
         
-        let lexicon = Lexicon<String, JSON>()
+        let brain = Brain<String, JSON>()
         
         let concept = Concept<String, JSON>(action: Identity.self)
         
-        lexicon["concept"] = concept
-        
-        
+        brain["concept"] = concept
     }
 }
 
@@ -64,27 +62,32 @@ private struct Concept<Lemma, Signal> where Lemma: Hashable {
     let action: OutputFunction.Type
 }
 
-private class Lexicon<Lemma, Signal> where Lemma: Hashable {
+private class Brain<Lemma, Signal> where Lemma: Hashable {
     
-    @Published private var book: [Lemma: Entry] = [:]
+    typealias Lexicon = [Lemma: Concept<Lemma, Signal>]
+    typealias Network = [Lemma: Node]
+    
+    @Published var lexicon: Lexicon = [:]
+    
+    var network: Network = [:]
     
     subscript(lemma: Lemma) -> Concept<Lemma, Signal>? {
         get {
-            book[lemma]?.concept
+            network[lemma]?.concept
         }
         set {
             guard let concept = newValue else {
-                book.removeValue(forKey: lemma)
+                network.removeValue(forKey: lemma)
                 return
             }
-            book[lemma] = Entry(concept: concept)
+            network[lemma] = Node(concept: concept)
         }
     }
 }
 
-private extension Lexicon {
+private extension Brain {
     
-    struct Entry {
+    struct Node {
         let concept: Concept<Lemma, Signal>
     }
 }

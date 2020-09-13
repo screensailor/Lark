@@ -1,3 +1,5 @@
+import Peek
+
 @dynamicMemberLookup
 public indirect enum Tree<Key, Leaf> where Key: Hashable {
     case leaf(Leaf)

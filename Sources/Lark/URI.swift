@@ -1,3 +1,5 @@
+import Peek
+
 open class URI {
     
     @usableFromInline let __url: URL

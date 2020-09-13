@@ -1,3 +1,5 @@
+import Peek
+
 public enum JSONLeaf: Equatable {
     case null
     case boolean(Bool)

@@ -1,3 +1,5 @@
+import Peek
+
 public typealias IntOrString = EitherType<Int, String>
 
 extension IntOrString {

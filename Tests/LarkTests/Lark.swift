@@ -1,3 +1,5 @@
+@_exported import Peek
+
 import Lark
 import Hope
 
