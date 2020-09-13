@@ -54,11 +54,11 @@ extension Publisher where Output == JSON {
         self[path]
     }
     
-    public subscript(path: JSON.Path) -> AnyPublisher<JSON, Failure> {
+    @inlinable public subscript(path: JSON.Path) -> AnyPublisher<JSON, Failure> {
         compactMap{ $0[path] }.eraseToAnyPublisher()
     }
     
-    public func `as`<T>(_ type: T.Type = T.self) -> AnyPublisher<T, Error> {
+    @inlinable public func `as`<T>(_ type: T.Type = T.self) -> AnyPublisher<T, Error> {
         tryMap{ o -> T in try o.cast() }.eraseToAnyPublisher()
     }
 }
