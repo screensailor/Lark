@@ -22,25 +22,25 @@ class Scope™: Hopes {
     
     func test_1() {
         
-        let result = Sink.Optional(0.0)
+        let o = Sink.Optional(0)
         
         let x: JSON.Path = ["a", "b", 3]
-        let y: JSON.Path = [3, 2, 1]
+        let y: JSON.Path = ["somewhere", "else"]
 
-        let x$ = $json.map(\.[x]).tryCompactMap{ try $0?.cast(to: Double.self) }
-        let y$ = $json.map(\.[y]).tryCompactMap{ try $0?.cast(to: Double.self) }
+        let x$ = $json.map(\.[x]).tryCompactMap{ try $0?.cast(to: Int.self) }
+        let y$ = $json.map(\.[y]).tryCompactMap{ try $0?.cast(to: Int.self) }
         
-        result ...= x$.combineLatest(y$).map(+)
+        o ...= x$.combineLatest(y$).map(+)
 
-        hope(result.value) == 0
+        hope(o.value) == 0
         
         json[x] = 4
         
-        hope(result.value) == 0
+        hope(o.value) == 0
 
         json[y] = 12
 
-        hope(result.value) == 16
+        hope(o.value) == 16
     }
 }
 

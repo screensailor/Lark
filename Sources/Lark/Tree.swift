@@ -1,5 +1,3 @@
-import Peek
-
 @dynamicMemberLookup
 public indirect enum Tree<Key, Leaf> where Key: Hashable {
     case leaf(Leaf)
@@ -12,7 +10,6 @@ extension Tree where Key: ExpressibleByStringLiteral {
         self[[Tree.Index(key)]] // TODO: set
     }
 }
-
     
 extension Tree {
     
@@ -51,10 +48,18 @@ extension Tree: BoxedAny {
         file: String = #file,
         line: Int = #line
     ) throws -> T {
-        guard let t = any as? T else {
-            throw Error("\(any) is not \(T.self)", function, file, line).peek()
+        switch (T.self, any)
+        {
+        case let (_, o as T):
+            return o
+            
+        case let (is Int.Type, o as Double):
+            if let o = Int(exactly: o) { return o as! T }
+            
+        default:
+            break
         }
-        return t
+        throw Error("\(any) is not \(T.self)", function, file, line)
     }
 }
 
@@ -175,7 +180,7 @@ extension Tree {
             _ file: String = #file,
             _ line: Int = #line
         ){
-            self.description = "Tree.Error(\(description) at: \(here(function, file, line)))"
+            self.description = "Tree.Error(\(description) at: \(function) \(file) \(line)))"
         }
     }
 }
