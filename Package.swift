@@ -12,14 +12,13 @@ let package = Package(
     ],
     products: [
         .library(name: "Lark", targets: ["Lark"]),
-        .library(name: "Peek", targets: ["Peek"]),
-        .library(name: "Hope", targets: ["Hope"]),
+    ],
+    dependencies: [
+        .package(url: "https://github.com/screensailor/Peek.git", .branch("trunk")),
+        .package(url: "https://github.com/screensailor/Hope.git", .branch("trunk")),
     ],
     targets: [
         .target(name: "Lark", dependencies: ["Peek"]),
-        .target(name: "Peek"),
-        .target(name: "Hope"),
         .testTarget(name: "LarkTests", dependencies: ["Lark", "Peek", "Hope"]),
-        .testTarget(name: "PeekTests", dependencies: ["Peek", "Hope"]),
     ]
 )

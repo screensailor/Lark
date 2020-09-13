@@ -51,6 +51,8 @@ class Scope™: Hopes {
         let concept = Concept<String, JSON>(action: Identity.self)
         
         lexicon["concept"] = concept
+        
+        
     }
 }
 
