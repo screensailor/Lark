@@ -68,10 +68,14 @@ private class Lexicon<Lemma, Signal> where Lemma: Hashable {
     
     subscript(lemma: Lemma) -> Concept<Lemma, Signal>? {
         get {
-            fatalError()
+            book[lemma]?.concept
         }
         set {
-            
+            guard let concept = newValue else {
+                book.removeValue(forKey: lemma)
+                return
+            }
+            book[lemma] = Entry(concept: concept)
         }
     }
 }
