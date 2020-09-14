@@ -90,6 +90,45 @@ extension Tree { // TODO: Encoder and Decoder
 
 extension Tree {
     
+    @inlinable public func `as`(
+        _: Any.Type = Any.self,
+        _ function: String = #function,
+        _ file: String = #file,
+        _ line: Int = #line
+    ) throws -> Any {
+        try cast(function, file, line)
+    }
+    
+    @inlinable public func `as`<A>(
+        _: A.Type = A.self,
+        _ function: String = #function,
+        _ file: String = #file,
+        _ line: Int = #line
+    ) throws -> A {
+        try cast(function, file, line)
+    }
+
+    @inlinable public func `as`<A>(
+        _: [A].Type = [A].self,
+        _ function: String = #function,
+        _ file: String = #file,
+        _ line: Int = #line
+    ) throws -> [A] {
+        try cast(function, file, line)
+    }
+    
+    @inlinable public func `as`<A>(
+        _: [Key: A].Type = [Key: A].self,
+        _ function: String = #function,
+        _ file: String = #file,
+        _ line: Int = #line
+    ) throws -> [Key: A] {
+        try cast(function, file, line)
+    }
+}
+
+extension Tree {
+    
     public typealias Index = EitherType<Int, Key>
     public typealias Path = [Index]
 

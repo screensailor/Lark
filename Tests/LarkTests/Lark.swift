@@ -76,7 +76,7 @@ class Lark™: Hopes {
         o ...= brain["some concept"]
         
         brain.functions[""] = Brain.Function.ƒ1{ $0 }
-        brain.functions["+"] = Brain.Function.ƒ2{ try JSON($0.cast(to: Int.self) + $1.cast(to: Int.self)) }
+        brain.functions["+"] = Brain.Function.ƒ2{ try JSON($0.as(Int.self) + $1.as(Int.self)) }
         
         brain.lexicon["some concept"] = Concept(
             connections: [

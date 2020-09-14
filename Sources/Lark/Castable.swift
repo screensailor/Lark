@@ -27,5 +27,14 @@ extension Castable {
         }
         return a
     }
+    
+    @inlinable public func `as`<A>(
+        _: A.Type = A.self,
+        _ function: String = #function,
+        _ file: String = #file,
+        _ line: Int = #line
+    ) throws -> A {
+        try cast(to: A.self, function, file, line)
+    }
 }
 
