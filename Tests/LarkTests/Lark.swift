@@ -76,7 +76,7 @@ class Lark™: Hopes {
         o ...= brain["some concept"]
         
         brain.functions[""] = Brain.Function.ƒ1{ $0 }
-        brain.functions["+"] = Brain.Function.ƒ2{ try JSON($0.as(Int.self) + $1.as(Int.self)) }
+        brain.functions["+"] = Brain.Function.ƒ2{ try JSON(Int($0) + Int($1)) }
         
         brain.lexicon["some concept"] = Concept(
             connections: [
@@ -95,3 +95,9 @@ class Lark™: Hopes {
         hope(o.value) == 5
     }
 }
+
+extension Equatable {
+    static var o: Self.Type { self }
+}
+
+

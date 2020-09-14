@@ -7,6 +7,17 @@ extension JSON {
     @inlinable public init(_ o: Int) { self = .leaf(.init(o)) }
 }
 
+extension CustomDebugStringConvertible {
+    @inlinable public init(
+        _ o: JSON,
+        _ function: String = #function,
+        _ file: String = #file,
+        _ line: Int = #line
+    ) throws {
+        self = try o.cast(function, file, line)
+    }
+}
+
 extension JSON: ExpressibleByBooleanLiteral {
     @inlinable public init(booleanLiteral value: Bool) { self = .leaf(.boolean(value)) }
 }
@@ -56,14 +67,14 @@ public enum JSONLeaf: Equatable {
 
 extension JSONLeaf: Castable {
     
-    public init(_: NSNull){ self = .null }
-    public init(_ o: Bool){ self = .boolean(o) }
-    public init(_ o: Double){ self = .number(o) }
-    public init(_ o: String){ self = .string(o) }
-    public init(_ o: Peek.Error){ self = .error(o) }
-    
-    public init(_ o: JSONLeaf){ self = o }
-    public init(_ o: Int){ self = .number(Double(o)) }
+    @inlinable public init(_: NSNull){ self = .null }
+    @inlinable public init(_ o: Bool){ self = .boolean(o) }
+    @inlinable public init(_ o: Double){ self = .number(o) }
+    @inlinable public init(_ o: String){ self = .string(o) }
+    @inlinable public init(_ o: Peek.Error){ self = .error(o) }
+
+    @inlinable public init(_ o: JSONLeaf){ self = o }
+    @inlinable public init(_ o: Int){ self = .number(Double(o)) }
 
     public init<A>(
         _ a: A,
