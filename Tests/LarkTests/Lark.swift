@@ -4,6 +4,10 @@ import Hope
 
 class Lark™: Hopes {
     
+    typealias Brain = Lark.Brain<String, JSON>
+    typealias Lexicon = Brain.Lexicon
+    typealias Concept = Brain.Concept
+
     @Published private var json: JSON = .empty
     
     func test() {
@@ -41,15 +45,9 @@ class Lark™: Hopes {
         hope(o.value) == 16
     }
     
-    typealias Brain = Lark.Brain<String, JSON>
-    typealias Lexicon = Brain.Lexicon
-    typealias Concept = Brain.Concept
-    
-    let lexicon = Lexicon()
-    
     func test_2() {
         let o = Sink.Var<JSON>(.empty)
-        let brain = Brain(lexicon)
+        let brain = Brain()
         
         o ...= brain["?"]
         
@@ -60,7 +58,7 @@ class Lark™: Hopes {
     
     func test_3() {
         let o = Sink.Var<JSON>(.empty)
-        let brain = Brain(lexicon)
+        let brain = Brain()
         
         brain["?"].send("Yay!")
         
@@ -71,7 +69,7 @@ class Lark™: Hopes {
 
     func test_4() {
         let o = Sink.Var<JSON>(.empty)
-        let brain = Brain(lexicon)
+        let brain = Brain()
         
         o ...= brain["some concept"]
         

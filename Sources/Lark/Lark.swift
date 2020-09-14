@@ -20,15 +20,14 @@ class Brain<Lemma, Signal> where Lemma: Hashable {
     typealias Network     = [Lemma: Node]
     typealias State       = [Lemma: Signal]
     
-    var lexicon:     Lexicon = [:]
-    var connections: Connections = [:]
-    var functions:   Functions = [:]
-    var network:     Network = [:]
-    var state:       State = [:]
+    @Published var lexicon:     Lexicon = [:]
+    @Published var connections: Connections = [:]
+    @Published var functions:   Functions = [:]
+    @Published var network:     Network = [:]
+    @Published var state:       State = [:]
+}
 
-    init(_ lexicon: Lexicon) {
-        self.lexicon = lexicon
-    }
+extension Brain {
     
     subscript(lemma: Lemma) -> Node {
         network[lemma] ?? { o in
