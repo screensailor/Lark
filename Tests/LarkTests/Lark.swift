@@ -41,43 +41,44 @@ class Lark™: Hopes {
         hope(o.value) == 16
     }
     
-    typealias Lexicon = Lark.Lexicon<String, JSON>
-    typealias Concept = Lexicon.Concept
-    typealias Brain = Lexicon.Brain
+    typealias Brain = Lark.Brain<String, JSON>
+    typealias Lexicon = Brain.Lexicon
+    typealias Concept = Brain.Concept
     
     let lexicon = Lexicon()
     
     func test_2() {
+        let o = Sink.Var<JSON>(.empty)
         let brain = Brain(lexicon)
         
-        let x = Sink.Var<JSON>(.empty)
-        
-        x ...= brain["?"]
+        o ...= brain["?"]
         
         brain["?"].send("Yay!")
         
-        hope(x.value) == "Yay!"
+        hope(o.value) == "Yay!"
     }
     
     func test_3() {
+        let o = Sink.Var<JSON>(.empty)
         let brain = Brain(lexicon)
         
         brain["?"].send("Yay!")
         
-        let x = Sink.Var<JSON>(.empty)
+        o ...= brain["?"]
         
-        x ...= brain["?"]
-        
-        hope(x.value) == "Yay!"
+        hope(o.value) == "Yay!"
     }
 
     func test_4() {
+        let o = Sink.Var<JSON>(.empty)
         let brain = Brain(lexicon)
+        
+        o ...= brain["some concept"]
         
         brain.functions[""] = Brain.Function.ƒ1{ $0 }
         brain.functions["+"] = Brain.Function.ƒ2{ try JSON($0.cast(to: Int.self) + $1.cast(to: Int.self)) }
         
-        brain.lexicon.book["some concept"] = Concept(
+        brain.lexicon["some concept"] = Concept(
             connections: [
                 "x": "",
                 "y": ""
@@ -85,12 +86,8 @@ class Lark™: Hopes {
             action: "+"
         )
         
-        brain.lexicon.book["x"] = Concept(connections: [:], action: "")
-        brain.lexicon.book["y"] = Concept(connections: [:], action: "")
-
-        let o = Sink.Var<JSON>(.empty)
-        
-        o ...= brain["some concept"]
+        brain.lexicon["x"] = Concept(connections: [:], action: "")
+        brain.lexicon["y"] = Concept(connections: [:], action: "")
 
         brain["x"].send(2)
         brain["y"].send(3)

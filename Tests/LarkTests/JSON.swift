@@ -35,7 +35,7 @@ class JSON™: Hopes {
 
     func test_any() throws {
         let o: JSON = ["a": ["c": [3, 4, ["d": "😅"]]]]
-        let json1 = try JSONSerialization.data(withJSONObject: o.any, options: [])
+        let json1 = try JSONSerialization.data(withJSONObject: o.cast(to: [String: Any].self), options: [])
         let json2 = try JSONSerialization.data(withJSONObject: ["a": ["c": [3, 4, ["d": "😅"]]]], options: [])
         hope(json1) == json2
     }

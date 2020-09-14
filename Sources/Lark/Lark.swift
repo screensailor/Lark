@@ -12,24 +12,39 @@ enum OS {
     typealias Lemma = String
 }
 
-struct Lexicon<Lemma, Signal> where Lemma: Hashable {
-    
-    typealias Brain = Lark.Brain<Lemma, Signal>
-
-    struct Concept {
-        let connections: [Lemma: Brain.Connection.Name]
-        let action: Brain.Function.Name
-    }
-    
-    var book: [Lemma: Concept] = [:]
-}
-
 class Brain<Lemma, Signal> where Lemma: Hashable {
     
-    typealias Lexicon = Lark.Lexicon<Lemma, Signal>
-    typealias Concept = Lexicon.Concept
+    typealias Lexicon = [Lemma: Concept]
     typealias Network = [Lemma: Node]
+    typealias State = [Lemma: Signal]
     
+    var connections: [Lemma: Brain.Connection] = [:]
+    var functions: [Lemma: Brain.Function] = [:]
+    
+    @Published var lexicon: Lexicon = .init()
+    
+    private(set) var network: Network = [:]
+    private(set) var state: State = [:]
+    
+    init(_ lexicon: Lexicon) {
+        self.lexicon = lexicon
+    }
+    
+    subscript(lemma: Lemma) -> Node {
+        network[lemma] ?? { o in
+            network[lemma] = o
+            return o
+        }(Node())
+    }
+}
+
+extension Brain {
+    
+    struct Concept {
+        let connections: [Lemma: Connection.Name]
+        let action: Brain.Function.Name
+    }
+
     struct Connection {
         typealias Name = OS.Lemma
         let ƒ: (Signal) throws -> Signal
@@ -42,28 +57,7 @@ class Brain<Lemma, Signal> where Lemma: Hashable {
         case ƒ2((Signal, Signal) throws -> Signal)
         case ƒ3((Signal, Signal, Signal) throws -> Signal)
     }
-    
-    var connections: [OS.Lemma: Brain.Connection] = [:]
-    var functions: [OS.Lemma: Brain.Function] = [:]
-    
-    @Published var lexicon: Lexicon = .init()
-    private(set) var network: Network = [:]
-    
-    init(_ lexicon: Lexicon) {
-        self.lexicon = lexicon
-    }
-    
-    subscript(lemma: Lemma) -> Node {
-        let node = network[lemma] ?? { o in
-            network[lemma] = o
-            return o
-        }(Node())
-        return node
-    }
-}
 
-extension Brain {
-    
     class Node: Subject {
         
         typealias Output = Signal
