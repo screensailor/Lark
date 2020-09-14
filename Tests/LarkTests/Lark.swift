@@ -66,10 +66,17 @@ class Lark™: Hopes {
         
         hope(o.value) == "Yay!"
     }
+    
+    let os = OS<String, JSON>(
+        functions: [
+            "": .ƒ1{ $0 },
+            "+": .ƒ2{ try JSON(Int($0) + Int($1)) }
+        ]
+    )
 
     func test_4() {
         let o = Sink.Var<JSON>(.empty)
-        let brain = Brain()
+        let brain = Brain(on: os)
         
         o ...= brain["some concept"]
         

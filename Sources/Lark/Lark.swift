@@ -8,17 +8,11 @@ infix operator ¶ : TernaryPrecedence
 
 infix operator ...= : BitwiseShiftPrecedence
 
-enum OS {
-    typealias Lemma = String
-    typealias Signal = JSON
+struct OS<Lemma, Signal> where Lemma: Hashable {
     
-    static let functions: [Lemma: Function] = [
-        "": .ƒ1{ $0 },
-        "+": .ƒ2{ try Signal(Int($0) + Int($1)) }
-    ]
+    var functions: [Lemma: Function] = [:]
     
     enum Function {
-        typealias Lemma = OS.Lemma
         case ƒ0(() throws -> Signal)
         case ƒ1((Signal) throws -> Signal)
         case ƒ2((Signal, Signal) throws -> Signal)
@@ -29,19 +23,22 @@ enum OS {
 class Brain<Lemma, Signal> where Lemma: Hashable {
     
     typealias Lexicon     = [Lemma: Concept]
-    typealias Connections = [Lemma: Connection]
-    typealias Functions   = [Lemma: Function]
+    typealias Connections = [Lemma: Lemma]
+    typealias Functions   = [Lemma: Lemma]
     typealias Network     = [Lemma: Node]
     typealias State       = [Lemma: Signal]
-    
-    typealias Connection  = OS.Function.Lemma
-    typealias Function    = OS.Function.Lemma
     
     @Published var lexicon:     Lexicon = [:]
     @Published var connections: Connections = [:]
     @Published var functions:   Functions = [:]
     @Published var network:     Network = [:]
     @Published var state:       State = [:]
+    
+    let os: OS<Lemma, Signal>
+    
+    init(on os: OS<Lemma, Signal>) {
+        self.os = os
+    }
 }
 
 extension Brain {
@@ -59,9 +56,9 @@ extension Brain {
     struct Concept {
         
         let connections: Connections
-        let action: Function?
+        let action: Lemma?
         
-        init(connections: Connections = [:], action: Function? = nil) {
+        init(connections: Connections = [:], action: Lemma? = nil) {
             self.connections = connections
             self.action = action
         }
