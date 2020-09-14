@@ -10,15 +10,32 @@ infix operator ...= : BitwiseShiftPrecedence
 
 enum OS {
     typealias Lemma = String
+    typealias Signal = JSON
+    
+    static let functions: [Lemma: Function] = [
+        "": .ƒ1{ $0 },
+        "+": .ƒ2{ try Signal(Int($0) + Int($1)) }
+    ]
+    
+    enum Function {
+        typealias Lemma = OS.Lemma
+        case ƒ0(() throws -> Signal)
+        case ƒ1((Signal) throws -> Signal)
+        case ƒ2((Signal, Signal) throws -> Signal)
+        case ƒ3((Signal, Signal, Signal) throws -> Signal)
+    }
 }
 
 class Brain<Lemma, Signal> where Lemma: Hashable {
     
     typealias Lexicon     = [Lemma: Concept]
-    typealias Connections = [Lemma: Connection.Name]
+    typealias Connections = [Lemma: Connection]
     typealias Functions   = [Lemma: Function]
     typealias Network     = [Lemma: Node]
     typealias State       = [Lemma: Signal]
+    
+    typealias Connection  = OS.Function.Lemma
+    typealias Function    = OS.Function.Lemma
     
     @Published var lexicon:     Lexicon = [:]
     @Published var connections: Connections = [:]
@@ -42,25 +59,12 @@ extension Brain {
     struct Concept {
         
         let connections: Connections
-        let action: Function.Name
+        let action: Function?
         
-        init(connections: Connections = [:], action: Function.Name) {
+        init(connections: Connections = [:], action: Function? = nil) {
             self.connections = connections
             self.action = action
         }
-    }
-
-    struct Connection {
-        typealias Name = OS.Lemma
-        let ƒ: (Signal) throws -> Signal
-    }
-    
-    enum Function {
-        typealias Name = OS.Lemma
-        case ƒ0(() throws -> Signal)
-        case ƒ1((Signal) throws -> Signal)
-        case ƒ2((Signal, Signal) throws -> Signal)
-        case ƒ3((Signal, Signal, Signal) throws -> Signal)
     }
 
     class Node: Subject {

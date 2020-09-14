@@ -73,9 +73,6 @@ class Lark™: Hopes {
         
         o ...= brain["some concept"]
         
-        brain.functions[""] = Brain.Function.ƒ1{ $0 }
-        brain.functions["+"] = Brain.Function.ƒ2{ try JSON(Int($0) + Int($1)) }
-        
         brain.lexicon["some concept"] = Concept(
             connections: [
                 "x": "",
@@ -84,8 +81,8 @@ class Lark™: Hopes {
             action: "+"
         )
         
-        brain.lexicon["x"] = Concept(action: "")
-        brain.lexicon["y"] = Concept(action: "")
+        brain.lexicon["x"] = Concept()
+        brain.lexicon["y"] = Concept()
 
         brain["x"].send(2)
         brain["y"].send(3)
