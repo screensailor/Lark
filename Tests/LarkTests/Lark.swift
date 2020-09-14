@@ -94,9 +94,6 @@ class Lark™: Hopes {
 private let os = OS<String, JSON>(
     functions: [
         "": .ƒ₁{ $0 },
-        "+": .ƒ₂{ try JSON(Int($0) + Int($1)) }
+        "+": .ƒ₂{ try JSON(Double($0) + Double($1)) }
     ]
 )
-
-
-

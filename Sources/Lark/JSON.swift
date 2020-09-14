@@ -4,7 +4,13 @@ import Foundation
 public typealias JSON = Tree<String, JSONLeaf>
 
 extension JSON {
-    @inlinable public init(_ o: Int) { self = .leaf(.init(o)) }
+    @inlinable public init() { self = .leaf(.null) }
+    @inlinable public init(_ o: NSNull) { self = .leaf(.null) }
+    @inlinable public init(_ o: Bool) { self = .leaf(.boolean(o)) }
+    @inlinable public init(_ o: Int) { self = .leaf(.number(Double(o))) }
+    @inlinable public init(_ o: Double) { self = .leaf(.number(o)) }
+    @inlinable public init(_ o: String) { self = .leaf(.string(o)) }
+    @inlinable public init(_ o: Peek.Error) { self = .leaf(.error(o)) }
 }
 
 extension CustomDebugStringConvertible {
