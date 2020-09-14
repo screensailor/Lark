@@ -14,18 +14,18 @@ enum OS {
 
 class Brain<Lemma, Signal> where Lemma: Hashable {
     
-    typealias Lexicon = [Lemma: Concept]
-    typealias Network = [Lemma: Node]
-    typealias State = [Lemma: Signal]
+    typealias Lexicon     = [Lemma: Concept]
+    typealias Connections = [Lemma: Connection]
+    typealias Functions   = [Lemma: Function]
+    typealias Network     = [Lemma: Node]
+    typealias State       = [Lemma: Signal]
     
-    var connections: [Lemma: Brain.Connection] = [:]
-    var functions: [Lemma: Brain.Function] = [:]
-    
-    @Published var lexicon: Lexicon = .init()
-    
-    private(set) var network: Network = [:]
-    private(set) var state: State = [:]
-    
+    var lexicon:     Lexicon = [:]
+    var connections: Connections = [:]
+    var functions:   Functions = [:]
+    var network:     Network = [:]
+    var state:       State = [:]
+
     init(_ lexicon: Lexicon) {
         self.lexicon = lexicon
     }
