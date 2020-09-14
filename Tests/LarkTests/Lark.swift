@@ -84,8 +84,8 @@ class Lark™: Hopes {
             action: "+"
         )
         
-        brain.lexicon["x"] = Concept(connections: [:], action: "")
-        brain.lexicon["y"] = Concept(connections: [:], action: "")
+        brain.lexicon["x"] = Concept(action: "")
+        brain.lexicon["y"] = Concept(action: "")
 
         brain["x"].send(2)
         brain["y"].send(3)

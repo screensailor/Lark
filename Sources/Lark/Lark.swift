@@ -15,7 +15,7 @@ enum OS {
 class Brain<Lemma, Signal> where Lemma: Hashable {
     
     typealias Lexicon     = [Lemma: Concept]
-    typealias Connections = [Lemma: Connection]
+    typealias Connections = [Lemma: Connection.Name]
     typealias Functions   = [Lemma: Function]
     typealias Network     = [Lemma: Node]
     typealias State       = [Lemma: Signal]
@@ -40,8 +40,14 @@ extension Brain {
 extension Brain {
     
     struct Concept {
-        let connections: [Lemma: Connection.Name]
-        let action: Brain.Function.Name
+        
+        let connections: Connections
+        let action: Function.Name
+        
+        init(connections: Connections = [:], action: Function.Name) {
+            self.connections = connections
+            self.action = action
+        }
     }
 
     struct Connection {
