@@ -47,7 +47,7 @@ class Lark™: Hopes {
     
     func test_2() {
         let o = Sink.Var<JSON>(.empty)
-        let brain = Brain()
+        let brain = Brain(on: os)
         
         o ...= brain["?"]
         
@@ -58,7 +58,7 @@ class Lark™: Hopes {
     
     func test_3() {
         let o = Sink.Var<JSON>(.empty)
-        let brain = Brain()
+        let brain = Brain(on: os)
         
         brain["?"].send("Yay!")
         
@@ -67,13 +67,6 @@ class Lark™: Hopes {
         hope(o.value) == "Yay!"
     }
     
-    let os = OS<String, JSON>(
-        functions: [
-            "": .ƒ1{ $0 },
-            "+": .ƒ2{ try JSON(Int($0) + Int($1)) }
-        ]
-    )
-
     func test_4() {
         let o = Sink.Var<JSON>(.empty)
         let brain = Brain(on: os)
@@ -82,8 +75,8 @@ class Lark™: Hopes {
         
         brain.lexicon["some concept"] = Concept(
             connections: [
-                "x": "",
-                "y": ""
+                "x": nil,
+                "y": nil
             ],
             action: "+"
         )
@@ -98,8 +91,12 @@ class Lark™: Hopes {
     }
 }
 
-extension Equatable {
-    static var o: Self.Type { self }
-}
+private let os = OS<String, JSON>(
+    functions: [
+        "": .ƒ₁{ $0 },
+        "+": .ƒ₂{ try JSON(Int($0) + Int($1)) }
+    ]
+)
+
 
 

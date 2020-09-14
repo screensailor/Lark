@@ -13,17 +13,17 @@ struct OS<Lemma, Signal> where Lemma: Hashable {
     var functions: [Lemma: Function] = [:]
     
     enum Function {
-        case ƒ0(() throws -> Signal)
-        case ƒ1((Signal) throws -> Signal)
-        case ƒ2((Signal, Signal) throws -> Signal)
-        case ƒ3((Signal, Signal, Signal) throws -> Signal)
+        case ƒ₀(() throws -> Signal)
+        case ƒ₁((Signal) throws -> Signal)
+        case ƒ₂((Signal, Signal) throws -> Signal)
+        case ƒ₃((Signal, Signal, Signal) throws -> Signal)
     }
 }
 
 class Brain<Lemma, Signal> where Lemma: Hashable {
     
     typealias Lexicon     = [Lemma: Concept]
-    typealias Connections = [Lemma: Lemma]
+    typealias Connections = [Lemma: Lemma?]
     typealias Functions   = [Lemma: Lemma]
     typealias Network     = [Lemma: Node]
     typealias State       = [Lemma: Signal]
