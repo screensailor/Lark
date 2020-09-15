@@ -38,6 +38,6 @@ extension Buffered: Equatable where Value: Equatable {
 
 extension Buffered: CustomDebugStringConvertible {
     public var debugDescription: String {
-        "\(Buffered.self)(\(__o))"
+        "\(Buffered.self)\(__o)"
     }
 }
