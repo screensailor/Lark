@@ -7,23 +7,23 @@ class Buffered™: Hopes {
         
         let o = Buffered(0)
         
-        hope(o.pair == (0, 0)) == true
+        hope(o.__o == (0, 0)) == true
         
-        o.value += 1
-        o.value += 1
-        o.value += 1
+        o[] += 1
+        o[] += 1
+        o[] += 1
 
-        hope(o.value) == 0
+        hope(o[]) == 0
         
         hope(o == (0, 1)) == true
         hope(o.committed) == Buffered(1)
         
         o.commit()
-        hope(o.pair == (1, 1)) == true
+        hope(o.__o == (1, 1)) == true
 
-        o.value += 1
-        o.value += 1
-        o.value += 1
+        o[] += 1
+        o[] += 1
+        o[] += 1
 
         hope(o == (1, 2)) == true
         
@@ -40,11 +40,11 @@ class Buffered™: Hopes {
         o["b", 1] = "✅"
         
         hope(o["b", 1]) == 3
-        hope(o.value) == json
+        hope(o[]) == json
 
         o.commit()
         
-        hope(o.value) == ["a": 1, "b": [2, "✅"]]
+        hope(o[]) == ["a": 1, "b": [2, "✅"]]
     }
 }
 
