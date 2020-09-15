@@ -4,9 +4,6 @@ final public class Buffered<Value> {
     @usableFromInline var pair: (Value, Value)
     
     @inlinable public init(_ value: Value) { pair = (value, value) }
-    @inlinable public init(_ pair: (Value, Value)) { self.pair = pair }
-    @inlinable public init(_ value: Value, _ buffer: Value) { self.pair = (value, buffer) }
-    @inlinable public init(value: Value, buffer: Value) { self.pair = (value, buffer) }
 }
 
 extension Buffered {
@@ -14,7 +11,7 @@ extension Buffered {
 }
 
 extension Buffered {
-    @inlinable public var committed: Buffered { .init((pair.1, pair.1)) }
+    @inlinable public var committed: Buffered { .init(pair.1) }
     @inlinable public func commit() { pair = (pair.1, pair.1) }
 }
 

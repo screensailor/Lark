@@ -1,4 +1,4 @@
-import Lark
+@testable import Lark
 import Hope
 
 class Buffered™: Hopes {
@@ -7,7 +7,7 @@ class Buffered™: Hopes {
         
         let o = Buffered(0)
         
-        hope(o) == Buffered(0, 0)
+        hope(o.pair == (0, 0)) == true
         
         o.value += 1
         o.value += 1
@@ -15,20 +15,20 @@ class Buffered™: Hopes {
 
         hope(o.value) == 0
         
-        hope(o) == Buffered(0, 1)
-        hope(o.committed) == Buffered(1, 1)
+        hope(o == (0, 1)) == true
+        hope(o.committed) == Buffered(1)
         
         o.commit()
-        hope(o) == Buffered(1, 1)
+        hope(o.pair == (1, 1)) == true
 
         o.value += 1
         o.value += 1
         o.value += 1
 
-        hope(o) == Buffered(1, 2)
+        hope(o == (1, 2)) == true
         
         o.commit()
-        hope(o) == Buffered(2, 2)
+        hope(o == (2, 2)) == true
     }
     
     func test_Buffered_JSON() {
