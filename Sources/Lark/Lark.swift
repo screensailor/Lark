@@ -32,7 +32,7 @@ class Brain<Lemma, Signal> where Lemma: Hashable {
     @Published var connections: Connections = [:]
     @Published var functions:   Functions = [:]
     @Published var network:     Network = [:]
-    @Published var state:       State = Buffered([:])
+    @Published var state:       State = Buffered([:]) // TODO: accumulated changes must be explicitly committed (e.g. per run loop)
     
     let os: OS<Lemma, Signal>
     

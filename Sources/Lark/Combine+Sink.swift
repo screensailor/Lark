@@ -3,7 +3,9 @@ import Peek
 public enum Sink {}
 
 extension Sink {
-    public final class Var<A> {
+    
+    public final class Var<A>: ReferenceWriteSubscriptable {
+        public static var subscriptRoot: ReferenceWritableKeyPath<Sink.Var<A>, A> { \.value }
         public var bag: Bag = []
         @Published public fileprivate(set) var value: A
         public init(_ value: A){ self.value = value }
@@ -11,7 +13,9 @@ extension Sink {
 }
 
 extension Sink {
-    public final class Optional<A> {
+    
+    public final class Optional<A>: ReferenceWriteSubscriptable {
+        public static var subscriptRoot: ReferenceWritableKeyPath<Sink.Optional<A>, A?> { \.value }
         public var bag: Bag = []
         @Published public fileprivate(set) var value: A?
         public init(_ value: A){ self.value = value }
@@ -20,7 +24,9 @@ extension Sink {
 }
 
 extension Sink {
-    public final class Result<A> {
+    
+    public final class Result<A>: ReferenceWriteSubscriptable {
+        public static var subscriptRoot: ReferenceWritableKeyPath<Sink.Result<A>, Swift.Result<A, Error>> { \.result }
         public var bag: Bag = []
         @Published public fileprivate(set) var result: Swift.Result<A, Error>
         @inlinable public var value: A? { result.value }

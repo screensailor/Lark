@@ -22,7 +22,7 @@ class Lark™: Hopes {
         
         brain["?"].send("Yay!")
         
-        hope(o.value) == "Yay!"
+        hope(o[]) == "Yay!"
     }
     
     func test_3() {
@@ -33,16 +33,18 @@ class Lark™: Hopes {
         
         o ...= brain["?"]
         
-        hope(o.value) == "Yay!"
+        hope(o[]) == "Yay!"
     }
     
     func test_4() {
         let o = Sink.Var<JSON>(.empty)
         let brain = Brain(on: os)
         
-        o ...= brain["some concept"]
+        let lemma = "a new conept"
         
-        brain.lexicon["some concept"] = Concept(
+        o ...= brain[lemma]
+        
+        brain.lexicon[lemma] = Concept(
             connections: [
                 "x": nil,
                 "y": nil
@@ -53,10 +55,10 @@ class Lark™: Hopes {
         brain.lexicon["x"] = Concept()
         brain.lexicon["y"] = Concept()
 
-        brain["x"].send(2)
-        brain["y"].send(3)
+        brain["x"].send(2) // e.g. user event
+        brain["y"].send(3) // e.g. database push
         
-        hope(o.value) == 5
+        hope(o[]) == 5
     }
 }
 
