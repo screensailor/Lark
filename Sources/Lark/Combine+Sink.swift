@@ -1,5 +1,3 @@
-import Peek
-
 public enum Sink {}
 
 extension Sink {

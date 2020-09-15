@@ -1,5 +1,3 @@
-import Peek
-
 public struct EitherType<A, B> {
     public private(set) var value: Value
 }

@@ -1,5 +1,3 @@
-import Peek
-
 extension Publisher {
     
     @inlinable public func filter<A>(_: A.Type = A.self) -> Publishers.CompactMap<Self, A> {

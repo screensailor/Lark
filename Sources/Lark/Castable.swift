@@ -1,5 +1,3 @@
-import Peek
-
 public protocol Castable {
     init<A>(_ a: A, _ function: String, _ file: String, _ line: Int) throws
     func cast<A>(to: A.Type, _ function: String, _ file: String, _ line: Int) throws -> A

@@ -1,4 +1,3 @@
-import Peek
 import Foundation
 
 public typealias JSON = Tree<String, JSONLeaf>

@@ -1,5 +1,3 @@
-import Peek
-
 @dynamicMemberLookup
 public indirect enum Tree<Key, Leaf>
 where Key: Hashable, Leaf: Castable

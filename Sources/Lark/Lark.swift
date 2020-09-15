@@ -1,6 +1,5 @@
 @_exported import Combine
-
-import Peek
+@_exported import Peek
 
 infix operator ¶ : TernaryPrecedence
 
@@ -10,7 +9,7 @@ infix operator ...= : BitwiseShiftPrecedence
 
 struct OS<Lemma, Signal> where Lemma: Hashable {
     
-    var functions: [Lemma: Function] = [:]
+    var functions: [Lemma: Function] = [:] // TODO: use function builder as a namespace
     
     enum Function {
         case ƒ₀(() throws -> Signal)
