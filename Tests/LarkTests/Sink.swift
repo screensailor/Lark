@@ -13,14 +13,14 @@ class Sink™: Hopes {
         
         o ...= $json[x]
         
-        hope(o.value) == nil
+        hope(o[]) == nil
         
         json[x] = "c"
         
-        hope(o.value) == "c"
+        hope(o[]) == "c"
     }
     
-    func test_2() {
+    func test_2() throws {
         
         let o = Sink.Result(0)
 
@@ -29,14 +29,14 @@ class Sink™: Hopes {
         
         o ...= x.combineLatest(y).map(+)
 
-        hope(o.value) == 0
+        try hope(o[].get()) == 0
         
         json["a", "b", 3] = 4
         
-        hope(o.value) == 0
+        try hope(o[].get()) == 0
 
         json["somewhere", "else"] = 12
 
-        hope(o.value) == 16
+        try hope(o[].get()) == 16
     }
 }

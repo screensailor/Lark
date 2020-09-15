@@ -5,20 +5,20 @@ public enum Sink {}
 extension Sink {
     
     public final class Var<A>: ReferenceWriteSubscriptable {
-        public static var subscriptRoot: ReferenceWritableKeyPath<Sink.Var<A>, A> { \.value }
+        @inlinable public static var subscriptRoot: ReferenceWritableKeyPath<Sink.Var<A>, A> { \.__o }
+        @usableFromInline @Published var __o: A
         public var bag: Bag = []
-        @Published public fileprivate(set) var value: A
-        public init(_ value: A){ self.value = value }
+        public init(_ value: A){ self.__o = value }
     }
 }
 
 extension Sink {
     
     public final class Optional<A>: ReferenceWriteSubscriptable {
-        public static var subscriptRoot: ReferenceWritableKeyPath<Sink.Optional<A>, A?> { \.value }
+        @inlinable public static var subscriptRoot: ReferenceWritableKeyPath<Sink.Optional<A>, A?> { \.__o }
+        @usableFromInline @Published var __o: A?
         public var bag: Bag = []
-        @Published public fileprivate(set) var value: A?
-        public init(_ value: A){ self.value = value }
+        public init(_ value: A){ self.__o = value }
         public init(){}
     }
 }
@@ -26,19 +26,12 @@ extension Sink {
 extension Sink {
     
     public final class Result<A>: ReferenceWriteSubscriptable {
-        public static var subscriptRoot: ReferenceWritableKeyPath<Sink.Result<A>, Swift.Result<A, Error>> { \.result }
+        @inlinable public static var subscriptRoot: ReferenceWritableKeyPath<Sink.Result<A>, Swift.Result<A, Error>> { \.__o }
+        @usableFromInline @Published var __o: Swift.Result<A, Error>
         public var bag: Bag = []
-        @Published public fileprivate(set) var result: Swift.Result<A, Error>
-        @inlinable public var value: A? { result.value }
-        @inlinable public var error: Error? { result.error }
-        public init(_ result: Swift.Result<A, Error>){ self.result = result }
-        public init(_ result: A){ self.result = .success(result) }
+        public init(_ result: Swift.Result<A, Error>){ self.__o = result }
+        public init(_ result: A){ self.__o = .success(result) }
     }
-}
-
-extension Result {
-    @inlinable public var value: Success? { if case .success(let o) = self { return o } else { return nil } }
-    @inlinable public var error: Failure? { if case .failure(let o) = self { return o } else { return nil } }
 }
 
 extension Publisher {
@@ -51,7 +44,7 @@ extension Publisher {
     public func sink<A>(_ sink: Sink.Var<A>) where Output == A {
         self.sink { _ in
         } receiveValue: { output in
-            sink.value = output
+            sink.__o = output
         }.in(&sink.bag)
     }
 
@@ -63,10 +56,10 @@ extension Publisher {
     public func sink(_ sink: Sink.Optional<Output>) {
         self.sink { completion in
             if case .failure = completion {
-                sink.value = nil
+                sink.__o = nil
             }
         } receiveValue: { output in
-            sink.value = output
+            sink.__o = output
         }.in(&sink.bag)
     }
 
@@ -78,10 +71,10 @@ extension Publisher {
     public func sink<A>(_ sink: Sink.Optional<A>) where Output == A? {
         self.sink { completion in
             if case .failure = completion {
-                sink.value = nil
+                sink.__o = nil
             }
         } receiveValue: { output in
-            sink.value = output
+            sink.__o = output
         }.in(&sink.bag)
     }
 
@@ -93,10 +86,10 @@ extension Publisher {
     public func sink(_ sink: Sink.Result<Output>) {
         self.sink { completion in
             if case .failure(let o) = completion {
-                sink.result = .failure(o)
+                sink.__o = .failure(o)
             }
         } receiveValue: { output in
-            sink.result = .success(output)
+            sink.__o = .success(output)
         }.in(&sink.bag)
     }
 }
