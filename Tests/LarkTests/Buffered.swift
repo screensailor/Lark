@@ -40,16 +40,18 @@ class Buffered™: Hopes {
     func test_Buffered_JSON() {
         
         let json: JSON = ["a": 1, "b": [2, 3]]
+        let b1: JSON.Path = ["b", 1]
         
         let o = Buffered(json)
         
-        o["b", 1] = "✅"
+        o[b1] = "✅"
         
-        hope(o["b", 1]) == 3
+        hope(o[b1]) == 3
         hope(o[]) == json
 
         o.commit()
         
+        hope(o[b1]) == "✅"
         hope(o[]) == ["a": 1, "b": [2, "✅"]]
     }
 }
