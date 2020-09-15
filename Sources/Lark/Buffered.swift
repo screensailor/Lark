@@ -34,14 +34,6 @@ extension Buffered: Equatable where Value: Equatable {
     @inlinable public static func == (lhs: Buffered<Value>, rhs: Buffered<Value>) -> Bool {
         lhs.__o == rhs.__o
     }
-    
-    @inlinable public static func == (lhs: Buffered<Value>, rhs: (Value, Value)) -> Bool {
-        lhs.__o == rhs
-    }
-    
-    @inlinable public static func == (lhs: (Value, Value), rhs: Buffered<Value>) -> Bool {
-        lhs == rhs.__o
-    }
 }
 
 extension Buffered: CustomDebugStringConvertible {
