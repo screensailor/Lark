@@ -10,21 +10,19 @@ final public class Buffered<Value> {
 }
 
 extension Buffered {
-    @inlinable public var value: Value { pair.0 }
-    @inlinable public var buffer: Value { get { pair.1 } set { pair.1 = newValue } }
-    @inlinable public var swapped: Buffered { .init((pair.1, pair.0)) }
+    @inlinable public var value: Value { get { pair.0 } set { pair.1 = newValue } }
 }
 
 extension Buffered {
-    @inlinable public func swap() { pair = (pair.1, pair.0) }
+    @inlinable public var committed: Buffered { .init((pair.1, pair.1)) }
     @inlinable public func commit() { pair = (pair.1, pair.1) }
 }
 
 extension Buffered {
     
     @inlinable public subscript<A>(dynamicMember keyPath: WritableKeyPath<Value, A>) -> A {
-        get { value[keyPath: keyPath] }
-        set { buffer[keyPath: keyPath] = newValue }
+        get { pair.0[keyPath: keyPath] }
+        set { pair.1[keyPath: keyPath] = newValue }
     }
 }
 
@@ -40,5 +38,11 @@ extension Buffered: Equatable where Value: Equatable {
     
     @inlinable public static func == (lhs: (Value, Value), rhs: Buffered<Value>) -> Bool {
         lhs == rhs.pair
+    }
+}
+
+extension Buffered: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        "\(Buffered.self)(\(pair))"
     }
 }

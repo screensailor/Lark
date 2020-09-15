@@ -28,7 +28,7 @@ class Brain<Lemma, Signal> where Lemma: Hashable {
     typealias Network     = [Lemma: Node]
     typealias State       = Buffered<[Lemma: Signal]>
     
-    @Published var lexicon:     Lexicon = [:]
+    @Published var lexicon:     Lexicon = [:] // TODO: eventually compiled from more ergonomic languages
     @Published var connections: Connections = [:]
     @Published var functions:   Functions = [:]
     @Published var network:     Network = [:]
