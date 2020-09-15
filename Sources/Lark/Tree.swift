@@ -4,6 +4,7 @@ import Peek
 public indirect enum Tree<Key, Leaf>
 where Key: Hashable, Leaf: Castable
 {
+    // TODO: reimplement without an enum and recursivity and compare performance
     case leaf(Leaf)
     case array([Tree])
     case dictionary([Key: Tree])
@@ -176,6 +177,12 @@ extension Tree {
                 self = new
                 return
             }
+            guard path.count == 1 else {
+                var o = self[first] ?? .empty
+                o[path.dropFirst()] = new
+                self[first] = o
+                return
+            }
             switch self
             {
             case .leaf:
@@ -231,4 +238,19 @@ extension Tree: Equatable where Leaf: Equatable {
         default: return false
         }
     }
+}
+
+extension Tree: CustomDebugStringConvertible {
+
+    public var debugDescription: String {
+        switch self {
+        case let .leaf(o): return String(describing: o)
+        case let .array(o): return String(describing: o)
+        case let .dictionary(o): return String(describing: o)
+        }
+    }
+}
+
+extension Tree: CustomStringConvertible {
+    @inlinable public var description: String { debugDescription }
 }

@@ -10,12 +10,14 @@ class JSON™: Hopes {
         
         hope(o[]) == "👋"
         
-        o[2] = 3
+        o["a", 2] = 3
         
-        hope(o[0]) == .empty
-        hope(o[1]) == .empty
-        hope(o[2]) == 3
+        hope(o) == ["a": [.empty, .empty, 3]]
         
+        o["a", 1] = 2
+        
+        hope(o) == ["a": [.empty, 2, 3]]
+
         o[] = ["a": ["b": 2, "c": [3, 4, ["d": "😅"]]]]
         
         hope(o["a", "b"]) == 2

@@ -1,0 +1,44 @@
+@dynamicMemberLookup
+final public class Buffered<Value> {
+    
+    @usableFromInline var pair: (Value, Value)
+    
+    @inlinable public init(_ value: Value) { pair = (value, value) }
+    @inlinable public init(_ pair: (Value, Value)) { self.pair = pair }
+    @inlinable public init(_ value: Value, _ buffer: Value) { self.pair = (value, buffer) }
+    @inlinable public init(value: Value, buffer: Value) { self.pair = (value, buffer) }
+}
+
+extension Buffered {
+    @inlinable public var value: Value { pair.0 }
+    @inlinable public var buffer: Value { get { pair.1 } set { pair.1 = newValue } }
+    @inlinable public var swapped: Buffered { .init((pair.1, pair.0)) }
+}
+
+extension Buffered {
+    @inlinable public func swap() { pair = (pair.1, pair.0) }
+    @inlinable public func commit() { pair = (pair.1, pair.1) }
+}
+
+extension Buffered {
+    
+    @inlinable public subscript<A>(dynamicMember keyPath: WritableKeyPath<Value, A>) -> A {
+        get { value[keyPath: keyPath] }
+        set { buffer[keyPath: keyPath] = newValue }
+    }
+}
+
+extension Buffered: Equatable where Value: Equatable {
+    
+    @inlinable public static func == (lhs: Buffered<Value>, rhs: Buffered<Value>) -> Bool {
+        lhs.pair == rhs.pair
+    }
+    
+    @inlinable public static func == (lhs: Buffered<Value>, rhs: (Value, Value)) -> Bool {
+        lhs.pair == rhs
+    }
+    
+    @inlinable public static func == (lhs: (Value, Value), rhs: Buffered<Value>) -> Bool {
+        lhs == rhs.pair
+    }
+}

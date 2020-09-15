@@ -155,3 +155,19 @@ extension JSONLeaf: ExpressibleByUnicodeScalarLiteral {
 extension JSONLeaf: ExpressibleByExtendedGraphemeClusterLiteral {
     public init(extendedGraphemeClusterLiteral value: String) { self = .string(value) }
 }
+
+extension JSONLeaf: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        switch self {
+        case .null: return "null"
+        case let .boolean(o): return String(describing: o)
+        case let .number(o): return String(describing: o)
+        case let .string(o): return o
+        case let .error(o): return String(describing: o)
+        }
+    }
+}
+
+extension JSONLeaf: CustomStringConvertible {
+    @inlinable public var description: String { debugDescription }
+}

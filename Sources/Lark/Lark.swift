@@ -26,13 +26,13 @@ class Brain<Lemma, Signal> where Lemma: Hashable {
     typealias Connections = [Lemma: Lemma?]
     typealias Functions   = [Lemma: Lemma]
     typealias Network     = [Lemma: Node]
-    typealias State       = [Lemma: Signal]
+    typealias State       = Buffered<[Lemma: Signal]>
     
     @Published var lexicon:     Lexicon = [:]
     @Published var connections: Connections = [:]
     @Published var functions:   Functions = [:]
     @Published var network:     Network = [:]
-    @Published var state:       State = [:]
+    @Published var state:       State = Buffered([:])
     
     let os: OS<Lemma, Signal>
     
