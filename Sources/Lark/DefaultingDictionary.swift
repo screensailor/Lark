@@ -41,7 +41,7 @@ extension DefaultingDictionary {
 extension Dictionary {
     
     @inlinable
-    public func defaulting(to ƒ: @escaping @autoclosure () -> Value) -> DefaultInsertingDictionary<Key, Value> {
+    public func defaulting(to ƒ: @escaping @autoclosure () -> Value) -> DefaultingDictionary<Key, Value> {
         .init(self, default: ƒ())
     }
 }

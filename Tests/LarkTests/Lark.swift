@@ -47,19 +47,17 @@ class Lark™: Hopes {
         let o = Sink.Var<JSON>(nil)
         let brain = Brain()
 
-        brain[":)"] = "🙂"
-
+        brain[":)"] = "😞"
         brain.commit()
 
         o ...= brain.potential(":)")
         
-        hope(o[]) == "🙂"
+        hope(o[]) == "😞"
         
-        brain[":)"] = "🙂🙂"
-        
+        brain[":)"] = "🙂"
         brain.commit()
         
-        hope(o[]) == "🙂🙂"
+        hope(o[]) == "🙂"
     }
 
     func test_3() {

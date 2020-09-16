@@ -1,7 +1,7 @@
 class DefaultInsertingDictionary™: Hopes {
     
     func test() {
-        var o = [String: Int]().defaultInserting(default: 3)
+        var o = [String: Int]().inserting(default: 3)
         
         hope.true(o.isEmpty)
         

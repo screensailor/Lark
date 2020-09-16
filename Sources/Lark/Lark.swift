@@ -28,7 +28,7 @@ where
     var connections:    Connections = [:]
     let functions:      Functions // TODO: use function builder as a namespace
     var network:        Network = [:]
-    private let state = State(.init(default: nil)) // TODO: accumulated changes must be explicitly committed (e.g. per run loop)
+    private let state = State([Lemma: Signal]().defaulting(to: nil)) // TODO: accumulated changes must be explicitly committed (e.g. per run loop)
 
     init(_ functions: Functions = [:]) {
         self.functions = functions
@@ -40,12 +40,8 @@ extension Brain {
     typealias Potential = CurrentValueSubject<Signal, Never>
 
     subscript(concept: Lemma) -> Signal {
-        get {
-            state[concept]
-        }
-        set {
-            state[concept] = newValue
-        }
+        get { state[concept] }
+        set { state[concept] = newValue }
     }
     
     func potential(_ concept: Lemma) -> Potential {
