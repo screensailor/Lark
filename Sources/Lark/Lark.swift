@@ -25,13 +25,13 @@ class Brain<Lemma, Signal> where Lemma: Hashable {
     typealias Connections = [Lemma: Lemma?]
     typealias Functions   = [Lemma: Lemma]
     typealias Network     = [Lemma: Node]
-    typealias State       = Buffered<[Lemma: Signal]>
+    typealias State       = BufferedKeyPathSubjects<[Lemma: Signal]>
     
     @Published var lexicon:     Lexicon = [:] // TODO: eventually compiled from more ergonomic languages
     @Published var connections: Connections = [:]
     @Published var functions:   Functions = [:]
     @Published var network:     Network = [:]
-    @Published var state:       State = Buffered([:]) // TODO: accumulated changes must be explicitly committed (e.g. per run loop)
+    @Published var state =      State([:]) // TODO: accumulated changes must be explicitly committed (e.g. per run loop)
     
     let os: OS<Lemma, Signal>
     

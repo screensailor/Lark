@@ -2,9 +2,7 @@
 /// TODO: `@propertyWrapper public struct PublishedKeyPaths<Value>`
 /// (see ``Combine.Published``)
 @dynamicMemberLookup
-public final class CurrentKeyPathSubjects<A>
-where A: ExpressibleByNilLiteral
-{
+public final class CurrentKeyPathSubjects<A> {
     public var published: Subject { .init(self) }
     
     // TODO: atomic r/w
