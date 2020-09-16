@@ -10,10 +10,22 @@ class Lark™: Hopes {
     typealias Lexicon = Brain.Lexicon
     typealias Concept = Brain.Concept
     
+    struct Identity: Func₁ {
+        typealias X = JSON
+        func ƒ(_ x: X) throws -> X { x }
+    }
+    
+    struct Add: Func₂ {
+        typealias X = JSON
+        func ƒ(_ x: (JSON, JSON)) throws -> JSON {
+            try JSON(Double(x.0) + Double(x.1))
+        }
+    }
+    
     let os = OS<String, JSON>(
         functions: [
-            "": .ƒ₁{ $0 },
-            "+": .ƒ₂{ try JSON(Double($0) + Double($1)) }
+            "": Identity.self,
+            "+": Add.self
         ]
     )
     func test_1() {
@@ -65,6 +77,8 @@ class Lark™: Hopes {
 
         brain.state["x"] = 2 // e.g. user event
         brain.state["y"] = 3 // e.g. database push
+        
+        brain.state.commit()
 
 //        hope(o[]) == 5
     }
