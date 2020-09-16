@@ -6,6 +6,8 @@ public final class CurrentKeyPathSubjects<A>
 where A: ExpressibleByNilLiteral
 {
     public var published: Subject { .init(self) }
+    
+    // TODO: atomic r/w
     public private(set) var root: A
     private var paths: [KeyPath<A, A>: CurrentValueSubject<A, Never>] = [:]
     
@@ -31,7 +33,7 @@ where A: ExpressibleByNilLiteral
         public subscript(dynamicMember path: WritableKeyPath<A, A>) -> CurrentValueSubject<A, Never> {
             __o.paths[path] ?? {
                 let o = CurrentValueSubject<A, Never>(__o.root[keyPath: path])
-                __o.paths[path] = o
+                __o.paths[path] = o // TODO: reference counting and removing at zero
                 return o
             }()
         }
