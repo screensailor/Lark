@@ -12,17 +12,6 @@ extension Sink {
 
 extension Sink {
     
-    public final class Optional<A>: ReferenceWriteSubscriptable {
-        @inlinable public static var subscriptRoot: ReferenceWritableKeyPath<Sink.Optional<A>, A?> { \.__o }
-        @usableFromInline @Published var __o: A?
-        public var bag: Bag = []
-        public init(_ value: A){ self.__o = value }
-        public init(){}
-    }
-}
-
-extension Sink {
-    
     public final class Result<A>: ReferenceWriteSubscriptable {
         @inlinable public static var subscriptRoot: ReferenceWritableKeyPath<Sink.Result<A>, Swift.Result<A, Error>> { \.__o }
         @usableFromInline @Published var __o: Swift.Result<A, Error>
@@ -41,36 +30,6 @@ extension Publisher {
 
     public func sink<A>(_ sink: Sink.Var<A>) where Output == A {
         self.sink { _ in
-        } receiveValue: { output in
-            sink.__o = output
-        }.in(&sink.bag)
-    }
-
-    @inlinable
-    public static func ...= (lhs: Sink.Optional<Output>, rhs: Self) {
-        rhs.sink(lhs)
-    }
-
-    public func sink(_ sink: Sink.Optional<Output>) {
-        self.sink { completion in
-            if case .failure = completion {
-                sink.__o = nil
-            }
-        } receiveValue: { output in
-            sink.__o = output
-        }.in(&sink.bag)
-    }
-
-    @inlinable
-    public static func ...= <A>(lhs: Sink.Optional<A>, rhs: Self) where Output == A? {
-        rhs.sink(lhs)
-    }
-
-    public func sink<A>(_ sink: Sink.Optional<A>) where Output == A? {
-        self.sink { completion in
-            if case .failure = completion {
-                sink.__o = nil
-            }
         } receiveValue: { output in
             sink.__o = output
         }.in(&sink.bag)
