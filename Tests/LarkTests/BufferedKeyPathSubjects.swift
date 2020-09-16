@@ -1,6 +1,21 @@
 class BufferedKeyPathSubjects™: Hopes {
     
     func test() {
+        let a = Sink.Var<String?>("😞")
+        let p = BufferedKeyPathSubjects<[String: String]>([:])
+
+        a ...= p.published["happy"]
+
+        p["happy"] = "🙂"
+
+        hope(a[]) == nil
+        
+        p.commit()
+        
+        hope(a[]) == "🙂"
+    }
+
+    func test_JSON() {
         let a = Sink.Var<JSON>(nil)
         let p = BufferedKeyPathSubjects<JSON>(nil)
 

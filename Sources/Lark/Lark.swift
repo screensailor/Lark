@@ -31,7 +31,8 @@ class Brain<Lemma, Signal> where Lemma: Hashable {
     @Published var connections: Connections = [:]
     @Published var functions:   Functions = [:]
     @Published var network:     Network = [:]
-    @Published var state =      State([:]) // TODO: accumulated changes must be explicitly committed (e.g. per run loop)
+    
+    let state = State([:]) // TODO: accumulated changes must be explicitly committed (e.g. per run loop)
     
     let os: OS<Lemma, Signal>
     
@@ -42,22 +43,12 @@ class Brain<Lemma, Signal> where Lemma: Hashable {
 
 extension Brain {
     
-    subscript(lemma: Lemma) -> Node {
-        network[lemma] ?? { o in
-            network[lemma] = o
-            return o
-        }(Node())
-    }
-}
-
-extension Brain {
-    
     struct Concept {
         
         let connections: Connections
-        let action: Lemma?
+        let action: Lemma
         
-        init(connections: Connections = [:], action: Lemma? = nil) {
+        init(connections: Connections = [:], action: Lemma) {
             self.connections = connections
             self.action = action
         }
