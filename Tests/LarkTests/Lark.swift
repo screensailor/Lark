@@ -11,12 +11,12 @@ class Lark™: Hopes {
     typealias Concept = Brain.Concept
     
     struct Identity: Func₁ {
-        typealias X = JSON
-        func ƒ(_ x: X) throws -> X { x }
+
+        func ƒ(_ x: JSON) throws -> JSON { x }
     }
     
     struct Add: Func₂ {
-        typealias X = JSON
+
         func ƒ(_ x: (JSON, JSON)) throws -> JSON {
             try JSON(Double(x.0) + Double(x.1))
         }

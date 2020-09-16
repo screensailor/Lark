@@ -7,15 +7,14 @@ infix operator ¶ : TernaryPrecedence
 
 infix operator ...= : BitwiseShiftPrecedence
 
-protocol AnyFunc { init() }
-protocol Func: AnyFunc { associatedtype X }
-protocol Func₀: Func { func ƒ() throws -> X }
-protocol Func₁: Func { func ƒ(_ x: X) throws -> X }
-protocol Func₂: Func { func ƒ(_ x: (X, X)) throws -> X }
+protocol Func { init() }
+protocol Func₀: Func { associatedtype X; func ƒ() throws -> X }
+protocol Func₁: Func { associatedtype X; func ƒ(_ x: X) throws -> X }
+protocol Func₂: Func { associatedtype X; func ƒ(_ x: (X, X)) throws -> X }
 
 struct OS<Lemma, Signal> where Lemma: Hashable {
 
-    var functions: [Lemma: AnyFunc.Type] = [:] // TODO: use function builder as a namespace
+    var functions: [Lemma: Func.Type] = [:] // TODO: use function builder as a namespace
 }
 
 class Brain<Lemma, Signal> where Lemma: Hashable {
