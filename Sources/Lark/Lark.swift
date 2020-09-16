@@ -12,19 +12,23 @@ protocol Func₀: Func { associatedtype X; func ƒ() throws -> X }
 protocol Func₁: Func { associatedtype X; func ƒ(_ x: X) throws -> X }
 protocol Func₂: Func { associatedtype X; func ƒ(_ x: (X, X)) throws -> X }
 
-class Brain<Lemma, Signal> where Lemma: Hashable {
+class Brain<Lemma, Signal>
+where
+    Lemma: Hashable,
+    Signal: ExpressibleByNilLiteral
+{
     
     typealias Lexicon     = [Lemma: Concept]
     typealias Connections = [Lemma: Lemma]
     typealias Functions   = [Lemma: Func.Type]
     typealias Network     = [Lemma: Node]
-    typealias State       = BufferedKeyPathSubjects<[Lemma: Signal]>
+    typealias State       = BufferedKeyPathSubjects<DefaultingDictionary<Lemma, Signal>>
     
-    var lexicon:     Lexicon = [:] // TODO: eventually compiled from more ergonomic languages
-    var connections: Connections = [:]
-    let functions:   Functions // TODO: use function builder as a namespace
-    var network:     Network = [:]
-    let state =      State([:]) // TODO: accumulated changes must be explicitly committed (e.g. per run loop)
+    var lexicon:        Lexicon = [:] // TODO: eventually compiled from more ergonomic languages
+    var connections:    Connections = [:]
+    let functions:      Functions // TODO: use function builder as a namespace
+    var network:        Network = [:]
+    private let state = State(.init(default: nil)) // TODO: accumulated changes must be explicitly committed (e.g. per run loop)
 
     init(_ functions: Functions = [:]) {
         self.functions = functions
@@ -32,16 +36,29 @@ class Brain<Lemma, Signal> where Lemma: Hashable {
 }
 
 extension Brain {
-    
+
     typealias Potential = CurrentValueSubject<Signal, Never>
+
+    subscript(concept: Lemma) -> Signal {
+        get {
+            state[concept]
+        }
+        set {
+            state[concept] = newValue
+        }
+    }
     
-    subscript(concept: Lemma) -> Potential {
-        fatalError()
+    func potential(_ concept: Lemma) -> Potential {
+        state.published[concept]
+    }
+
+    func commit() {
+        state.commit()
     }
 }
 
 extension Brain {
-    
+
     struct Concept {
         
         let connections: Connections
@@ -86,4 +103,8 @@ extension Brain {
             subject.receive(subscriber: subscriber)
         }
     }
+}
+
+private extension Optional where Wrapped: ExpressibleByNilLiteral {
+    var orNil: Wrapped { self ?? nil }
 }

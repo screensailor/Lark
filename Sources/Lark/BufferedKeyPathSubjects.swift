@@ -44,7 +44,7 @@ public final class BufferedKeyPathSubjects<Value> {
         
         init(_ o: BufferedKeyPathSubjects) { __o = o }
         
-        public subscript<A>(dynamicMember path: WritableKeyPath<Value, A>) -> CurrentValueSubject<A, Never> {
+        public subscript<A>(dynamicMember path: KeyPath<Value, A>) -> CurrentValueSubject<A, Never> {
             __o.subjects[path]?.reference as? CurrentValueSubject<A, Never> ?? {
                 let subject = CurrentValueSubject<A, Never>(__o.value.__o.0[keyPath: path])
                 let o = Subject(
