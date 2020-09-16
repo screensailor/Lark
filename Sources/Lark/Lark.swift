@@ -12,29 +12,32 @@ protocol Func₀: Func { associatedtype X; func ƒ() throws -> X }
 protocol Func₁: Func { associatedtype X; func ƒ(_ x: X) throws -> X }
 protocol Func₂: Func { associatedtype X; func ƒ(_ x: (X, X)) throws -> X }
 
-struct OS<Lemma, Signal> where Lemma: Hashable {
-
-    var functions: [Lemma: Func.Type] = [:] // TODO: use function builder as a namespace
-}
-
 class Brain<Lemma, Signal> where Lemma: Hashable {
     
     typealias Lexicon     = [Lemma: Concept]
-    typealias Connections = [Lemma: Lemma?]
-    typealias Functions   = [Lemma: Lemma]
+    typealias Connections = [Lemma: Lemma]
+    typealias Functions   = [Lemma: Func.Type]
     typealias Network     = [Lemma: Node]
     typealias State       = BufferedKeyPathSubjects<[Lemma: Signal]>
     
-    @Published var lexicon:     Lexicon = [:] // TODO: eventually compiled from more ergonomic languages
-    @Published var connections: Connections = [:]
-    @Published var functions:   Functions = [:]
-    @Published var network:     Network = [:]
+    var lexicon:     Lexicon = [:] // TODO: eventually compiled from more ergonomic languages
+    var connections: Connections = [:]
+    let functions:   Functions // TODO: use function builder as a namespace
+    var network:     Network = [:]
+    let state =      State([:]) // TODO: accumulated changes must be explicitly committed (e.g. per run loop)
+
+    init(_ functions: Functions = [:]) {
+        self.functions = functions
+    }
+}
+
+extension Brain {
     
-    let state = State([:]) // TODO: accumulated changes must be explicitly committed (e.g. per run loop)
+    typealias Potential = CurrentValueSubject<Signal, Never>
     
-    let os: OS<Lemma, Signal>
-    
-    init(on os: OS<Lemma, Signal>) { self.os = os }
+    subscript(concept: Lemma) -> Potential {
+        fatalError()
+    }
 }
 
 extension Brain {

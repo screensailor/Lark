@@ -7,6 +7,7 @@
 class Lark™: Hopes {
     
     typealias Brain = Lark.Brain<String, JSON>
+    typealias Functions = [String: Func.Type]
     typealias Lexicon = Brain.Lexicon
     typealias Concept = Brain.Concept
     
@@ -22,15 +23,14 @@ class Lark™: Hopes {
         }
     }
     
-    let os = OS<String, JSON>(
-        functions: [
-            "": Identity.self,
-            "+": Add.self
-        ]
-    )
+    let functions: Functions = [
+        "": Identity.self,
+        "+": Add.self
+    ]
+
     func test_1() {
         let o = Sink.Var<JSON?>(nil)
-        let brain = Brain(on: os)
+        let brain = Brain()
         
         o ...= brain.state.published["?"]
         
@@ -45,7 +45,7 @@ class Lark™: Hopes {
     
     func test_2() {
         let o = Sink.Var<JSON?>(nil)
-        let brain = Brain(on: os)
+        let brain = Brain()
 
         brain.state["?"] = "🙂"
 
@@ -58,25 +58,20 @@ class Lark™: Hopes {
 
     func test_3() {
         let o = Sink.Var<JSON?>(nil)
-        let brain = Brain(on: os)
+        let brain = Brain(functions)
 
-        let lemma = "a new conept"
+        o ...= brain.state.published["new conept"]
 
-        o ...= brain.state.published[lemma]
-
-        brain.lexicon[lemma] = Concept(
+        brain.lexicon["new conept"] = Concept(
             connections: [
-                "x": nil,
-                "y": nil
+                "x": "",
+                "y": ""
             ],
             action: "+"
         )
 
-        brain.lexicon["x"] = Concept(action: "")
-        brain.lexicon["y"] = Concept(action: "")
-
-        brain.state["x"] = 2 // e.g. user event
-        brain.state["y"] = 3 // e.g. database push
+        brain.state["x"] = 2
+        brain.state["y"] = 3
         
         brain.state.commit()
 
