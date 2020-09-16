@@ -7,25 +7,25 @@ public final class BufferedKeyPathSubjects<Value> {
     public var published: Subjects { .init(self) }
     
     // TODO: atomic r/w
-    public private(set) var root: Buffered<Value>
+    public private(set) var value: Buffered<Value>
     private var subjects: [PartialKeyPath<Value>: Subject] = [:]
     private var updated: Set<PartialKeyPath<Value>> = [] // TODO: sequential as well as unuque
     
-    public init(_ root: Value) { self.root = Buffered(root) }
+    public init(_ value: Value) { self.value = Buffered(value) }
     
     public subscript<A>(dynamicMember path: WritableKeyPath<Value, A>) -> A {
         get {
-            root.__o.0[keyPath: path]
+            value.__o.0[keyPath: path]
         }
         set {
-            root.__o.1[keyPath: path] = newValue
+            value.__o.1[keyPath: path] = newValue
             updated.insert(path)
         }
     }
     
     public func commit() {
-        root.commit()
-        let value = root[]
+        value.commit()
+        let value = self.value[]
         for path in updated {
             subjects[path]?.send(value)
         }
@@ -46,7 +46,7 @@ public final class BufferedKeyPathSubjects<Value> {
         
         public subscript<A>(dynamicMember path: WritableKeyPath<Value, A>) -> CurrentValueSubject<A, Never> {
             __o.subjects[path]?.reference as? CurrentValueSubject<A, Never> ?? {
-                let subject = CurrentValueSubject<A, Never>(__o.root.__o.0[keyPath: path])
+                let subject = CurrentValueSubject<A, Never>(__o.value.__o.0[keyPath: path])
                 let o = Subject(
                     reference: subject,
                     send: { value in subject.send(value[keyPath: path]) }
