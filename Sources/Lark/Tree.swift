@@ -1,6 +1,6 @@
 @dynamicMemberLookup
 public indirect enum Tree<Key, Leaf>
-where Key: Hashable, Leaf: Castable
+where Key: Hashable, Leaf: Castable, Leaf: ExpressibleByNilLiteral
 {
     // TODO: reimplement without an enum and recursivity and compare performance
     case leaf(Leaf)
@@ -16,9 +16,7 @@ extension Tree where Key: ExpressibleByStringLiteral {
     
 extension Tree {
     
-    public static var empty: Tree { .dictionary([:]) }
-    
-    public init() { self = .empty }
+    public init() { self = .leaf(nil) }
     public init(_ o: Self) { self = o }
     public init(_ o: Leaf) { self = .leaf(o) }
 }
@@ -131,22 +129,22 @@ extension Tree {
     public typealias Index = EitherType<Int, Key>
     public typealias Path = [Index]
 
-    @inlinable public subscript(path: Index..., default o: Self) -> Self {
-        self[path] ?? o
-    }
+//    @inlinable public subscript(path: Index..., default o: Self) -> Self {
+//        self[path] ?? o
+//    }
 
-    @inlinable public subscript(path: Index...) -> Self? {
+    @inlinable public subscript(path: Index...) -> Self {
         get { self[path] }
         set { self[path] = newValue }
     }
     
-    @inlinable public subscript<Path>(path: Path, default o: Self) -> Self
-    where Path: Collection, Path.Element == Index
-    {
-        self[path] ?? o
-    }
+//    @inlinable public subscript<Path>(path: Path, default o: Self) -> Self
+//    where Path: Collection, Path.Element == Index
+//    {
+//        self[path] ?? o
+//    }
     
-    public subscript<Path>(path: Path) -> Self?
+    public subscript<Path>(path: Path) -> Self
     where Path: Collection, Path.Element == Index
     {
         get {
@@ -166,17 +164,17 @@ extension Tree {
                 guard let key = first[Key.self] else {
                     return nil
                 }
-                return o[key]?[path.dropFirst()]
+                return o[key]?[path.dropFirst()] ?? nil
             }
         }
         set {
-            let new = newValue ?? .empty
+            let new = newValue //?? .empty
             guard let first = path.first else {
                 self = new
                 return
             }
             guard path.count == 1 else {
-                var o = self[first] ?? .empty
+                var o = self[first] //?? .empty
                 o[path.dropFirst()] = new
                 self[first] = o
                 return
@@ -187,7 +185,7 @@ extension Tree {
                 switch first.value
                 {
                 case let .a(i):
-                    var o = Array(repeating: Self.empty, count: i)
+                    var o = Array<Self>(repeating: nil, count: i)
                     o.append(new)
                     self = .array(o)
                     
@@ -200,7 +198,7 @@ extension Tree {
                 {
                 case let .a(i):
                     o.append(
-                        contentsOf: Array(repeating: Self.empty, count: max(0, 1 + i - o.count))
+                        contentsOf: Array<Self>(repeating: nil, count: max(0, 1 + i - o.count))
                     )
                     o[i] = new
                     self = .array(o)
@@ -213,7 +211,7 @@ extension Tree {
                 switch first.value
                 {
                 case let .a(i):
-                    var o = Array(repeating: Self.empty, count: i)
+                    var o = Array<Self>(repeating: nil, count: i)
                     o.append(new)
                     self = .array(o)
 

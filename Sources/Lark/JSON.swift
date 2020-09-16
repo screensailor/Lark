@@ -57,8 +57,22 @@ extension Publisher where Output == JSON {
         compactMap{ $0[path] }.eraseToAnyPublisher()
     }
     
-    @inlinable public func `as`<T>(_ type: T.Type = T.self) -> AnyPublisher<T, Error> {
-        tryMap{ o -> T in try o.cast() }.eraseToAnyPublisher()
+    @inlinable public func `as`<T>(
+        _ type: T.Type = T.self,
+        _ function: String = #function,
+        _ file: String = #file,
+        _ line: Int = #line
+    ) -> AnyPublisher<T, Error> {
+        tryMap{ o -> T in try o.cast(function, file, line) }.eraseToAnyPublisher()
+    }
+    
+    @inlinable public func `when`<T>(
+        _ type: T.Type = T.self,
+        _ function: String = #function,
+        _ file: String = #file,
+        _ line: Int = #line
+    ) -> AnyPublisher<T, Failure> {
+        compactMap{ o -> T? in try? o.cast(to: T.self, function, file, line) }.eraseToAnyPublisher()
     }
 }
 
@@ -129,6 +143,10 @@ extension JSONLeaf: Castable {
         throw "\(self) is not \(A.self)".error(function, file, line)
     }
 
+}
+
+extension JSONLeaf: ExpressibleByNilLiteral {
+    @inlinable public init(nilLiteral: ()) { self = .null }
 }
 
 extension JSONLeaf: ExpressibleByBooleanLiteral {

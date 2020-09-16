@@ -3,11 +3,11 @@ import Hope
 
 class Sink™: Hopes {
     
-    @Published private var json: JSON = .empty
+    @Published private var json: JSON = nil
     
     func test_1() {
         
-        let o = Sink.Optional<JSON>()
+        let o = Sink.Var<JSON>(nil)
         
         let x: JSON.Path = ["a", "b", 3]
         
@@ -24,8 +24,8 @@ class Sink™: Hopes {
         
         let o = Sink.Result(0)
 
-        let x = $json["a", "b", 3].as(Int.self)
-        let y = $json["somewhere", "else"].as(Int.self)
+        let x = $json["a", "b", 3].when(Int.self)
+        let y = $json["somewhere", "else"].when(Int.self)
         
         o ...= x.combineLatest(y).map(+)
 

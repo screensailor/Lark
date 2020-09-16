@@ -1,6 +1,8 @@
 @_exported import Peek
+@_exported import Hope
+@_exported import Lark
+
 @testable import Lark
-import Hope
 
 class Lark™: Hopes {
     
@@ -15,7 +17,7 @@ class Lark™: Hopes {
         ]
     )
     func test_2() {
-        let o = Sink.Var<JSON>(.empty)
+        let o = Sink.Var<JSON>(nil)
         let brain = Brain(on: os)
         
         o ...= brain["?"]
@@ -26,7 +28,7 @@ class Lark™: Hopes {
     }
     
     func test_3() {
-        let o = Sink.Var<JSON>(.empty)
+        let o = Sink.Var<JSON>(nil)
         let brain = Brain(on: os)
         
         brain["?"].send("Yay!")
@@ -37,7 +39,7 @@ class Lark™: Hopes {
     }
     
     func test_4() {
-        let o = Sink.Var<JSON>(.empty)
+        let o = Sink.Var<JSON>(nil)
         let brain = Brain(on: os)
         
         let lemma = "a new conept"
@@ -58,7 +60,7 @@ class Lark™: Hopes {
         brain["x"].send(2) // e.g. user event
         brain["y"].send(3) // e.g. database push
         
-        hope(o[]) == 5
+        //hope(o[]) == 5
     }
 }
 
