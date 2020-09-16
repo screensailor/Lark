@@ -16,15 +16,19 @@ class Lark™: Hopes {
             "+": .ƒ₂{ try JSON(Double($0) + Double($1)) }
         ]
     )
-    func test_2() {
-//        let o = Sink.Var<JSON>(nil)
-//        let brain = Brain(on: os)
+    func test_1() {
+        let o = Sink.Optional<JSON>(nil)
+        let brain = Brain(on: os)
         
-//        o ...= brain.state.published["?"]
+        o ...= brain.state.published["?"]
         
-//        brain["?"].send("Yay!")
+        brain.state["?"] = "🙂"
         
-//        hope(o[]) == "Yay!"
+        hope(o[]) == nil
+        
+        brain.state.commit()
+        
+        hope(o[]) == "🙂"
     }
     
 //    func test_3() {

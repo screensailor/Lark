@@ -1,7 +1,7 @@
 class BufferedKeyPathSubjects™: Hopes {
     
     func test() {
-        let a = Sink.Var<String?>("😞")
+        let a = Sink.Optional<String>("😞")
         let p = BufferedKeyPathSubjects<[String: String]>([:])
 
         a ...= p.published["happy"]
