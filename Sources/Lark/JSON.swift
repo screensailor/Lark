@@ -85,7 +85,8 @@ public enum JSONLeaf: Equatable {
 }
 
 extension JSONLeaf: ExpressibleByErrorValue {
-    public var isError: Bool {
+    
+    @inlinable public var isError: Bool {
         if case .error = self { return  true } else { return false }
     }
 }
@@ -101,22 +102,22 @@ extension JSONLeaf: Castable {
     @inlinable public init(_ o: JSONLeaf){ self = o }
     @inlinable public init(_ o: Int){ self = .number(Double(o)) }
 
-    public init<A>(
+    public static func from<A>(
         _ a: A,
         _ function: String = #function,
         _ file: String = #file,
         _ line: Int = #line
-    ) throws {
+    ) throws -> JSONLeaf {
         switch a
         {
-        case is NSNull: self = .null
-        case let o as Bool: self = .boolean(o)
-        case let o as Double: self = .number(o)
-        case let o as String: self = .string(o)
-        case let o as Peek.Error: self = .error(o)
+        case is NSNull: return .null
+        case let o as Bool: return .boolean(o)
+        case let o as Double: return .number(o)
+        case let o as String: return .string(o)
+        case let o as Peek.Error: return .error(o)
             
-        case let o as JSONLeaf: self = o
-        case let o as Int: self = .number(Double(o))
+        case let o as JSONLeaf: return o
+        case let o as Int: return .number(Double(o))
             
         default: throw "\(a) could not be converted to \(Self.self)".error(function, file, line)
         }

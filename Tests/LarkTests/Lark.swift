@@ -15,7 +15,7 @@ class Lark™: Hopes {
         
         func ƒ<X>(_ x: [X]) throws -> X where X: Castable {
             let o = try x.reduce(0){ a, e in try a + e.as(Double.self) }
-            return try X.init(o, #function, #file, #line)
+            return try X(o)
         }
     }
     
@@ -89,7 +89,7 @@ class Lark™: Hopes {
         brain["x"] = 2
         brain["y"] = 3
         
-        5.times(brain.commit)
+        2.times(brain.commit)
 
         hope(o[]) == 5
     }

@@ -5,8 +5,13 @@ public indirect enum Tree<Key, Leaf> where Key: Hashable {
 }
 
 extension Tree: ExpressibleByErrorValue where Leaf: ExpressibleByErrorValue {
-    public var isError: Bool {
+    
+    @inlinable public var isError: Bool {
         if case .leaf(let o) = self { return o.isError } else { return false }
+    }
+    
+    @inlinable public init(_ error: Peek.Error) {
+        self = .leaf(Leaf.init(error))
     }
 }
     
@@ -30,14 +35,14 @@ extension Tree: ExpressibleByDictionaryLiteral {
 
 extension Tree: Castable where Leaf: Castable { // TODO: Encoder and Decoder
     
-    public init<A>(
+    public static func from<A>(
         _ a: A,
         _ function: String = #function,
         _ file: String = #file,
         _ line: Int = #line
-    ) throws {
+    ) throws -> Self {
         let leaf = try Leaf.init(a, function, file, line)
-        self = .leaf(leaf)
+        return .leaf(leaf)
     }
     
     
