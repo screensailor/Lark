@@ -38,8 +38,6 @@ extension Brain {
 
 extension Brain {
 
-    public typealias Potential = CurrentValueSubject<Signal, Never>
-
     public subscript() -> [Lemma: Signal] {
         get { state[] }
         set { state[] = newValue }
@@ -57,6 +55,8 @@ extension Brain {
 }
 
 extension Brain {
+
+    public typealias Potential = CurrentValueSubject<Signal, Never>
 
     public func published(_ lemma: Lemma) -> Potential {
         if network[lemma] == nil {

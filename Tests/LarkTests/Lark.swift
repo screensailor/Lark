@@ -56,25 +56,26 @@ class Lark™: Hopes {
         let o = Sink.Var<JSON>(nil)
         let brain = Brain(functions: functions)
         
-        o ...= brain.published("x * (a + b)")
-
-        brain.lexicon["x * (a + b)"] = Concept(
-            connections: ["x", "a + b"],
+        o ...= brain.published("x * (a + b + c)")
+        
+        brain.lexicon["x * (a + b + c)"] = Concept(
+            connections: ["x", "a + b + c"],
             action: "*"
         )
         
-        brain.lexicon["a + b"] = Concept(
-            connections: ["a", "b"],
+        brain.lexicon["a + b + c"] = Concept(
+            connections: ["a", "b", "c"],
             action: "+"
         )
-
-        brain["a"] = 2
-        brain["b"] = 3
+        
+        brain["a"] = 1
+        brain["b"] = 2
+        brain["c"] = 3
         brain["x"] = 10
         
         3.times(brain.commit)
-
-        hope(o[]) == 50
+        
+        hope(o[]) == 60
     }
 }
 
