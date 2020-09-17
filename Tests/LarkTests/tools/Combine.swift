@@ -1,3 +1,12 @@
+public typealias Bag = Set<AnyCancellable>
+
+extension Cancellable {
+    
+    @inlinable public static func / (lhs: Self, rhs: inout Bag) {
+        lhs.store(in: &rhs)
+    }
+}
+
 extension Publisher {
     
     @inlinable public func filter<A>(_: A.Type = A.self) -> Publishers.CompactMap<Self, A> {
@@ -13,22 +22,3 @@ extension Publisher {
     }
 }
 
-extension Publishers.Print {
-    
-    @inlinable public func `in`(_ bag: inout Bag) {
-        sink(receiveCompletion: {_ in}, receiveValue: {_ in}).store(in: &bag)
-    }
-}
-
-public typealias Bag = Set<AnyCancellable>
-
-extension Cancellable {
-
-    @inlinable public func `in`(_ bag: inout Bag) {
-        store(in: &bag)
-    }
-    
-    @inlinable public static func / (lhs: Self, rhs: inout Bag) {
-        lhs.store(in: &rhs)
-    }
-}

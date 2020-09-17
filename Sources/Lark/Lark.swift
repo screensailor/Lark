@@ -5,9 +5,8 @@ infix operator ¶ : TernaryPrecedence
 
 // Lark
 
-infix operator ...= : BitwiseShiftPrecedence
-
 protocol Func { init() }
+protocol Func_: Func { associatedtype X; func ƒ(_ x: [X]) throws -> X }
 protocol Func₀: Func { associatedtype X; func ƒ() throws -> X }
 protocol Func₁: Func { associatedtype X; func ƒ(_ x: X) throws -> X }
 protocol Func₂: Func { associatedtype X; func ƒ(_ x: (X, X)) throws -> X }
@@ -82,24 +81,41 @@ extension Brain {
         typealias Output = Signal
         typealias Failure = Never
         
-        let concept: CurrentValueSubject<Concept?, Never>
+        let lemma: Lemma
+        var concept: Concept? { didSet { connectionsBag = [] } }
         
-        private var bag: Bag = []
+        var signals: [Signal] = []
+        
+        var conceptBag: Set<AnyCancellable> = []
+        var connectionsBag: Set<AnyCancellable> = []
         
         init(_ lemma: Lemma, in brain: Brain) {
-            concept = brain.lexicon.published[lemma]
-            concept.sink{ concept in
-                guard let concept = concept else {
+            self.lemma = lemma
+            brain.lexicon.published[lemma].sink{ [weak brain, weak self] concept in
+                guard let brain = brain else {
+                    self?.conceptBag = []
+                    self?.connectionsBag = []
+                    return
+                }
+                guard let self = self else {
                     brain.state[].removeValue(forKey: lemma)
                     return
                 }
-                
-                for connection in concept.connections {
-//                    brain.state.published[connection].sink{ signal in
-//                        brain.state[lemma] = signal
-//                    }.in(&self.bag)
+                guard let concept = concept else {
+                    self.concept = nil
+                    brain.state[].removeValue(forKey: lemma)
+                    return
                 }
-            }.in(&bag)
+                self.concept = concept
+                self.signals = Array(repeating: nil, count: concept.connections.count)
+                for (connection, weight) in concept.connections {
+                    brain.state.published[connection].sink{ signal in
+//                        brain.state[lemma] = signal
+                    }
+                    .store(in: &self.connectionsBag)
+                }
+            }
+            .store(in: &conceptBag)
         }
     }
 }
