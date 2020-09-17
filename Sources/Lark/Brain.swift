@@ -95,7 +95,7 @@ extension Brain {
                     return
                 }
                 self.concept = concept
-                self.signals = Array(repeating: nil, count: concept.connections.count)
+                self.signals = Array(repeating: nil, count: concept.connections.count) // TODO: Signal.init(Peek.Error("Uninitialized"))
                 for (i, connection) in concept.connections.enumerated() {
                     if brain.network[connection] == nil {
                         brain.network[connection] = Neuron(connection, in: brain)
@@ -111,7 +111,7 @@ extension Brain {
                             return
                         }
                         self.signals[i] = signal // TODO: equality check?
-                        do {
+                        do { // TODO: only on commit ❗️
                             guard let o = brain.functions[concept.action]?.init() else {
                                 throw "No function '\(concept.action)'".error()
                             }
