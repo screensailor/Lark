@@ -18,13 +18,13 @@ where
     Signal: ExpressibleByNilLiteral
 {
     
-    typealias Lexicon     = [Lemma: Concept]
+    typealias Lexicon     = CurrentKeyPathSubjects<[Lemma: Concept]>
     typealias Connections = [Lemma: Lemma]
     typealias Functions   = [Lemma: Func.Type]
-    typealias Network     = [Lemma: Node]
+    typealias Network     = [Lemma: Neuron]
     typealias State       = BufferedKeyPathSubjects<DefaultingDictionary<Lemma, Signal>>
     
-    var lexicon:        Lexicon = [:] // TODO: eventually compiled from more ergonomic languages
+    var lexicon =       Lexicon([:]) // TODO: eventually compiled from more ergonomic languages
     var connections:    Connections = [:]
     let functions:      Functions // TODO: use function builder as a namespace
     var network:        Network = [:]
@@ -37,25 +37,7 @@ where
 
 extension Brain {
 
-    typealias Potential = CurrentValueSubject<Signal, Never>
-
-    subscript(concept: Lemma) -> Signal {
-        get { state[concept] }
-        set { state[concept] = newValue }
-    }
-    
-    func potential(_ concept: Lemma) -> Potential {
-        state.published[concept]
-    }
-
-    func commit() {
-        state.commit()
-    }
-}
-
-extension Brain {
-
-    struct Concept {
+    struct Concept: Hashable {
         
         let connections: Connections
         let action: Lemma
@@ -65,42 +47,68 @@ extension Brain {
             self.action = action
         }
     }
+}
 
-    class Node: Subject {
+extension Brain {
+
+    typealias Potential = CurrentValueSubject<Signal, Never>
+
+    subscript() -> [Lemma: Signal] {
+        get { state[] }
+        set { state[] = newValue }
+    }
+
+    subscript(lemma: Lemma) -> Signal {
+        get { state[lemma] }
+        set { state[lemma] = newValue }
+    }
+
+    func commit() {
+        state.commit()
+    }
+}
+
+extension Brain {
+
+    func published(_ lemma: Lemma) -> Potential {
+        if network[lemma] == nil {
+            network[lemma] = Neuron(lemma, in: self)
+        }
+        return state.published[lemma]
+    }
+
+    class Neuron {
         
         typealias Output = Signal
         typealias Failure = Never
         
-        var signal: Signal? {
-            didSet {
-                guard let signal = signal else { return }
-                subject.send(signal)
-            }
-        }
+        let concept: CurrentValueSubject<Concept?, Never>
         
-        let subject = PassthroughSubject<Signal, Never>()
+        private var bag: Bag = []
         
-        func send(_ value: Signal) {
-            signal = value
-        }
-        
-        func send(completion: Subscribers.Completion<Never>) {
-            subject.send(completion: completion)
-        }
-        
-        func send(subscription: Subscription) {
-            subject.send(subscription: subscription)
-        }
-        
-        func receive<S>(subscriber: S)
-        where S: Subscriber, Failure == S.Failure, Output == S.Input
-        {
-            if let signal = signal { _ = subscriber.receive(signal) }
-            subject.receive(subscriber: subscriber)
+        init(_ lemma: Lemma, in brain: Brain) {
+            concept = brain.lexicon.published[lemma]
+            concept.sink{ concept in
+                guard let concept = concept else {
+                    brain.state[].removeValue(forKey: lemma)
+                    return
+                }
+                
+                for connection in concept.connections {
+//                    brain.state.published[connection].sink{ signal in
+//                        brain.state[lemma] = signal
+//                    }.in(&self.bag)
+                }
+            }.in(&bag)
         }
     }
 }
 
-private extension Optional where Wrapped: ExpressibleByNilLiteral {
-    var orNil: Wrapped { self ?? nil }
+extension Brain.Concept: CustomDebugStringConvertible {
+    
+    var debugDescription: String {
+        "\(Self.self)(connections: \(connections), action: \(action))"
+    }
 }
+
+
