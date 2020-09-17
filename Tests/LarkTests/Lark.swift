@@ -19,14 +19,23 @@ class Lark™: Hopes {
         }
     }
     
+    struct Product: Func {
+        
+        func ƒ<X>(_ x: [X]) throws -> X where X: Castable {
+            let o = try x.reduce(1){ a, e in try a * e.as(Double.self) }
+            return try X(o)
+        }
+    }
+
     let functions: Functions = [
         "": Identity.self,
-        "+": Sum.self
+        "+": Sum.self,
+        "*": Product.self
     ]
     
     func test() {
         let o = Sink.Var<JSON>(nil)
-        let brain = Brain(functions)
+        let brain = Brain(functions: functions)
 
         o ...= brain.published("new concept")
 
@@ -41,6 +50,31 @@ class Lark™: Hopes {
         2.times(brain.commit)
 
         hope(o[]) == 5
+    }
+    
+    func test_2() {
+        let o = Sink.Var<JSON>(nil)
+        let brain = Brain(functions: functions)
+        
+        o ...= brain.published("x * (a + b)")
+
+        brain.lexicon["x * (a + b)"] = Concept(
+            connections: ["x", "a + b"],
+            action: "*"
+        )
+        
+        brain.lexicon["a + b"] = Concept(
+            connections: ["a", "b"],
+            action: "+"
+        )
+
+        brain["a"] = 2
+        brain["b"] = 3
+        brain["x"] = 10
+        
+        3.times(brain.commit)
+
+        hope(o[]) == 50
     }
 }
 

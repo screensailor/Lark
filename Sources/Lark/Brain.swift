@@ -4,20 +4,21 @@ final public class Brain<Lemma, Signal> where
     Signal: ExpressibleByNilLiteral,
     Signal: ExpressibleByErrorValue
 {
-    public typealias Lexicon     = CurrentKeyPathSubjects<[Lemma: Concept]>
+    public typealias Lexicon     = BufferedKeyPathSubjects<[Lemma: Concept]>
     public typealias Connections = [Lemma]
     public typealias Functions   = [Lemma: Func.Type]
     public typealias Network     = [Lemma: Neuron]
     public typealias State       = BufferedKeyPathSubjects<DefaultingDictionary<Lemma, Signal>>
     
-    var lexicon =        Lexicon([:]) // TODO: eventually compiled from more ergonomic languages
-    let functions:       Functions
+    let functions: Functions
+    var lexicon:   Lexicon // TODO: eventually compiled from more ergonomic languages
     
     private var network: Network = [:]
     private let state =  State([Lemma: Signal]().defaulting(to: nil)) // TODO: accumulated changes must be explicitly committed (e.g. per run loop)
 
-    public init(_ functions: Functions = [:]) {
+    public init(functions: Functions = [:], lexicon: Lexicon = .init([:])) {
         self.functions = functions
+        self.lexicon = lexicon
     }
 }
 
@@ -50,6 +51,7 @@ extension Brain {
     }
 
     public func commit() {
+        lexicon.commit()
         state.commit()
     }
 }
@@ -89,13 +91,15 @@ extension Brain {
                     return
                 }
                 guard let concept = concept else {
-                    self.concept = nil
-                    brain[].removeValue(forKey: lemma)
+                    self.concept = nil // TODO: e.g. a binding with OS
                     return
                 }
                 self.concept = concept
                 self.signals = Array(repeating: nil, count: concept.connections.count)
                 for (i, connection) in concept.connections.enumerated() {
+                    if brain.network[connection] == nil {
+                        brain.network[connection] = Neuron(connection, in: brain)
+                    }
                     brain.state.published[connection].sink{ [weak brain, weak self] signal in
                         guard let brain = brain else {
                             self?.conceptBag = []
