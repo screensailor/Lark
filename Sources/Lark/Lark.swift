@@ -18,19 +18,6 @@ struct Identity: Func {
     }
 }
 
-public protocol ExpressibleByErrorValue {
-    var isError: Bool { get }
-    init(_ error: Peek.Error)
-    func throwIfError() throws -> Self
-}
-
-extension ExpressibleByErrorValue {
-    
-    public func throwIfError() throws -> Self {
-        if isError { throw String.Error(self) } else { return self }
-    }
-}
-
 class Brain<Lemma, Signal> where
     Lemma: Hashable,
     Signal: Castable, // TODO: Codable istead of Castable
@@ -147,7 +134,7 @@ extension Brain {
                             }
                             brain[lemma] = try o.ƒ(self.signals)
                         } catch {
-                            brain[lemma] = nil // TODO: Lemma.error(_:)
+                            brain[lemma] = Signal.init(Peek.Error("\(error)"))
                         }
                     }
                     .store(in: &self.connectionsBag)
@@ -164,5 +151,4 @@ extension Brain.Concept: CustomDebugStringConvertible {
         "\(Self.self)(connections: \(connections), action: \(action))"
     }
 }
-
 
