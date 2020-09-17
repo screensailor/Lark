@@ -23,55 +23,8 @@ class Lark™: Hopes {
         "": Identity.self,
         "+": Sum.self
     ]
-
-    func test_1() {
-        let o = Sink.Var<JSON>(nil)
-        let brain = Brain()
-        
-        o ...= brain.published(":)")
-        
-        brain[":)"] = "🙂"
-        
-        hope(o[]) == nil
-        
-        brain.commit()
-        
-        hope(o[]) == "🙂"
-    }
     
-    func test_2() {
-        let o = Sink.Var<JSON>(nil)
-        let brain = Brain()
-
-        brain[":)"] = "😞"
-        brain.commit()
-
-        o ...= brain.published(":)")
-        
-        hope(o[]) == "😞"
-        
-        brain[":)"] = "🙂"
-        brain.commit()
-        
-        hope(o[]) == "🙂"
-    }
-    
-    func test_3() {
-        let o = Sink.Var<Brain.Concept?>(nil)
-        let brain = Brain(functions)
-        
-        o ...= brain.lexicon.published["new concept"]
-        
-        hope(o[]) == nil
-        
-        let concept = Concept(action: "Hello world!")
-
-        brain.lexicon["new concept"] = concept
-
-        hope(o[]) == concept
-    }
-
-    func test_4() {
+    func test() {
         let o = Sink.Var<JSON>(nil)
         let brain = Brain(functions)
         
