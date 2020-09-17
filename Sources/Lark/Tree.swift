@@ -1,28 +1,23 @@
-@dynamicMemberLookup
-public indirect enum Tree<Key, Leaf>
-where Key: Hashable, Leaf: Castable, Leaf: ExpressibleByNilLiteral
-{
-    // TODO: reimplement without an enum and recursivity and compare performance
+public indirect enum Tree<Key, Leaf> where Key: Hashable {
     case leaf(Leaf)
     case array([Tree])
     case dictionary([Key: Tree])
 }
 
-extension Tree where Key: ExpressibleByStringLiteral {
-    public subscript(dynamicMember key: Key) -> Self? {
-        self[[Tree.Index(key)]] // TODO: set
+extension Tree: ExpressibleByErrorValue where Leaf: ExpressibleByErrorValue {
+    public var isError: Bool {
+        if case .leaf(let o) = self { return o.isError } else { return false }
     }
 }
     
 extension Tree {
-    
-    public init() { self = .leaf(nil) }
-    public init(_ o: Self) { self = o }
-    public init(_ o: Leaf) { self = .leaf(o) }
+    @inlinable public init(_ o: Self) { self = o }
+    @inlinable public init(_ o: Leaf) { self = .leaf(o) }
 }
 
-extension Tree: ExpressibleByNilLiteral {
-    @inlinable public init(nilLiteral: ()) { self.init() }
+extension Tree: ExpressibleByNilLiteral where Leaf: ExpressibleByNilLiteral {
+    @inlinable public init() { self = .leaf(nil) }
+    @inlinable public init(nilLiteral: ()) { self = .leaf(nil) }
 }
 
 extension Tree: ExpressibleByArrayLiteral {
@@ -33,7 +28,7 @@ extension Tree: ExpressibleByDictionaryLiteral {
     @inlinable public init(dictionaryLiteral elements: (Key, Tree)...) { self = .dictionary(.init(uniqueKeysWithValues: elements)) }
 }
 
-extension Tree: Castable { // TODO: Encoder and Decoder
+extension Tree: Castable where Leaf: Castable { // TODO: Encoder and Decoder
     
     public init<A>(
         _ a: A,
@@ -96,7 +91,7 @@ extension Tree: Castable { // TODO: Encoder and Decoder
     }
 }
 
-extension Tree {
+extension Tree where Leaf: Castable {
     
     @inlinable public func `as`(
         _: Any.Type = Any.self,
@@ -135,7 +130,7 @@ extension Tree {
     }
 }
 
-extension Tree {
+extension Tree where Leaf: ExpressibleByNilLiteral {
     
     public typealias Index = EitherType<Int, Key>
     public typealias Path = [Index]

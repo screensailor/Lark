@@ -84,6 +84,12 @@ public enum JSONLeaf: Equatable {
     case error(Peek.Error)
 }
 
+extension JSONLeaf: ExpressibleByErrorValue {
+    public var isError: Bool {
+        if case .error = self { return  true } else { return false }
+    }
+}
+
 extension JSONLeaf: Castable {
     
     @inlinable public init(_: NSNull){ self = .null }

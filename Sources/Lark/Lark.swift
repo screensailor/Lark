@@ -18,11 +18,15 @@ struct Identity: Func {
     }
 }
 
-class Brain<Lemma, Signal>
-where
+public protocol ExpressibleByErrorValue {
+    var isError: Bool { get }
+}
+
+class Brain<Lemma, Signal> where
     Lemma: Hashable,
-    Signal: Castable,
-    Signal: ExpressibleByNilLiteral
+    Signal: Castable, // TODO: Codable istead of Castable
+    Signal: ExpressibleByNilLiteral,
+    Signal: ExpressibleByErrorValue
 {
     
     typealias Lexicon     = CurrentKeyPathSubjects<[Lemma: Concept]>
