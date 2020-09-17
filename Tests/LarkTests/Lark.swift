@@ -11,21 +11,17 @@ class Lark™: Hopes {
     typealias Lexicon = Brain.Lexicon
     typealias Concept = Brain.Concept
     
-    struct Identity: Func₁ {
-
-        func ƒ(_ x: JSON) throws -> JSON { x }
-    }
-    
-    struct Add: Func₂ {
-
-        func ƒ(_ x: (JSON, JSON)) throws -> JSON {
-            try JSON(Double(x.0) + Double(x.1))
+    struct Sum: Func {
+        
+        func ƒ<X>(_ x: [X]) throws -> X where X: Castable {
+            let o = try x.reduce(0){ a, e in try a + e.as(Double.self) }
+            return try X.init(o, #function, #file, #line)
         }
     }
     
     let functions: Functions = [
         "": Identity.self,
-        "+": Add.self
+        "+": Sum.self
     ]
 
     func test_1() {
@@ -81,13 +77,10 @@ class Lark™: Hopes {
         
         hope(brain[]) == [:]
 
-        o ...= brain.published("new conept")
+        o ...= brain.published("new concept")
 
-        brain.lexicon["new conept"] = Concept(
-            connections: [
-                "x": "",
-                "y": ""
-            ],
+        brain.lexicon["new concept"] = Concept(
+            connections: ["x", "y"],
             action: "+"
         )
 
@@ -100,7 +93,7 @@ class Lark™: Hopes {
         hope(brain[]) == [
             "x": 2,
             "y": 3,
-//            "new concept": 5
+            "new concept": 5
         ]
     }
 }

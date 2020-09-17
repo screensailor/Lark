@@ -33,7 +33,18 @@ extension Tree: ExpressibleByDictionaryLiteral {
     @inlinable public init(dictionaryLiteral elements: (Key, Tree)...) { self = .dictionary(.init(uniqueKeysWithValues: elements)) }
 }
 
-extension Tree { // TODO: Encoder and Decoder
+extension Tree: Castable { // TODO: Encoder and Decoder
+    
+    public init<A>(
+        _ a: A,
+        _ function: String = #function,
+        _ file: String = #file,
+        _ line: Int = #line
+    ) throws {
+        let leaf = try Leaf.init(a, function, file, line)
+        self = .leaf(leaf)
+    }
+    
     
     public func cast(
         to: Any.Type = Any.self,

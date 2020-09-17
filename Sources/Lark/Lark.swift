@@ -5,26 +5,34 @@ infix operator ¶ : TernaryPrecedence
 
 // Lark
 
-protocol Func { init() }
-protocol Func_: Func { associatedtype X; func ƒ(_ x: [X]) throws -> X }
-protocol Func₀: Func { associatedtype X; func ƒ() throws -> X }
-protocol Func₁: Func { associatedtype X; func ƒ(_ x: X) throws -> X }
-protocol Func₂: Func { associatedtype X; func ƒ(_ x: (X, X)) throws -> X }
+protocol Func {
+    init()
+    func ƒ<X>(_ x: [X]) throws -> X where X: Castable
+}
+
+struct Identity: Func {
+
+    func ƒ<X>(_ x: [X]) throws -> X where X : Castable {
+        guard x.count == 1 else { throw "\(Identity.self) x.count: \(x.count)".error() }
+        return x[0]
+    }
+}
 
 class Brain<Lemma, Signal>
 where
     Lemma: Hashable,
+    Signal: Castable,
     Signal: ExpressibleByNilLiteral
 {
     
     typealias Lexicon     = CurrentKeyPathSubjects<[Lemma: Concept]>
-    typealias Connections = [Lemma: Lemma]
+    typealias Connections = [Lemma]
     typealias Functions   = [Lemma: Func.Type]
     typealias Network     = [Lemma: Neuron]
     typealias State       = BufferedKeyPathSubjects<DefaultingDictionary<Lemma, Signal>>
     
     var lexicon =       Lexicon([:]) // TODO: eventually compiled from more ergonomic languages
-    var connections:    Connections = [:]
+    var connections:    Connections = []
     let functions:      Functions // TODO: use function builder as a namespace
     var network:        Network = [:]
     private let state = State([Lemma: Signal]().defaulting(to: nil)) // TODO: accumulated changes must be explicitly committed (e.g. per run loop)
@@ -41,7 +49,7 @@ extension Brain {
         let connections: Connections
         let action: Lemma
         
-        init(connections: Connections = [:], action: Lemma) {
+        init(connections: Connections = [], action: Lemma) {
             self.connections = connections
             self.action = action
         }
@@ -108,9 +116,28 @@ extension Brain {
                 }
                 self.concept = concept
                 self.signals = Array(repeating: nil, count: concept.connections.count)
-                for (connection, weight) in concept.connections {
-                    brain.state.published[connection].sink{ signal in
-//                        brain.state[lemma] = signal
+                for (i, connection) in concept.connections.enumerated() {
+                    brain.state.published[connection].sink{ [weak brain, weak self] signal in
+                        guard let brain = brain else {
+                            self?.conceptBag = []
+                            self?.connectionsBag = []
+                            return
+                        }
+                        guard let self = self else {
+                            brain.state[].removeValue(forKey: lemma)
+                            return
+                        }
+                        self.signals[i] = signal // TODO: equality check?
+                        print("✅", connection, signal)
+                        do {
+                            guard let o = brain.functions[concept.action]?.init() else {
+                                throw "No function '\(concept.action)".error()
+                            }
+                            brain.state[lemma] = try o.ƒ(self.signals)
+                        } catch {
+                            print(error)
+                            brain.state[lemma] = nil // TODO: Lemma.error(_:)
+                        }
                     }
                     .store(in: &self.connectionsBag)
                 }
