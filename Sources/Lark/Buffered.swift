@@ -7,8 +7,16 @@ final public class Buffered<Value> {
 }
 
 extension Buffered {
-    @inlinable public var committed: Buffered { .init(__o.1) }
-    @inlinable public func commit() { __o = (__o.1, __o.1) }
+    
+    @inlinable public var committed: Buffered {
+        .init(__o.1)
+    }
+    
+    @discardableResult
+    @inlinable public func commit() -> Value {
+        __o = (__o.1, __o.1)
+        return __o.0
+    }
 }
 
 extension Buffered {

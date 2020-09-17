@@ -9,7 +9,7 @@ public final class BufferedKeyPathSubjects<Value> {
     // TODO: atomic r/w
     public private(set) var value: Buffered<Value>
     private var subjects: [PartialKeyPath<Value>: Subject] = [:]
-    private var updated: Set<PartialKeyPath<Value>> = [] // TODO: sequential as well as unuque
+    private var updated: [PartialKeyPath<Value>] = [] // TODO: sequential as well as unuque
     
     public init(_ value: Value) { self.value = Buffered(value) }
     
@@ -19,17 +19,17 @@ public final class BufferedKeyPathSubjects<Value> {
         }
         set {
             value.__o.1[keyPath: path] = newValue
-            updated.insert(path)
+            updated.append(path)
         }
     }
     
     public func commit() {
-        value.commit()
-        let value = self.value[]
+        let updated = self.updated
+        self.updated.removeAll(keepingCapacity: true)
+        let value = self.value.commit()
         for path in updated {
             subjects[path]?.send(value)
         }
-        updated.removeAll(keepingCapacity: true)
     }
     
     private struct Subject {

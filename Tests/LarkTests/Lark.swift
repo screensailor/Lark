@@ -83,18 +83,15 @@ class Lark™: Hopes {
             connections: ["x", "y"],
             action: "+"
         )
+        
+        brain.commit()
 
         brain["x"] = 2
         brain["y"] = 3
         
-        brain.commit()
-        brain.commit()
+        5.times(brain.commit)
 
-        hope(brain[]) == [
-            "x": 2,
-            "y": 3,
-            "new concept": 5
-        ]
+        hope(o[]) == 5
     }
 }
 

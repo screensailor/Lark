@@ -106,12 +106,12 @@ extension Brain {
                     return
                 }
                 guard let self = self else {
-                    brain.state[].removeValue(forKey: lemma)
+                    brain[].removeValue(forKey: lemma)
                     return
                 }
                 guard let concept = concept else {
                     self.concept = nil
-                    brain.state[].removeValue(forKey: lemma)
+                    brain[].removeValue(forKey: lemma)
                     return
                 }
                 self.concept = concept
@@ -124,19 +124,17 @@ extension Brain {
                             return
                         }
                         guard let self = self else {
-                            brain.state[].removeValue(forKey: lemma)
+                            brain[].removeValue(forKey: lemma)
                             return
                         }
                         self.signals[i] = signal // TODO: equality check?
-                        print("✅", connection, signal)
                         do {
                             guard let o = brain.functions[concept.action]?.init() else {
-                                throw "No function '\(concept.action)".error()
+                                throw "No function '\(concept.action)'".error()
                             }
-                            brain.state[lemma] = try o.ƒ(self.signals)
+                            brain[lemma] = try o.ƒ(self.signals)
                         } catch {
-                            print(error)
-                            brain.state[lemma] = nil // TODO: Lemma.error(_:)
+                            brain[lemma] = nil // TODO: Lemma.error(_:)
                         }
                     }
                     .store(in: &self.connectionsBag)
