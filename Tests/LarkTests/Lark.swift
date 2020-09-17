@@ -27,8 +27,6 @@ class Lark™: Hopes {
     func test() {
         let o = Sink.Var<JSON>(nil)
         let brain = Brain(functions)
-        
-        hope(brain[]) == [:]
 
         o ...= brain.published("new concept")
 
@@ -36,8 +34,6 @@ class Lark™: Hopes {
             connections: ["x", "y"],
             action: "+"
         )
-        
-        brain.commit()
 
         brain["x"] = 2
         brain["y"] = 3
