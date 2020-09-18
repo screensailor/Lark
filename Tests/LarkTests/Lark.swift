@@ -10,22 +10,6 @@ class Lark™: Hopes {
     typealias Functions = [String: Func.Type]
     typealias Lexicon = Brain.Lexicon
     typealias Concept = Brain.Concept
-    
-    struct Sum: Func {
-        
-        func ƒ<X>(_ x: [X]) throws -> X where X: Castable {
-            let o = try x.reduce(0){ a, e in try a + e.as(Double.self) }
-            return try X(o)
-        }
-    }
-    
-    struct Product: Func {
-        
-        func ƒ<X>(_ x: [X]) throws -> X where X: Castable {
-            let o = try x.reduce(1){ a, e in try a * e.as(Double.self) }
-            return try X(o)
-        }
-    }
 
     let functions: Functions = [
         "": Identity.self,

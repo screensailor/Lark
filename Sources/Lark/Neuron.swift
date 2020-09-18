@@ -24,7 +24,7 @@ extension Brain {
             guard hasUpdates, let brain = brain, let function = function else { return }
             hasUpdates = false
             do {
-                brain[lemma] = try function.ƒ(self.signals)
+                brain[lemma] = try function(self.signals)
             } catch {
                 brain[lemma] = Signal.init(BrainError(error))
             }
