@@ -11,8 +11,8 @@ final public class Brain<Lemma, Signal> where
     public typealias Network     = [Lemma: Neuron]
     public typealias State       = BufferedKeyPathSubjects<DefaultingDictionary<Lemma, Signal>>
     
-    let functions: Functions
-    var lexicon:   Lexicon // TODO: eventually compiled from more ergonomic languages
+    public let functions: Functions
+    public var lexicon:   Lexicon // TODO: eventually compiled from more ergonomic languages
     
     var network: Network = [:]
     let state =  State([Lemma: Signal]().defaulting(to: nil)) // TODO: Signal.init(Peek.Error("Uninitialized"))
