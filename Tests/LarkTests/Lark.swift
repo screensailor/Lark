@@ -78,4 +78,3 @@ class Lark™: Hopes {
         hope(o[]) == 60
     }
 }
-

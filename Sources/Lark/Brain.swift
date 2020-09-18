@@ -71,7 +71,8 @@ extension Brain {
         public let lemma: Lemma
         
         public private(set) var concept: Concept? { didSet { connectionsBag = [] } }
-        public private(set) var signals: [Signal] = []
+        public private(set) var signals: [Signal] = [] { didSet { hasUpdates = true } }
+        public private(set) var hasUpdates: Bool = false
         
         private var function: Func?
         private var brain: Brain? { didSet { emptyBags() } }
@@ -89,7 +90,11 @@ extension Brain {
                     return
                 }
                 self.concept = concept
-                self.function = brain.functions[concept.action]?.init() // TODO: error if missing
+                guard let function = brain.functions[concept.action]?.init() else {
+                    brain[lemma] = Signal.init("No function '\(concept.action)' for concept '\(lemma)'".error())
+                    return
+                }
+                self.function = function
                 self.signals = Array(repeating: nil, count: concept.connections.count) // TODO: Signal.init(Peek.Error("Uninitialized"))
                 for (i, connection) in concept.connections.enumerated() {
                     if brain.network[connection] == nil {
@@ -114,12 +119,10 @@ extension Brain {
         }
         
         func commit() {
-            guard let brain = brain, let concept = concept else { return }
+            guard hasUpdates, let brain = brain, let function = function else { return }
+            hasUpdates = false
             do {
-                guard let o = function else { // TODO: move to the point of receiving the concept
-                    throw "No function '\(concept.action)'".error()
-                }
-                brain[lemma] = try o.ƒ(self.signals)
+                brain[lemma] = try function.ƒ(self.signals)
             } catch {
                 brain[lemma] = Signal.init(Peek.Error("\(error)"))
             }
