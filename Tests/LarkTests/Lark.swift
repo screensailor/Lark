@@ -90,9 +90,6 @@ class Lark™: Hopes {
         brain["a"] = 1
         brain["b"] = 1
         brain["increment"] = 1
-
-        hope(a[]) == nil
-        hope(b[]) == nil
         
         brain.commit()
         
@@ -103,5 +100,10 @@ class Lark™: Hopes {
         
         hope(a[]) == 2
         hope(b[]) == 2
+        
+        brain.commit()
+        
+        hope(a[]) == 3
+        hope(b[]) == 3
     }
 }
