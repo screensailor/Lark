@@ -34,15 +34,12 @@ class Lark™: Hopes {
     ]
     
     func test() {
-        let o = Sink.Var<JSON>(nil)
         let brain = Brain(functions: functions)
+        let o = Sink.Var<JSON>(nil)
 
         o ...= brain.published("new concept")
 
-        brain.lexicon["new concept"] = Concept(
-            connections: ["x", "y"],
-            action: "+"
-        )
+        brain.lexicon["new concept"] = Concept(["x", "y"], "+")
 
         brain["x"] = 2
         brain["y"] = 3
@@ -53,8 +50,8 @@ class Lark™: Hopes {
     }
     
     func test_2() {
-        let o = Sink.Var<JSON>(nil)
         let brain = Brain(functions: functions)
+        let o = Sink.Var<JSON>(nil)
         
         o ...= brain.published("x * (a + b + c)")
         
@@ -76,5 +73,35 @@ class Lark™: Hopes {
         3.times(brain.commit)
         
         hope(o[]) == 60
+    }
+    
+    func test_infinite_synchronous_recusrsion() {
+        let brain = Brain(functions: functions)
+        
+        let a = Sink.Var<JSON>(nil)
+        let b = Sink.Var<JSON>(nil)
+        
+        a ...= brain.published("a")
+        b ...= brain.published("b")
+
+        brain.lexicon["a"] = Concept(["b", "increment"], "+")
+        brain.lexicon["b"] = Concept(["a", "increment"], "+")
+        
+        brain["a"] = 1
+        brain["b"] = 1
+        brain["increment"] = 1
+
+        hope(a[]) == nil
+        hope(b[]) == nil
+        
+        brain.commit()
+        
+        hope(a[]) == 1
+        hope(b[]) == 1
+        
+        brain.commit()
+        
+        hope(a[]) == 2
+        hope(b[]) == 2
     }
 }

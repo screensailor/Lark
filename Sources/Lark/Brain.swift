@@ -4,6 +4,7 @@ final public class Brain<Lemma, Signal> where
     Signal: ExpressibleByNilLiteral,
     Signal: ExpressibleByErrorValue
 {
+    // TODO: thread-safety
     public typealias Lexicon     = BufferedKeyPathSubjects<[Lemma: Concept]>
     public typealias Connections = [Lemma]
     public typealias Functions   = [Lemma: Func.Type]
@@ -14,7 +15,7 @@ final public class Brain<Lemma, Signal> where
     var lexicon:   Lexicon // TODO: eventually compiled from more ergonomic languages
     
     private var network: Network = [:]
-    private let state =  State([Lemma: Signal]().defaulting(to: nil)) // TODO: accumulated changes must be explicitly committed (e.g. per run loop)
+    private let state =  State([Lemma: Signal]().defaulting(to: nil)) // TODO: Signal.init(Peek.Error("Uninitialized"))
 
     public init(functions: Functions = [:], lexicon: Lexicon = .init([:])) {
         self.functions = functions
@@ -29,9 +30,13 @@ extension Brain {
         public let connections: Connections
         public let action: Lemma
         
-        public init(connections: Connections = [], action: Lemma) {
+        public init(_ connections: Connections = [], _ action: Lemma) {
             self.connections = connections
             self.action = action
+        }
+        
+        @inlinable public init(connections: Connections = [], action: Lemma) {
+            self.init(connections, action)
         }
     }
 }
