@@ -51,6 +51,7 @@ extension Brain {
     public func commit() {
         lexicon.commit()
         state.commit()
+        network.values.forEach{ neuron in neuron.commit() }
     }
 }
 
@@ -67,34 +68,28 @@ extension Brain {
 
     public class Neuron {
         
-        typealias Output = Signal
-        typealias Failure = Never
-        
         public let lemma: Lemma
-        var concept: Concept? { didSet { connectionsBag = [] } }
         
-        var signals: [Signal] = []
+        public private(set) var concept: Concept? { didSet { connectionsBag = [] } }
+        public private(set) var signals: [Signal] = []
         
-        var conceptBag: Set<AnyCancellable> = []
-        var connectionsBag: Set<AnyCancellable> = []
+        private var function: Func?
+        private var brain: Brain? { didSet { emptyBags() } }
         
-        init(_ lemma: Lemma, in brain: Brain) {
+        private var conceptBag: Set<AnyCancellable> = []
+        private var connectionsBag: Set<AnyCancellable> = []
+        
+        fileprivate init(_ lemma: Lemma, in brain: Brain) {
             self.lemma = lemma
-            brain.lexicon.published[lemma].sink{ [weak brain, weak self] concept in
-                guard let brain = brain else {
-                    self?.conceptBag = []
-                    self?.connectionsBag = []
-                    return
-                }
-                guard let self = self else {
-                    brain[].removeValue(forKey: lemma)
-                    return
-                }
+            self.brain = brain
+            brain.lexicon.published[lemma].sink{ [weak self, weak brain] concept in
+                guard let self = self, let brain = brain else { return }
                 guard let concept = concept else {
-                    self.concept = nil // TODO: e.g. a binding with OS
+                    self.concept = nil // TODO: a more obvious formalism for a binding with OS
                     return
                 }
                 self.concept = concept
+                self.function = brain.functions[concept.action]?.init() // TODO: error if missing
                 self.signals = Array(repeating: nil, count: concept.connections.count) // TODO: Signal.init(Peek.Error("Uninitialized"))
                 for (i, connection) in concept.connections.enumerated() {
                     if brain.network[connection] == nil {
@@ -111,19 +106,33 @@ extension Brain {
                             return
                         }
                         self.signals[i] = signal // TODO: equality check?
-                        do { // TODO: only on commit ❗️
-                            guard let o = brain.functions[concept.action]?.init() else {
-                                throw "No function '\(concept.action)'".error()
-                            }
-                            brain[lemma] = try o.ƒ(self.signals)
-                        } catch {
-                            brain[lemma] = Signal.init(Peek.Error("\(error)"))
-                        }
                     }
                     .store(in: &self.connectionsBag)
                 }
             }
             .store(in: &conceptBag)
+        }
+        
+        func commit() {
+            guard let brain = brain, let concept = concept else { return }
+            do {
+                guard let o = function else { // TODO: move to the point of receiving the concept
+                    throw "No function '\(concept.action)'".error()
+                }
+                brain[lemma] = try o.ƒ(self.signals)
+            } catch {
+                brain[lemma] = Signal.init(Peek.Error("\(error)"))
+            }
+        }
+        
+        func emptyBags() {
+            conceptBag = []
+            connectionsBag = []
+        }
+        
+        deinit {
+            emptyBags()
+            brain?[].removeValue(forKey: lemma)
         }
     }
 }
