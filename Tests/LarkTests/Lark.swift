@@ -105,5 +105,10 @@ class Lark™: Hopes {
         
         hope(a[]) == 3
         hope(b[]) == 3
+        
+        100.times(brain.commit)
+        
+        hope(a[]) == 103
+        hope(b[]) == 103
     }
 }

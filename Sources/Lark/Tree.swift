@@ -10,7 +10,7 @@ extension Tree: ExpressibleByErrorValue where Leaf: ExpressibleByErrorValue {
         if case .leaf(let o) = self { return o.isError } else { return false }
     }
     
-    @inlinable public init(_ error: Peek.Error) {
+    @inlinable public init(_ error: BrainError) {
         self = .leaf(Leaf.init(error))
     }
 }

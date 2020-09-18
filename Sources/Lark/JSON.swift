@@ -9,7 +9,7 @@ extension JSON {
     @inlinable public init(_ o: Int) { self = .leaf(.number(Double(o))) }
     @inlinable public init(_ o: Double) { self = .leaf(.number(o)) }
     @inlinable public init(_ o: String) { self = .leaf(.string(o)) }
-    @inlinable public init(_ o: Peek.Error) { self = .leaf(.error(o)) }
+    @inlinable public init(_ o: BrainError) { self = .leaf(.error(o)) }
 }
 
 extension CustomDebugStringConvertible {
@@ -81,7 +81,7 @@ public enum JSONLeaf: Equatable {
     case boolean(Bool)
     case number(Double)
     case string(String)
-    case error(Peek.Error)
+    case error(BrainError)
 }
 
 extension JSONLeaf: ExpressibleByErrorValue {
@@ -97,7 +97,7 @@ extension JSONLeaf: Castable {
     @inlinable public init(_ o: Bool){ self = .boolean(o) }
     @inlinable public init(_ o: Double){ self = .number(o) }
     @inlinable public init(_ o: String){ self = .string(o) }
-    @inlinable public init(_ o: Peek.Error){ self = .error(o) }
+    @inlinable public init(_ o: BrainError){ self = .error(o) }
 
     @inlinable public init(_ o: JSONLeaf){ self = o }
     @inlinable public init(_ o: Int){ self = .number(Double(o)) }
@@ -114,7 +114,7 @@ extension JSONLeaf: Castable {
         case let o as Bool: return .boolean(o)
         case let o as Double: return .number(o)
         case let o as String: return .string(o)
-        case let o as Peek.Error: return .error(o)
+        case let o as BrainError: return .error(o)
             
         case let o as JSONLeaf: return o
         case let o as Int: return .number(Double(o))

@@ -26,7 +26,7 @@ extension Brain {
             do {
                 brain[lemma] = try function.ƒ(self.signals)
             } catch {
-                brain[lemma] = Signal.init(Peek.Error("\(error)"))
+                brain[lemma] = Signal.init(BrainError(error))
             }
         }
 
