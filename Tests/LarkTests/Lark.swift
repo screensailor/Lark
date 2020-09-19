@@ -2,9 +2,93 @@
 @_exported import Hope
 @_exported import Lark
 
+public protocol BrainFunction: CustomStringConvertible {
+    func callAsFunction<X>(x: [X]) -> Future<X, Never> where X: BrainWave
+}
+
+protocol SyncBrainFunction: BrainFunction {
+    func ƒ<X>(x: [X]) throws -> X where X: BrainWave
+}
+
+extension SyncBrainFunction {
+    public func callAsFunction<X>(x: [X]) -> Future<X, Never> where X : BrainWave {
+        Future{ promise in
+            do {
+                try promise(.success(ƒ(x: x)))
+            } catch let error as BrainError {
+                promise(.success(X(error)))
+            } catch {
+                promise(.success(X("\(error)".error())))
+            }
+        }
+    }
+}
+
+protocol AsyncBrainFunction: BrainFunction {
+    func ƒ<X>(x: [X], result: @escaping (Result<X, BrainError>) throws -> ()) where X: BrainWave
+}
+
+extension AsyncBrainFunction {
+    public func callAsFunction<X>(x: [X]) -> Future<X, Never> where X : BrainWave {
+        Future{ promise in
+            ƒ(x: x){ result in
+                do {
+                    try promise(.success(result.get()))
+                } catch let error as BrainError {
+                    promise(.success(X(error)))
+                } catch {
+                    promise(.success(X("\(error)".error())))
+                }
+            }
+        }
+    }
+}
+
+private struct Identity: SyncBrainFunction {
+    
+    public let description = "Expects one element, which is returned unchanged"
+    
+    public init() {}
+    
+    public func ƒ<X>(x: [X]) throws -> X where X: BrainWave {
+        guard x.count == 1 else { throw "\(Identity.self) x.count: \(x.count)".error() }
+        return x[0]
+    }
+}
+
+//public struct Sum: Func {
+//
+//    public let description = "Expects an array of numbers and returns their sum"
+//
+//    public init() {}
+//
+//    public func callAsFunction<X>(_ x: [X]) throws -> X where X: Castable {
+//        let o = try x.reduce(0){ a, e in try a + e.as(Double.self) }
+//        return try X(o)
+//    }
+//}
+//
+//public struct Product: Func {
+//
+//    public let description = "Expects an array of numbers and returns their product"
+//
+//    public init() {}
+//
+//    public func callAsFunction<X>(_ x: [X]) throws -> X where X: Castable {
+//        let o = try x.reduce(1){ a, e in try a * e.as(Double.self) }
+//        return try X(o)
+//    }
+//}
+
 class Lark™: Hopes {
 
-    func test() throws {
+//    let functions: [String: BrainFunc] = [
+//        "": Identity.self,
+//        "+": Sum.self,
+//        "*": Product.self
+//    ]
+
+    func test_blank_mind() throws {
         let o = Sink.Var<JSON>(nil)
         let mind = try Mind<String, JSON>()
         o ...= mind["?"]
@@ -13,15 +97,22 @@ class Lark™: Hopes {
         mind.commit()
         hope(o[]) == "🙂"
     }
+    
+    func test() throws {
+        
+        let f = Future<Int, Never> { promise in
+            promise(.success(42))
+        }
+        
+        f.sink{ value in
+            print("✅", value)
+        }
+    }
 }
 
 extension JSON: BrainWave {}
 
 public protocol BrainWave: Castable, ExpressibleByNilLiteral, ExpressibleByErrorValue {}
-
-public protocol BrainFunc: CustomStringConvertible {
-    func callAsFunction<X>(x: [X], file: String, line: Int) throws -> Future<X, Never> where X: BrainWave
-}
 
 public typealias BrainError = CodeLocation.Error
 
@@ -30,10 +121,10 @@ final public class Mind<Lemma, Signal> where
     Signal: BrainWave
 {
     public typealias Lexicon = [Lemma: Concept]
-    public typealias Functions = [Lemma: BrainFunc]
+    public typealias Functions = [Lemma: BrainFunction]
     
     public let lexicon: [Lemma: Concept]
-    public let functions: [Lemma: BrainFunc]
+    public let functions: [Lemma: BrainFunction]
 
     public typealias State = DefaultingDictionary<Lemma, Signal>
     public typealias Subject = CurrentValueSubject<Signal, Never>
@@ -55,11 +146,14 @@ final public class Mind<Lemma, Signal> where
     
     private var neurons: [Lemma: Neuron] = [:]
 
-    public init(_ lexicon: Lexicon = [:], _ functions: Functions = [:], _ state: [Lemma: Signal] = [:]) throws {
+    public init(
+        _ lexicon: Lexicon = [:],
+        _ functions: Functions = [:],
+        _ state: [Lemma: Signal] = [:]
+    ) throws {
         self.state = state.defaulting(to: nil)
         self.lexicon = lexicon
         self.functions = functions
-        
         for (lemma, _) in lexicon {
             neurons[lemma] = try Neuron(lemma, in: self)
         }
@@ -116,7 +210,7 @@ extension Mind {
         
         public let lemma: Lemma
         public let concept: Concept
-        public let function: BrainFunc
+        public let function: BrainFunction
         
         public private(set) var signals: [Signal] = [] { didSet { hasUpdates = true } }
         public private(set) var hasUpdates: Bool = false
