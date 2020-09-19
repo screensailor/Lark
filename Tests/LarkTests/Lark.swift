@@ -7,7 +7,7 @@ class Lark™: Hopes {
     func test() {
         let o = Sink.Var<JSON>(nil)
         let mind = Mind<String, JSON>()
-        o ...= mind.subjects["?"]
+        o ...= mind["?"]
         mind["?"] = "🙂"
         hope(o[]) == nil
         mind.commit()
@@ -15,27 +15,33 @@ class Lark™: Hopes {
     }
 }
 
-protocol BrainWave: Castable, ExpressibleByNilLiteral, ExpressibleByErrorValue {}
+public protocol BrainWave: Castable, ExpressibleByNilLiteral, ExpressibleByErrorValue {}
 extension JSON: BrainWave {}
 
-class Mind<Lemma, Signal> where
+final public class Mind<Lemma, Signal> where
     Lemma: Hashable,
     Signal: BrainWave
 {
-    typealias State = DefaultingDictionary<Lemma, Signal>
-    typealias Subjects = DefaultInsertingDictionary<Lemma, CurrentValueSubject<Signal, Never>>
+    public typealias State = DefaultingDictionary<Lemma, Signal>
+    public typealias Subject = CurrentValueSubject<Signal, Never>
+    public typealias Subjects = DefaultInsertingDictionary<Lemma, Subject>
     
     private var state = [Lemma: Signal]().defaulting(to: nil)
     private var writes: [Lemma: Signal] = [:]
-    lazy var subjects = Subjects([:]){ [weak self] key in .init(self?.state[key] ?? nil) }
+    private lazy var subjects = Subjects([:]){ [weak self] key in .init(self?.state[key] ?? nil) }
     
     
 }
 
 extension Mind {
+    
+    public subscript(lemma: Lemma) -> Subject {
+        subjects[lemma]
+    }
 
     public subscript() -> [Lemma: Signal] {
-        state[]
+        get { state[] }
+        set { writes = newValue }
     }
 
     public subscript(lemma: Lemma) -> Signal {
@@ -43,11 +49,14 @@ extension Mind {
         set { writes[lemma] = newValue }
     }
 
-    func commit() {
+    @discardableResult
+    public func commit() -> [Lemma: Signal] {
+        let writes = self.writes
+        self.writes.removeAll(keepingCapacity: true)
         state[].merge(writes){ $1 }
         for (lemma, signal) in writes {
             subjects[lemma]?.send(signal)
         }
-        writes.removeAll(keepingCapacity: true)
+        return writes
     }
 }
