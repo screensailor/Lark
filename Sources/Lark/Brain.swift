@@ -15,7 +15,8 @@ final public class Brain<Lemma, Signal> where
     private var state = [Lemma: Signal]().defaulting(to: nil)
     private var change: [Lemma: Signal] = [:]
     private var thoughts: [Lemma: Signal] = [:]
-    
+    private var neurons: [Lemma: Neuron] = [:]
+
     private lazy var subjects = Subjects([:]){ [weak self] lemma in
         guard let self = self else { return Subject(nil) }
         return Subject(self.state[lemma])
@@ -25,8 +26,6 @@ final public class Brain<Lemma, Signal> where
         guard let self = self else { return Subject(nil) }
         return Subject(self.state[lemma])
     }
-    
-    private var neurons: [Lemma: Neuron] = [:]
 
     public init(
         _ lexicon: Lexicon = [:],
@@ -125,7 +124,7 @@ extension Brain {
             
             $input.flatMap{ [weak self] x -> AnyPublisher<Signal, Never> in
                 self?.ƒ(x: x).eraseToAnyPublisher() ?? Empty().eraseToAnyPublisher()
-            }.sink{ [weak mind] x in
+            }.sink{ [weak mind] x in // TODO: move to the brain's queue
                 mind?.thoughts[lemma] = x
             }.store(in: &bag)
             
