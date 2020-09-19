@@ -5,25 +5,90 @@
 extension JSON: BrainWave {}
 
 class Lark™: Hopes {
+    
+    typealias Brain = Mind<String, JSON>
+    typealias Lexicon = Brain.Lexicon
+    typealias Concept = Brain.Concept
 
     let functions: [String: BrainFunction] = [
         "": Identity(),
         "+": Sum(),
         "*": Product()
     ]
+    
+    func test_sum_and_multiply() throws {
+        let lexicon = [
+            "x * (a + b + c)": Concept(["x", "a + b + c"], "*"),
+            "a + b + c": Concept(["a", "b", "c"], "+"),
+        ]
+        let brain = try Brain(lexicon, functions)
+        let o = Sink.Var<JSON>(nil)
+        
+        o ...= brain["x * (a + b + c)"]
+        
+        brain["a"] = 1
+        brain["b"] = 2
+        brain["c"] = 3
+        brain["x"] = 10
+        
+        brain.commit(thoughts: 2)
+        
+        hope(o[]) == 60
+    }
+
+    func test_sum_two_input_nodes() throws {
+        let lexicon = [
+            "new concept": Concept(["x", "y"], "+"),
+        ]
+        let brain = try Brain(lexicon, functions)
+        let o = Sink.Var<JSON>(nil)
+
+        o ...= brain["new concept"]
+
+        brain["x"] = 2
+        brain["y"] = 3
+        
+        brain.commit()
+
+        hope(o[]) == 5
+    }
+    
+    func test_infinite_synchronous_recusrsion() throws {
+        let lexicon = [
+            "x": Concept(["x", "increment"], "+")
+        ]
+        let brain = try Brain(lexicon, functions)
+        let x = Sink.Var<JSON>(nil)
+        
+        x ...= brain["x"]
+        
+        brain["increment"] = 1
+        brain["x"] = 0
+        
+        brain.commit()
+        hope(x[]) == 1
+        
+        brain.commit()
+        hope(x[]) == 2
+        
+        brain.commit()
+        hope(x[]) == 3
+        
+        brain.commit(thoughts: 100)
+        hope(x[]) == 103
+    }
 
     func test_blank_mind() throws {
         let o = Sink.Var<JSON>(nil)
         let mind = try Mind<String, JSON>()
+        
         o ...= mind["?"]
         mind["?"] = "🙂"
+        
         hope(o[]) == nil
+        
         mind.commit()
         hope(o[]) == "🙂"
-    }
-    
-    func test() throws {
-        
     }
 }
 
@@ -96,14 +161,24 @@ extension Mind {
     }
 
     @discardableResult
-    public func commit() -> [Lemma: Signal] {
-        let writes = self.change
-        self.change.removeAll(keepingCapacity: true)
+    public func commit(thoughts count: Int = 1) -> [Lemma: Signal] {
+        var writes = self.change
         state[].merge(writes){ $1 }
-        for (lemma, signal) in writes {
+        count.times{
+            for (lemma, signal) in writes {
+                nervs[lemma]?.send(signal)
+            }
+            writes = self.thoughts
+            self.change.merge(writes){ $1 }
+            self.thoughts.removeAll(keepingCapacity: true)
+            state[].merge(writes){ $1 }
+
+        }
+        for (lemma, signal) in self.change {
             subjects[lemma]?.send(signal)
         }
-        return writes
+        self.change = writes
+        return self.change
     }
 }
 
@@ -151,8 +226,7 @@ extension Mind {
             input = Array(repeating: nil, count: concept.connections.count) // TODO: Signal.void
             
             $input.flatMap{ [weak self] x -> AnyPublisher<Signal, Never> in
-                guard let self = self else { return Empty().eraseToAnyPublisher() }
-                return self.ƒ(x: x).eraseToAnyPublisher()
+                self?.ƒ(x: x).eraseToAnyPublisher() ?? Empty().eraseToAnyPublisher()
             }.sink{ [weak mind] x in
                 mind?.thoughts[lemma] = x
             }.store(in: &bag)
