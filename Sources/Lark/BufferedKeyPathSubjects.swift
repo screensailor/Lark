@@ -9,7 +9,7 @@ public final class BufferedKeyPathSubjects<Value> {
     // TODO: atomic r/w
     public private(set) var value: Buffered<Value>
     private var subjects: [PartialKeyPath<Value>: Subject] = [:]
-    private var updated: [PartialKeyPath<Value>] = [] // TODO: sequential as well as unuque
+    private var updated: Set<PartialKeyPath<Value>> = [] // TODO: sequential as well as unuque
     
     public init(_ value: Value) { self.value = Buffered(value) }
     
@@ -19,7 +19,7 @@ public final class BufferedKeyPathSubjects<Value> {
         }
         set {
             value.__o.1[keyPath: path] = newValue
-            updated.append(path)
+            updated.insert(path)
         }
     }
     
