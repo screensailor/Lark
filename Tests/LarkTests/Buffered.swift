@@ -8,7 +8,6 @@ class Buffered™: Hopes {
         
         o[] += 1
         o[] += 1
-        o[\.self] += 1
 
         hope(o[]) == 0
         hope(o) != Buffered(0)
