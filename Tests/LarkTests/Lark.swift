@@ -129,14 +129,14 @@ extension Mind {
         
         public let lemma: Lemma
         public let concept: Concept
-        public let function: BrainFunction
+        public let ƒ: BrainFunction
         
-        public private(set) var signals: [Signal] = [] { didSet { hasUpdates = true } }
-        public private(set) var hasUpdates: Bool = false
+        @Published var input: [Signal] = []
         
         private var bag: Set<AnyCancellable> = []
         
         init(_ lemma: Lemma, in mind: Mind) throws {
+            
             guard let concept = mind.lexicon[lemma] else {
                 throw "Missing concept for lemma '\(lemma)'".error()
             }
@@ -146,15 +146,21 @@ extension Mind {
             
             self.lemma = lemma
             self.concept = concept
-            self.function = function
+            self.ƒ = function
             
-            self.signals = Array(repeating: nil, count: concept.connections.count) // TODO: Signal.init(Peek.Error("Uninitialized"))
+            input = Array(repeating: nil, count: concept.connections.count) // TODO: Signal.void
+            
+            $input.flatMap{ [weak self] x -> AnyPublisher<Signal, Never> in
+                guard let self = self else { return Empty().eraseToAnyPublisher() }
+                return self.ƒ(x: x).eraseToAnyPublisher()
+            }.sink{ [weak mind] x in
+                mind?.thoughts[lemma] = x
+            }.store(in: &bag)
             
             for (i, connection) in concept.connections.enumerated() {
                 mind.nervs[connection].sink{ [weak self] signal in
-                    self?.signals[i] = signal
-                }
-                .store(in: &self.bag)
+                    self?.input[i] = signal
+                }.store(in: &self.bag)
             }
         }
     }
