@@ -56,37 +56,37 @@ private struct Identity: SyncBrainFunction {
     }
 }
 
-//public struct Sum: Func {
-//
-//    public let description = "Expects an array of numbers and returns their sum"
-//
-//    public init() {}
-//
-//    public func callAsFunction<X>(_ x: [X]) throws -> X where X: Castable {
-//        let o = try x.reduce(0){ a, e in try a + e.as(Double.self) }
-//        return try X(o)
-//    }
-//}
-//
-//public struct Product: Func {
-//
-//    public let description = "Expects an array of numbers and returns their product"
-//
-//    public init() {}
-//
-//    public func callAsFunction<X>(_ x: [X]) throws -> X where X: Castable {
-//        let o = try x.reduce(1){ a, e in try a * e.as(Double.self) }
-//        return try X(o)
-//    }
-//}
+private struct Sum: SyncBrainFunction {
+
+    public let description = "Expects an array of numbers and returns their sum"
+
+    public init() {}
+
+    public func ƒ<X>(x: [X]) throws -> X where X: BrainWave {
+        let o = try x.reduce(0){ a, e in try a + e.as(Double.self) }
+        return try X(o)
+    }
+}
+
+private struct Product: SyncBrainFunction {
+
+    public let description = "Expects an array of numbers and returns their product"
+
+    public init() {}
+
+    public func ƒ<X>(x: [X]) throws -> X where X: BrainWave {
+        let o = try x.reduce(1){ a, e in try a * e.as(Double.self) }
+        return try X(o)
+    }
+}
 
 class Lark™: Hopes {
 
-//    let functions: [String: BrainFunc] = [
-//        "": Identity.self,
-//        "+": Sum.self,
-//        "*": Product.self
-//    ]
+    let functions: [String: BrainFunction] = [
+        "": Identity(),
+        "+": Sum(),
+        "*": Product()
+    ]
 
     func test_blank_mind() throws {
         let o = Sink.Var<JSON>(nil)
