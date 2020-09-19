@@ -6,7 +6,6 @@ final public class Brain<Lemma, Signal> where
 {
     // TODO: thread-safety
     public typealias Lexicon     = BufferedKeyPathSubjects<[Lemma: Concept]>
-    public typealias Connections = [Lemma]
     public typealias Functions   = [Lemma: Func.Type]
     public typealias Network     = [Lemma: Neuron]
     public typealias State       = BufferedKeyPathSubjects<DefaultingDictionary<Lemma, Signal>>
@@ -27,15 +26,15 @@ extension Brain {
 
     public struct Concept: Hashable {
         
-        public let connections: Connections
+        public let connections: [Lemma]
         public let action: Lemma
         
-        public init(_ connections: Connections = [], _ action: Lemma) {
+        public init(_ connections: [Lemma] = [], _ action: Lemma) {
             self.connections = connections
             self.action = action
         }
         
-        @inlinable public init(connections: Connections = [], action: Lemma) {
+        @inlinable public init(connections: [Lemma] = [], action: Lemma) {
             self.init(connections, action)
         }
     }
