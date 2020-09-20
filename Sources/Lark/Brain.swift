@@ -75,7 +75,7 @@ extension Brain {
         }
         change.removeAll(keepingCapacity: true)
         change.merge(writes){ _, o in o }
-        return writes
+        return change
     }
 }
 

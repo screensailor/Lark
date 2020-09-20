@@ -7,7 +7,7 @@ public protocol SyncBrainFunction: BrainFunction {
 }
 
 public protocol AsyncBrainFunction: BrainFunction {
-    func ƒ<X>(x: [X], result: @escaping (Result<X, BrainError>) throws -> ()) where X: BrainWave
+    func ƒ<X>(x: [X], result: @escaping (() throws -> X) -> ()) where X: BrainWave
 }
 
 extension SyncBrainFunction {
@@ -31,7 +31,7 @@ extension AsyncBrainFunction {
         Future{ promise in
             ƒ(x: x){ result in
                 do {
-                    try promise(.success(result.get()))
+                    try promise(.success(result()))
                 } catch let error as BrainError {
                     promise(.success(X(error)))
                 } catch {
