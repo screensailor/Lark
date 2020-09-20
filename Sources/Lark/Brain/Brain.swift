@@ -66,9 +66,10 @@ extension Brain {
                 nervs[lemma]?.send(signal)
             }
             writes = thoughts
-            change.merge(writes){ _, o in o }
             thoughts.removeAll(keepingCapacity: true)
-            state[].merge(writes){ $1 }
+            guard writes.count > 0 else { return }
+            change.merge(writes){ _, o in o }
+            state[].merge(writes){ _, o in o }
         }
         for (lemma, signal) in change {
             subjects[lemma]?.send(signal)
@@ -116,13 +117,13 @@ extension Brain {
             guard let concept = mind.lexicon[lemma] else {
                 throw "Missing concept for lemma '\(lemma)'".error()
             }
-            guard let function = mind.functions[concept.function] else {
+            guard let ƒ = mind.functions[concept.function] else {
                 throw "Function '\(concept.function)' not found for concept '\(lemma)'".error()
             }
             
             self.lemma = lemma
             self.concept = concept
-            self.ƒ = function
+            self.ƒ = ƒ
             
             x = Array(repeating: nil, count: concept.connections.count) // TODO: Signal.void
             
