@@ -12,8 +12,8 @@ class Brain™: Hopes {
     
     func test_sum_and_multiply() throws {
         let lexicon = [
-            "x * (a + b + c)": Concept(["x", "a + b + c"], "*"),
-            "a + b + c": Concept(["a", "b", "c"], "+"),
+            "x * (a + b + c)": Concept("*", "x", "a + b + c"),
+            "a + b + c": Concept("+", "a", "b", "c"),
         ]
         let brain = try Brain(lexicon, functions)
         let o = Sink.Var<JSON>(nil)
@@ -32,7 +32,7 @@ class Brain™: Hopes {
 
     func test_sum_two_input_nodes() throws {
         let lexicon = [
-            "new concept": Concept(["x", "y"], "+"),
+            "new concept": Concept("+", "x", "y"),
         ]
         let brain = try Brain(lexicon, functions)
         let o = Sink.Var<JSON>(nil)
@@ -49,7 +49,7 @@ class Brain™: Hopes {
     
     func test_infinite_synchronous_recusrsion() throws {
         let lexicon = [
-            "x": Concept(["x", "increment"], "+")
+            "x": Concept("+", "x", "increment")
         ]
         let brain = try Brain(lexicon, functions)
         let x = Sink.Var<JSON>(nil)

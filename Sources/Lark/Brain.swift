@@ -82,16 +82,20 @@ extension Brain {
 extension Brain {
 
     public struct Concept: Hashable {
-        public let connections: [Lemma]
         public let function: Lemma
+        public let connections: [Lemma]
     }
 }
 
 extension Brain.Concept {
     
-    public init(_ connections: [Lemma] = [], _ function: Lemma) {
-        self.connections = connections
+    public init(_ function: Lemma, _ connections: [Lemma]) {
         self.function = function
+        self.connections = connections
+    }
+    
+    public init(_ function: Lemma, _ connections: Lemma...) {
+        self.init(function, connections)
     }
 }
 
