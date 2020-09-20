@@ -7,7 +7,8 @@ class Brain™: Hopes {
     let functions: [String: BrainFunction] = [
         "": Identity(),
         "+": Sum(),
-        "*": Product()
+        "*": Product(),
+        "after": After(),
     ]
     
     func test_sum_and_multiply() throws {

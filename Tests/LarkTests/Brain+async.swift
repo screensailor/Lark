@@ -1,18 +1,12 @@
-class Brain_async™: Hopes {
-    
-    typealias Brain = Lark.Brain<String, JSON>
-    typealias Lexicon = Brain.Lexicon
-    typealias Concept = Brain.Concept
-
-    let functions: [String: BrainFunction] = [
-        "": Identity(),
-        "+": Sum(),
-        "*": Product(),
-        "after": After()
-    ]
+class Brain™_async: Brain™ {
     
     private var bag: Bag = []
     
+    override func tearDown() {
+        bag = []
+        super.tearDown()
+    }
+
     func test() throws {
         let promise = expectation(description: "!".here())
         
@@ -24,7 +18,7 @@ class Brain_async™: Hopes {
         
         o ...= brain["alarm"]
         
-        brain["t"] = 0.5
+        brain["t"] = 0.1
         brain["alarm message"] = "Wakey wakey!"
 
         hope(o[]) != "Wakey wakey!"
@@ -33,7 +27,7 @@ class Brain_async™: Hopes {
         
         hope(o[]) != "Wakey wakey!"
 
-        Timer.publish(every: 0.1, on: .main, in: .common).autoconnect().sink{ _ in
+        Timer.publish(every: 0.01, on: .main, in: .common).autoconnect().sink{ _ in
             brain.commit()
             if o[] == "Wakey wakey!" { promise.fulfill() }
         } / bag
