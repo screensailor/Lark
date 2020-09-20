@@ -1,3 +1,5 @@
+// TODO: Declared typed parameters and the abstracted argument casting
+
 public struct Identity: SyncBrainFunction {
     
     public let description = "Expects one element, which is returned unchanged"

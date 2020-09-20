@@ -107,7 +107,7 @@ extension Brain {
         public let concept: Concept
         public let ƒ: BrainFunction
         
-        @Published var input: [Signal] = []
+        @Published var x: [Signal] = []
         
         private var bag: Set<AnyCancellable> = []
         
@@ -124,9 +124,9 @@ extension Brain {
             self.concept = concept
             self.ƒ = function
             
-            input = Array(repeating: nil, count: concept.connections.count) // TODO: Signal.void
+            x = Array(repeating: nil, count: concept.connections.count) // TODO: Signal.void
             
-            $input.flatMap{ [weak self] x -> AnyPublisher<Signal, Never> in
+            $x.flatMap{ [weak self] x -> AnyPublisher<Signal, Never> in
                 self?.ƒ(x: x).eraseToAnyPublisher() ?? Empty().eraseToAnyPublisher()
             }.sink{ [weak mind] x in // TODO: move to the brain's queue
                 mind?.thoughts[lemma] = x
@@ -134,7 +134,7 @@ extension Brain {
             
             for (i, connection) in concept.connections.enumerated() {
                 mind.nervs[connection].sink{ [weak self] signal in
-                    self?.input[i] = signal
+                    self?.x[i] = signal
                 }.store(in: &self.bag)
             }
         }
