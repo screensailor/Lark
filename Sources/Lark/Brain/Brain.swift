@@ -56,6 +56,9 @@ extension Brain {
         get { state[lemma] }
         set { change[lemma] = newValue }
     }
+    
+    @inlinable public func subject(_ lemma: Lemma) -> Subject { self[lemma] }
+    @inlinable public func state(of lemma: Lemma) -> Signal { self[lemma] }
 
     @discardableResult
     public func commit(thoughts count: Int = 1) -> [Lemma: Signal] {
