@@ -69,8 +69,8 @@ extension Brain {
                 nervs[lemma]?.send(signal)
             }
             writes = thoughts
+            guard !writes.isEmpty else { return }
             thoughts.removeAll(keepingCapacity: true)
-            guard writes.count > 0 else { return }
             change.merge(writes){ _, o in o }
             state[].merge(writes){ _, o in o }
         }
@@ -86,21 +86,14 @@ extension Brain {
 extension Brain {
 
     public struct Concept: Hashable {
-        public let function: Lemma
-        public let connections: [Lemma]
+        public let ƒ: Lemma
+        public let x: [Lemma]
     }
 }
 
 extension Brain.Concept {
-    
-    public init(_ function: Lemma, _ connections: [Lemma]) {
-        self.function = function
-        self.connections = connections
-    }
-    
-    public init(_ function: Lemma, _ connections: Lemma...) {
-        self.init(function, connections)
-    }
+    public init(_ ƒ: Lemma, _ x: Lemma...) { self.init(ƒ, x) }
+    public init(_ ƒ: Lemma, _ x: [Lemma]) { self.init(ƒ: ƒ, x: x) }
 }
 
 extension Brain {
@@ -115,29 +108,29 @@ extension Brain {
         
         private var bag: Set<AnyCancellable> = []
         
-        init(_ lemma: Lemma, in mind: Brain) throws {
+        init(_ lemma: Lemma, in brain: Brain) throws {
             
-            guard let concept = mind.lexicon[lemma] else {
+            guard let concept = brain.lexicon[lemma] else {
                 throw "Missing concept for lemma '\(lemma)'".error()
             }
-            guard let ƒ = mind.functions[concept.function] else {
-                throw "Function '\(concept.function)' not found for concept '\(lemma)'".error()
+            guard let ƒ = brain.functions[concept.ƒ] else {
+                throw "Function '\(concept.ƒ)' not found for concept '\(lemma)'".error()
             }
             
             self.lemma = lemma
             self.concept = concept
             self.ƒ = ƒ
             
-            x = Array(repeating: nil, count: concept.connections.count) // TODO: Signal.void
+            x = Array(repeating: nil, count: concept.x.count) // TODO: Signal.void
             
             $x.flatMap{ [weak self] x -> AnyPublisher<Signal, Never> in
                 self?.ƒ(x: x).eraseToAnyPublisher() ?? Empty().eraseToAnyPublisher()
-            }.sink{ [weak mind] x in // TODO: move to the brain's queue
-                mind?.thoughts[lemma] = x
+            }.sink{ [weak brain] x in // TODO: move to the brain's queue
+                brain?.thoughts[lemma] = x
             }.store(in: &bag)
             
-            for (i, connection) in concept.connections.enumerated() {
-                mind.nervs[connection].sink{ [weak self] signal in
+            for (i, connection) in concept.x.enumerated() {
+                brain.nervs[connection].sink{ [weak self] signal in
                     self?.x[i] = signal
                 }.store(in: &self.bag)
             }
