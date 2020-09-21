@@ -122,7 +122,22 @@ extension Brain {
         
         func commit(to brain: Brain) {
             let x = concept.x.map{ x in brain.state[x] }
-            y = ƒ(x).assign(to: \.thoughts[lemma], on: brain)
+            switch ƒ
+            {
+            case let ƒ as SyncBrainFunction:
+                do {
+                    brain.thoughts[lemma] = try ƒ.ƒ(x: x)
+                } catch let error as BrainError {
+                    brain.thoughts[lemma] = Signal.init(error)
+                } catch {
+                    brain.thoughts[lemma] = Signal.init(BrainError(String(describing: error)))
+                }
+                
+            default:
+                y = ƒ(x)
+                    .receive(on: RunLoop.current) // TODO: on Brain.queue
+                    .assign(to: \.thoughts[lemma], on: brain)
+            }
         }
     }
 }

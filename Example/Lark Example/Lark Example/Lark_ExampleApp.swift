@@ -28,7 +28,9 @@ enum my {
         "life": GameOfLife()
     ]
     
-    static let rows = cols * 2
+    static let size = UIScreen.main.nativeBounds.size
+    static let ratio = size.height / size.width
+    static let rows = Int((CGFloat(cols) * ratio).rounded(.down))
     static let cols = 20
     
     static func idx(_ i: Int, in count: Int) -> Int {
