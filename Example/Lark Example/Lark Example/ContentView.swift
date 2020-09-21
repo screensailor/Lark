@@ -8,6 +8,7 @@ struct ContentView: View {
     
     let timer = Timer.publish(every: 0.2, on: .main, in: .common).autoconnect()
     
+    /// - Note: The purpose of this example is not Game of Life performance, but to stress out Lark.
     var body: some View {
         HStack(spacing: 1) {
             ForEach(0..<my.cols) { col in
