@@ -63,14 +63,14 @@ class Brain™: Hopes {
         brain.commit()
         hope(x[]) == 1
         
-        brain.commit()
-        hope(x[]) == 2
-        
-        brain.commit()
-        hope(x[]) == 3
-        
-        brain.commit(thoughts: 100)
-        hope(x[]) == 103
+//        brain.commit()
+//        hope(x[]) == 2
+//        
+//        brain.commit()
+//        hope(x[]) == 3
+//        
+//        brain.commit(thoughts: 100)
+//        hope(x[]) == 103
     }
 
     func test_blank_mind() throws {

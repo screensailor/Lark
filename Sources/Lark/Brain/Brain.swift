@@ -14,15 +14,12 @@ final public class Brain<Lemma, Signal> where
 
     private var state = [Lemma: Signal]().defaulting(to: nil)
     private var change: [Lemma: Signal] = [:]
-    private var thoughts: [Lemma: Signal] = [:]
+    private var thoughts = [Lemma: Signal]().defaulting(to: nil)
+    
     private var neurons: [Lemma: Neuron] = [:]
+    private var connections: [Lemma: Set<Lemma>] = [:]
 
     private lazy var subjects = Subjects([:]){ [weak self] lemma in
-        guard let self = self else { return Subject(nil) }
-        return Subject(self.state[lemma])
-    }
-
-    private lazy var nervs = Subjects([:]){ [weak self] lemma in
         guard let self = self else { return Subject(nil) }
         return Subject(self.state[lemma])
     }
@@ -35,7 +32,18 @@ final public class Brain<Lemma, Signal> where
         self.state = state.defaulting(to: nil)
         self.lexicon = lexicon
         self.functions = functions
-        try lexicon.keys.forEach{ lemma in neurons[lemma] = try Neuron(lemma, in: self) }
+        try lexicon.keys.forEach{ lemma in
+            
+            guard let concept = lexicon[lemma] else {
+                throw "Missing concept for lemma '\(lemma)'".error()
+            }
+            guard let ƒ = functions[concept.ƒ] else {
+                throw "Function '\(concept.ƒ)' not found for concept '\(lemma)'".error()
+            }
+
+            neurons[lemma] = Neuron(lemma, concept, ƒ)
+            concept.x.forEach{ x in connections[x, default: []].insert(lemma) }
+        }
     }
 }
 
@@ -60,15 +68,15 @@ extension Brain {
 
     @discardableResult
     public func commit(thoughts count: Int = 1) -> [Lemma: Signal] {
-        var writes = change.merging(thoughts){ o, x in o.peek(as: .error, "Replacing thought \(x)") }
+        var writes = change.merging(thoughts[]){ o, x in o.peek(as: .error, "Replacing thought \(x)") }
         state[].merge(writes){ _, o in o }
         (0 ..< max(count, 0)).forEach{ _ in
-            for (lemma, signal) in writes {
-                nervs[lemma]?.send(signal)
+            for lemma in updated(by: writes) {
+                neurons[lemma]?.commit(to: self)
             }
-            writes = thoughts
+            writes = thoughts[]
             guard !writes.isEmpty else { return }
-            thoughts.removeAll(keepingCapacity: true)
+            thoughts[].removeAll(keepingCapacity: true)
             change.merge(writes){ _, o in o }
             state[].merge(writes){ _, o in o }
         }
@@ -78,6 +86,10 @@ extension Brain {
         change.removeAll(keepingCapacity: true)
         change.merge(writes){ _, o in o }
         return change
+    }
+    
+    func updated(by changes: [Lemma: Signal]) -> Set<Lemma> {
+        return changes.keys.reduce(into: Set<Lemma>()){ a, e in a.formUnion(connections[e] ?? []) }
     }
 }
 
@@ -101,37 +113,16 @@ extension Brain {
         public let lemma: Lemma
         public let concept: Concept
         public let ƒ: BrainFunction
-        
-        @Published var x: [Signal] = []
-        
-        private var bag: Set<AnyCancellable> = []
-        
-        init(_ lemma: Lemma, in brain: Brain) throws {
-            
-            guard let concept = brain.lexicon[lemma] else {
-                throw "Missing concept for lemma '\(lemma)'".error()
-            }
-            guard let ƒ = brain.functions[concept.ƒ] else {
-                throw "Function '\(concept.ƒ)' not found for concept '\(lemma)'".error()
-            }
-            
-            self.lemma = lemma
-            self.concept = concept
-            self.ƒ = ƒ
 
-            x = concept.x.map{ _ in nil } // TODO: Signal.void
-            
-            $x.flatMap{ [weak self] x -> AnyPublisher<Signal, Never> in
-                self?.ƒ(x: x).eraseToAnyPublisher() ?? Empty().eraseToAnyPublisher()
-            }.sink{ [weak brain] x in // TODO: move to the brain's queue
-                brain?.thoughts[lemma] = x
-            }.store(in: &bag)
-            
-            for (i, connection) in concept.x.enumerated() {
-                brain.nervs[connection].sink{ [weak self] signal in
-                    self?.x[i] = signal
-                }.store(in: &self.bag)
-            }
+        private var y: AnyCancellable?
+        
+        init(_ lemma: Lemma, _ concept: Concept, _ ƒ: BrainFunction) {
+            (self.lemma, self.concept, self.ƒ) = (lemma, concept, ƒ)
+        }
+        
+        func commit(to brain: Brain) {
+            let x = concept.x.map{ x in brain.state[x] }
+            y = ƒ(x).assign(to: \.thoughts[lemma], on: brain)
         }
     }
 }

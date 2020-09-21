@@ -6,7 +6,7 @@ struct ContentView: View {
     
     @State var cells: DefaultingDictionary<String, JSON> = .init([:], default: nil)
     
-    let timer = Timer.publish(every: 0.2, on: .main, in: .common).autoconnect()
+    let timer = Timer.publish(every: 1 / 60, on: .main, in: .common).autoconnect()
     
     /// - Note: The purpose of this example is not Game of Life performance, but to stress out Lark.
     var body: some View {

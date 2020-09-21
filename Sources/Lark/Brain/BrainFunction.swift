@@ -1,5 +1,5 @@
 public protocol BrainFunction: CustomStringConvertible {
-    func callAsFunction<X>(x: [X]) -> Future<X, Never> where X: BrainWave
+    func callAsFunction<X>(_ x: [X]) -> Future<X, Never> where X: BrainWave
 }
 
 public protocol SyncBrainFunction: BrainFunction {
@@ -12,7 +12,7 @@ public protocol AsyncBrainFunction: BrainFunction {
 
 extension SyncBrainFunction {
     
-    public func callAsFunction<X>(x: [X]) -> Future<X, Never> where X : BrainWave {
+    public func callAsFunction<X>(_ x: [X]) -> Future<X, Never> where X : BrainWave {
         Future{ promise in
             do {
                 try promise(.success(ƒ(x: x)))
@@ -27,7 +27,7 @@ extension SyncBrainFunction {
 
 extension AsyncBrainFunction {
     
-    public func callAsFunction<X>(x: [X]) -> Future<X, Never> where X : BrainWave {
+    public func callAsFunction<X>(_ x: [X]) -> Future<X, Never> where X : BrainWave {
         Future{ promise in
             ƒ(x: x){ result in
                 do {
