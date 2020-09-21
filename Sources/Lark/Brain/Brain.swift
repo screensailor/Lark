@@ -35,9 +35,7 @@ final public class Brain<Lemma, Signal> where
         self.state = state.defaulting(to: nil)
         self.lexicon = lexicon
         self.functions = functions
-        for (lemma, _) in lexicon {
-            neurons[lemma] = try Neuron(lemma, in: self)
-        }
+        try lexicon.keys.forEach{ lemma in neurons[lemma] = try Neuron(lemma, in: self) }
     }
 }
 
@@ -120,8 +118,8 @@ extension Brain {
             self.lemma = lemma
             self.concept = concept
             self.ƒ = ƒ
-            
-            x = Array(repeating: nil, count: concept.x.count) // TODO: Signal.void
+
+            x = concept.x.map{ _ in nil } // TODO: Signal.void
             
             $x.flatMap{ [weak self] x -> AnyPublisher<Signal, Never> in
                 self?.ƒ(x: x).eraseToAnyPublisher() ?? Empty().eraseToAnyPublisher()

@@ -1,5 +1,6 @@
 import SwiftUI
 import Lark
+import Peek
 
 struct ContentView: View {
     
@@ -10,8 +11,7 @@ struct ContentView: View {
             ForEach(0..<my.cols) { col in
                 VStack(spacing: 1) {
                     ForEach(0..<my.rows) { row in
-                        let cell = "cell:\(row):\(col)"
-                        let isLive = cells[cell].cast(default: false)
+                        let isLive = cells["cell:\(row):\(col)"].cast(default: false)
                         Rectangle()
                             .foregroundColor(isLive ? .red : .blue)
                             .cornerRadius(3)
@@ -21,8 +21,14 @@ struct ContentView: View {
         }
         .padding()
         .onTapGesture {
-            my.brain.commit()
-            cells = my.brain[].defaulting(to: nil)
+            
+            1.peek(signpost: "commit", .begin)
+            let o = my.brain.commit().defaulting(to: nil)
+            1.peek(signpost: "commit", .end)
+            
+            2.peek(signpost: "set", .begin)
+            cells = o
+            2.peek(signpost: "set", .end)
         }
     }
 }

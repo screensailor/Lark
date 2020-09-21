@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		07744A28251822B700B24C8A /* Peek in Frameworks */ = {isa = PBXBuildFile; productRef = 07744A27251822B700B24C8A /* Peek */; };
 		077E6B3B2517B22C003F7B99 /* Lark_ExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 077E6B3A2517B22C003F7B99 /* Lark_ExampleApp.swift */; };
 		077E6B3D2517B22C003F7B99 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 077E6B3C2517B22C003F7B99 /* ContentView.swift */; };
 		077E6B3F2517B22D003F7B99 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 077E6B3E2517B22D003F7B99 /* Assets.xcassets */; };
@@ -29,6 +30,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				077E6B4C2517B29B003F7B99 /* Lark in Frameworks */,
+				07744A28251822B700B24C8A /* Peek in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,6 +99,7 @@
 			name = "Lark Example";
 			packageProductDependencies = (
 				077E6B4B2517B29B003F7B99 /* Lark */,
+				07744A27251822B700B24C8A /* Peek */,
 			);
 			productName = "Lark Example";
 			productReference = 077E6B372517B22C003F7B99 /* Lark Example.app */;
@@ -343,6 +346,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		07744A27251822B700B24C8A /* Peek */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Peek;
+		};
 		077E6B4B2517B29B003F7B99 /* Lark */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Lark;

@@ -73,8 +73,9 @@ public struct GameOfLife: SyncBrainFunction {
     public init() {}
 
     public func ƒ<X>(x: [X]) throws -> X where X: BrainWave {
-        guard let isLive = x.first?.as(Bool.self, default: false) else { throw "\(After.self) x.count: \(x.count)".error() }
+        guard let isLive = x.first?.as(Bool.self, default: false)
+        else { throw "\(After.self) x.count: \(x.count)".error() }
         let n = x.dropFirst().reduce(0){ a, e in a + (e.cast(default: false) ? 1 : 0) }
-        return try X(isLive && (2...3).contains(n) || n == 3)
+        return try X((isLive && n == 2) || n == 3)
     }
 }
