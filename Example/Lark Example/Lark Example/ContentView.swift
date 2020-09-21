@@ -6,6 +6,8 @@ struct ContentView: View {
     
     @State var cells: DefaultingDictionary<String, JSON> = .init([:], default: nil)
     
+    let timer = Timer.publish(every: 0.2, on: .main, in: .common).autoconnect()
+    
     var body: some View {
         HStack(spacing: 1) {
             ForEach(0..<my.cols) { col in
@@ -20,15 +22,13 @@ struct ContentView: View {
             }
         }
         .padding()
-        .onTapGesture {
-            
+        .onReceive(timer) { _ in
             1.peek(signpost: "commit", .begin)
-            let o = my.brain.commit().defaulting(to: nil)
+            cells = my.brain.commit().defaulting(to: nil)
             1.peek(signpost: "commit", .end)
-            
-            2.peek(signpost: "set", .begin)
-            cells = o
-            2.peek(signpost: "set", .end)
+        }
+        .onTapGesture {
+            my.brain[] = my.state
         }
     }
 }

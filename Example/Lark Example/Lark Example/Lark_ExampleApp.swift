@@ -31,30 +31,44 @@ enum my {
     static let rows = cols * 2
     static let cols = 20
     
+    static func idx(_ i: Int, in count: Int) -> Int {
+        i < 0 ? count + i : (i > count - 1 ? i - count : i)
+    }
+    
     static let lexicon: [String: Concept] = {
         var o: [String: Concept] = [:]
         for col in 0..<cols {
             for row in 0..<rows {
+                let row = (
+                    prev: idx(row - 1, in: rows),
+                    this: row,
+                    next: idx(row + 1, in: rows)
+                )
+                let col = (
+                    prev: idx(col - 1, in: cols),
+                    this: col,
+                    next: idx(col + 1, in: cols)
+                )
                 let kernel = [
-                    "cell:\(row):\(col)",
+                    "cell:\(row.this):\(col.this)",
                     
-                    "cell:\(row - 1):\(col - 1)",
-                    "cell:\(row - 1):\(col - 0)",
-                    "cell:\(row - 1):\(col + 1)",
+                    "cell:\(row.prev):\(col.prev)",
+                    "cell:\(row.prev):\(col.this)",
+                    "cell:\(row.prev):\(col.next)",
                     
-                    "cell:\(row - 0):\(col - 1)",
-                    "cell:\(row - 0):\(col + 1)",
+                    "cell:\(row.this):\(col.prev)",
+                    "cell:\(row.this):\(col.next)",
                     
-                    "cell:\(row + 1):\(col - 1)",
-                    "cell:\(row + 1):\(col - 0)",
-                    "cell:\(row + 1):\(col + 1)",
+                    "cell:\(row.next):\(col.prev)",
+                    "cell:\(row.next):\(col.this)",
+                    "cell:\(row.next):\(col.next)",
                 ]
-                o["cell:\(row):\(col)"] = Concept("life", kernel)
+                o["cell:\(row.this):\(col.this)"] = Concept("life", kernel)
             }
         }
         return o
     }()
-    
+
     static var state: [String: JSON] {
         var o: [String: JSON] = [:]
         for col in 0..<cols {
@@ -73,8 +87,8 @@ public struct GameOfLife: SyncBrainFunction {
     public init() {}
 
     public func ƒ<X>(x: [X]) throws -> X where X: BrainWave {
-        guard let isLive = x.first?.as(Bool.self, default: false)
-        else { throw "\(After.self) x.count: \(x.count)".error() }
+        guard x.count == 9 else { throw "\(After.self) x.count: \(x.count)".error() }
+        let isLive = x[0].as(Bool.self, default: false)
         let n = x.dropFirst().reduce(0){ a, e in a + (e.cast(default: false) ? 1 : 0) }
         return try X((isLive && n == 2) || n == 3)
     }
