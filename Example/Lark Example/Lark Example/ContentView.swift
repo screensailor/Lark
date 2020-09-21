@@ -24,9 +24,9 @@ struct ContentView: View {
         }
         .padding()
         .onReceive(timer) { _ in
-            peek(signpost: .begin, "commit")
+            1.peek(signpost: "commit", .begin)
             cells = my.brain.commit().defaulting(to: nil)
-            peek(signpost: .end, "commit")
+            1.peek(signpost: "commit", .end)
         }
         .onTapGesture {
             my.brain[] = my.state
