@@ -1,6 +1,6 @@
-import Foundation
-
 public typealias JSON = Tree<String, JSONLeaf>
+
+extension JSON: BrainWave {}
 
 extension JSON {
     @inlinable public init() { self = .leaf(.null) }

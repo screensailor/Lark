@@ -13,15 +13,8 @@ public protocol AsyncBrainFunction: BrainFunction {
 extension SyncBrainFunction {
     
     public func callAsFunction<X>(_ x: [X]) -> Future<X, Never> where X : BrainWave {
-        Future{ promise in
-            do {
-                try promise(.success(ƒ(x: x)))
-            } catch let error as BrainError {
-                promise(.success(X(error)))
-            } catch {
-                promise(.success(X("\(error)".error())))
-            }
-        }
+        let y = X.catch{ try ƒ(x: x) }
+        return Future{ promise in promise(.success(y)) }
     }
 }
 
@@ -29,14 +22,9 @@ extension AsyncBrainFunction {
     
     public func callAsFunction<X>(_ x: [X]) -> Future<X, Never> where X : BrainWave {
         Future{ promise in
-            ƒ(x: x){ result in
-                do {
-                    try promise(.success(result()))
-                } catch let error as BrainError {
-                    promise(.success(X(error)))
-                } catch {
-                    promise(.success(X("\(error)".error())))
-                }
+            ƒ(x: x){ ƒ in
+                let y = X.catch{ try ƒ() }
+                promise(.success(y))
             }
         }
     }

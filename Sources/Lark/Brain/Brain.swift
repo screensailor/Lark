@@ -71,7 +71,7 @@ extension Brain {
         var writes = change.merging(thoughts[]){ o, x in o.peek(as: .error, "Replacing thought \(x)") }
         state[].merge(writes){ _, o in o }
         (0 ..< max(count, 0)).forEach{ _ in
-            for lemma in updated(by: writes) {
+            for lemma in affected(by: writes) {
                 neurons[lemma]?.commit(to: self)
             }
             writes = thoughts[]
@@ -88,7 +88,7 @@ extension Brain {
         return change
     }
     
-    func updated(by changes: [Lemma: Signal]) -> Set<Lemma> {
+    func affected(by changes: [Lemma: Signal]) -> Set<Lemma> {
         return changes.keys.reduce(into: Set<Lemma>()){ a, e in a.formUnion(connections[e] ?? []) }
     }
 }
@@ -125,17 +125,11 @@ extension Brain {
             switch ƒ
             {
             case let ƒ as SyncBrainFunction:
-                do {
-                    brain.thoughts[lemma] = try ƒ.ƒ(x: x)
-                } catch let error as BrainError {
-                    brain.thoughts[lemma] = Signal.init(error)
-                } catch {
-                    brain.thoughts[lemma] = Signal.init(BrainError(String(describing: error)))
-                }
+                brain.thoughts[lemma] = Signal.catch{ try ƒ.ƒ(x: x) }
                 
             default:
                 y = ƒ(x)
-                    .receive(on: RunLoop.current) // TODO: on Brain.queue
+                    .receive(on: RunLoop.main) // TODO: on Brain.queue
                     .assign(to: \.thoughts[lemma], on: brain)
             }
         }
