@@ -135,3 +135,10 @@ extension Brain {
         }
     }
 }
+
+extension Brain: CustomStringConvertible {
+    
+    public var description: String {
+        "\(Self.self)"
+    }
+}

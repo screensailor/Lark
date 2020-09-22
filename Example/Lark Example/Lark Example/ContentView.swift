@@ -25,9 +25,11 @@ struct ContentView: View {
         .statusBar(hidden: true)
         .ignoresSafeArea()
         .onReceive(Self.timer) { _ in
-            1.peek(signpost: "commit", .begin)
-            cells = my.brain.commit().defaulting(to: nil)
-            1.peek(signpost: "commit", .end)
+            cells = my.brain
+                .peek(signpost: "commit", .begin)
+                .commit()
+                .peek(signpost: "commit", .end)
+                .defaulting(to: nil)
         }
         .onTapGesture {
             my.brain[] = my.state
