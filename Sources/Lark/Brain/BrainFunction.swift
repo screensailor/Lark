@@ -3,7 +3,7 @@ public protocol BrainFunction: CustomStringConvertible {
 }
 
 public protocol SyncBrainFunction: BrainFunction {
-    func ƒ<X>(x: [X]) throws -> X where X: BrainWave
+    func ƒ<X>(x: [X]) throws -> X? where X: BrainWave
 }
 
 public protocol AsyncBrainFunction: BrainFunction {
@@ -13,8 +13,10 @@ public protocol AsyncBrainFunction: BrainFunction {
 extension SyncBrainFunction {
     
     public func callAsFunction<X>(_ x: [X]) -> Future<X, Never> where X : BrainWave {
-        let y = X.catch{ try ƒ(x: x) }
-        return Future{ promise in promise(.success(y)) }
+        return Future{ promise in
+            guard let y = X.catch({ try ƒ(x: x) }) else { return }
+            promise(.success(y))
+        }
     }
 }
 
@@ -23,7 +25,7 @@ extension AsyncBrainFunction {
     public func callAsFunction<X>(_ x: [X]) -> Future<X, Never> where X : BrainWave {
         Future{ promise in
             ƒ(x: x){ ƒ in
-                let y = X.catch{ try ƒ() }
+                let y = X.catch(ƒ)
                 promise(.success(y))
             }
         }

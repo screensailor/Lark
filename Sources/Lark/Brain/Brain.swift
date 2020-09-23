@@ -49,6 +49,10 @@ final public class Brain<Lemma, Signal> where
 
 extension Brain {
     
+    public var didChange: Bool {
+        !change.isEmpty
+    }
+    
     public subscript(lemma: Lemma) -> Subject {
         subjects[lemma]
     }
@@ -125,7 +129,9 @@ extension Brain {
             switch ƒ
             {
             case let ƒ as SyncBrainFunction:
-                brain.thoughts[lemma] = Signal.catch{ try ƒ.ƒ(x: x) }
+                if let y = Signal.catch({ try ƒ.ƒ(x: x) }) {
+                    brain.thoughts[lemma] = y
+                }
                 
             default:
                 y = ƒ(x)

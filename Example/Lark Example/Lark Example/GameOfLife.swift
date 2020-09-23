@@ -3,34 +3,67 @@ import Lark
 
 struct GameOfLife: View {
     
-    @State private var brain = try! Brain(my.lexicon, my.functions, my.randomState())
-    @State private var cells = [String: JSON]().defaulting(to: nil)
-    @State private var timer = Timer.publish(every: 1 / 60, on: .main, in: .common).autoconnect()
-    
+    @ObservedObject private var brain = GameOfLifeBrain()
+
     var body: some View {
         HStack(spacing: 0) {
-            ForEach(0..<my.cols) { col in
+            ForEach(brain.cols) { col in
                 VStack(spacing: 0) {
-                    ForEach(0..<my.rows) { row in
-                        let isLive = cells["cell:\(row):\(col)"]
-                            .cast(default: false)
+                    ForEach(brain.rows) { row in
                         Rectangle()
-                            .foregroundColor(isLive ? .white : .clear)
+                            .foregroundColor(brain.cell(row, col) ? .white : .blue)
                             .cornerRadius(4)
                     }
                 }
             }
         }
-        .background(Color.blue)
-        .onReceive(timer) { _ in
-            cells = brain
+        .onReceive(brain.objectWillChange){ _ in
+            brain.commit()
+        }
+        .onTapGesture {
+            brain.perturb()
+        }
+    }
+}
+
+private class GameOfLifeBrain: ObservableObject {
+    
+    let cols = 0 ..< my.cols
+    let rows = 0 ..< my.rows
+    
+    let objectWillChange = ObservableObjectPublisher()
+    
+    private var brain = try! Brain(my.lexicon, my.functions)
+    
+    func cell(_ row: Int, _ col: Int) -> Bool {
+        brain["cell:\(row):\(col)"].cast(default: false)
+    }
+    
+    func commit() {
+        DispatchQueue.main.async {
+            self.brain
                 .peek(signpost: "commit", .begin)
                 .commit()
                 .peek(signpost: "commit", .end)
-                .defaulting(to: nil)
+            
+            if self.brain.didChange {
+                self.objectWillChange.send()
+            }
         }
-        .onTapGesture {
-            brain[] = my.randomState()
+    }
+    
+    func perturb() {
+        
+        for col in cols {
+            for row in rows {
+                if Float.random(in: 0...1) < 0.05 {
+                    brain["cell:\(row):\(col)"] = JSON(true)
+                }
+            }
+        }
+        
+        if brain.didChange {
+            objectWillChange.send()
         }
     }
 }
@@ -59,17 +92,18 @@ extension my {
         
         let description = "Game of Life"
         
-        func ƒ<X>(x: [X]) throws -> X where X: BrainWave {
+        func ƒ<X>(x: [X]) throws -> X? where X: BrainWave {
             let x = x.map{ $0.cast(default: false) ? 1 : 0 }
-            let y = try ƒ(x)
+            guard let y = try ƒ(x) else { return nil }
             return try X(y)
         }
         
-        private func ƒ(_ x: [Int]) throws -> Bool {
+        private func ƒ(_ x: [Int]) throws -> Bool? {
             guard x.count == 9 else { throw "GameOfLifeFunction error: x.count = \(x.count)".error() }
             let isLive = x[4] != 0
             let n = x.reduce(0, +) - (isLive ? 1 : 0)
-            return (isLive && n == 2) || n == 3
+            let y = (isLive && n == 2) || n == 3
+            return y == isLive ? nil : y
         }
     }
 }
@@ -119,14 +153,4 @@ extension my {
         
         return o
     }()
-    
-    static func randomState() -> State {
-        var o: [String: JSON] = [:]
-        for col in 0..<cols {
-            for row in 0..<rows {
-                o["cell:\(row):\(col)"] = JSON(Float.random(in: 0...1) < 0.1)
-            }
-        }
-        return o
-    }
 }
