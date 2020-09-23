@@ -21,9 +21,7 @@ struct GameOfLife: View {
                 }
             }
         }
-        .statusBar(hidden: true)
         .background(Color.blue)
-        .ignoresSafeArea()
         .onReceive(timer) { _ in
             cells = brain
                 .peek(signpost: "commit", .begin)
