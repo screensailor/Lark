@@ -70,7 +70,7 @@ private class GameOfLifeBrain: ObservableObject {
 
 private enum my {
     
-    static let cols = 25
+    static let cols = 30
     static let rows = Int((CGFloat(cols) * aspectRatio).rounded(.down))
     
     static let size = UIScreen.main.nativeBounds.size
