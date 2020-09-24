@@ -1,10 +1,12 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @State var color: Color = .blue
 
     var body: some View {
         ZStack {
-            GameOfLife()
+            GameOfLife(color: $color)
             VStack{
                 Text("Game of Lark")
                     .font(.system(.largeTitle, design: .rounded))
@@ -15,7 +17,7 @@ struct ContentView: View {
             }
         }
         .statusBar(hidden: true)
-        .background(Color.blue)
+        .background(color)
         .ignoresSafeArea()
     }
 }

@@ -1,9 +1,12 @@
 import SwiftUI
 import Lark
 
-struct GameOfLife: View {
-    
-    @ObservedObject private var brain = GameOfLifeBrain()
+struct GameOfLife {
+    @Binding var color: Color
+    @ObservedObject private var brain: GameOfLifeBrain = .shared
+}
+
+extension GameOfLife: View {
 
     var body: some View {
         HStack(spacing: 0) {
@@ -11,7 +14,7 @@ struct GameOfLife: View {
                 VStack(spacing: 0) {
                     ForEach(brain.rows) { row in
                         Rectangle()
-                            .foregroundColor(brain.cell(row, col) ? .white : .blue)
+                            .foregroundColor(brain.cell(row, col) ? .white : color)
                             .cornerRadius(4)
                     }
                 }
@@ -28,12 +31,17 @@ struct GameOfLife: View {
 
 private class GameOfLifeBrain: ObservableObject {
     
+    typealias my = GameOfLifeBrain
+    
     let cols = 0 ..< my.cols
     let rows = 0 ..< my.rows
     
     let objectWillChange = ObservableObjectPublisher()
     
     private var brain = try! Brain(my.lexicon, my.functions)
+}
+
+extension GameOfLifeBrain {
     
     func cell(_ row: Int, _ col: Int) -> Bool {
         brain["cell:\(row):\(col)"].cast(default: false)
@@ -68,8 +76,10 @@ private class GameOfLifeBrain: ObservableObject {
     }
 }
 
-private enum my {
+extension GameOfLifeBrain {
     
+    static let shared = GameOfLifeBrain()
+
     static let cols = 30
     static let rows = Int((CGFloat(cols) * aspectRatio).rounded(.down))
     
@@ -77,7 +87,7 @@ private enum my {
     static let aspectRatio = size.height / size.width
 }
 
-extension my {
+extension GameOfLifeBrain {
     typealias Lemma = String
     typealias Brain = Lark.Brain<Lemma, JSON>
     typealias State = [Lemma: JSON]
@@ -86,9 +96,9 @@ extension my {
     typealias Functions = [Lemma: BrainFunction]
 }
 
-extension my {
+extension GameOfLifeBrain {
     
-    struct GameOfLifeFunction: SyncBrainFunction {
+    struct Function: SyncBrainFunction {
         
         let description = "Game of Life"
         
@@ -106,12 +116,9 @@ extension my {
             return y == isLive ? nil : y
         }
     }
-}
-
-extension my {
     
     static let functions: Functions = [
-        "Game of Life": GameOfLifeFunction()
+        "Game of Life": Function()
     ]
     
     static let lexicon: Lexicon = {
