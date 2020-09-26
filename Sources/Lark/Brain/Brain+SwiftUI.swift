@@ -32,5 +32,28 @@ extension Brain {
             }
         )
     }
+    
+    public func binding<A>(to lemma: Lemma) -> Binding<A?> {
+        Binding(
+            get: { [weak self] in
+                guard let self = self else { return nil }
+                return try? self.state(of: lemma).as(A.self)
+            },
+            set: { [weak self] new in
+                guard let self = self else { return }
+                guard let new = new else {
+                    self[lemma] = nil
+                    return
+                }
+                do {
+                    self[lemma] = try Signal(new)
+                } catch let error as BrainError {
+                    self[lemma] = Signal(error)
+                } catch {
+                    self[lemma] = Signal(.init(String(describing: error)))
+                }
+            }
+        )
+    }
 }
 #endif
