@@ -16,7 +16,7 @@ class Brain™_async: Brain™ {
         let brain = try Brain(lexicon, functions)
         let o = Sink.Var<JSON>(nil)
         
-        o ...= brain["alarm"]
+        o ...= brain.subject("alarm")
         
         brain["t"] = 0.1
         brain["alarm message"] = "Wakey wakey!"

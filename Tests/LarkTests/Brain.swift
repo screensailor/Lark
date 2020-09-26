@@ -19,7 +19,7 @@ class Brain™: Hopes {
         let brain = try Brain(lexicon, functions)
         let o = Sink.Var<JSON>(nil)
         
-        o ...= brain["x * (a + b + c)"]
+        o ...= brain.subject("x * (a + b + c)")
         
         brain["a"] = 1
         brain["b"] = 2
@@ -38,7 +38,7 @@ class Brain™: Hopes {
         let brain = try Brain(lexicon, functions)
         let o = Sink.Var<JSON>(nil)
 
-        o ...= brain["new concept"]
+        o ...= brain.subject("new concept")
 
         brain["x"] = 2
         brain["y"] = 3
@@ -55,7 +55,7 @@ class Brain™: Hopes {
         let brain = try Brain(lexicon, functions)
         let x = Sink.Var<JSON>(nil)
         
-        x ...= brain["x"]
+        x ...= brain.subject("x")
         
         brain["increment"] = 1
         brain["x"] = 0
@@ -73,16 +73,16 @@ class Brain™: Hopes {
 //        hope(x[]) == 103
     }
 
-    func test_blank_mind() throws {
+    func test_blank_brain() throws {
         let o = Sink.Var<JSON>(nil)
-        let mind = try Brain()
+        let brain = try Brain()
         
-        o ...= mind["?"]
-        mind["?"] = "🙂"
+        o ...= brain.subject("?")
+        brain["?"] = "🙂"
         
         hope(o[]) == nil
         
-        mind.commit()
+        brain.commit()
         hope(o[]) == "🙂"
     }
 }

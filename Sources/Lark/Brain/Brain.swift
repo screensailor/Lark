@@ -52,10 +52,6 @@ extension Brain {
     public var didChange: Bool {
         !change.isEmpty
     }
-    
-    public subscript(lemma: Lemma) -> Subject {
-        subjects[lemma]
-    }
 
     public subscript() -> [Lemma: Signal] {
         get { state[] }
@@ -67,7 +63,7 @@ extension Brain {
         set { change[lemma] = newValue }
     }
     
-    @inlinable public func subject(_ lemma: Lemma) -> Subject { self[lemma] }
+    public func subject(_ lemma: Lemma) -> Subject { subjects[lemma] }
     @inlinable public func state(of lemma: Lemma) -> Signal { self[lemma] }
 
     @discardableResult
