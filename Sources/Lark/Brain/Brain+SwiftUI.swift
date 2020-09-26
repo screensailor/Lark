@@ -3,6 +3,17 @@ import SwiftUI
 
 extension Brain {
     
+    public func binding(to lemma: Lemma) -> Binding<Signal> {
+        Binding(
+            get: { [weak self] in
+                self?.state(of: lemma) ?? nil
+            },
+            set: { [weak self] new in
+                self?[lemma] = new
+            }
+        )
+    }
+    
     public func binding<A>(to lemma: Lemma, default o: A) -> Binding<A> {
         Binding(
             get: { [weak self] in

@@ -19,6 +19,8 @@ class Brain_and_SwiftUI™: Brain™ {
         let ui = UI()
         let control = ui.body as! Control
         
+        hope(control.text) == "😞"
+        
         control.text = "🙂"
         
         ui.brain.commit()
