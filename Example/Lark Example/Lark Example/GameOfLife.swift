@@ -1,4 +1,3 @@
-import SwiftUI
 import Lark
 
 struct GameOfLife {
@@ -13,9 +12,7 @@ extension GameOfLife: View {
             ForEach(brain.cols) { col in
                 VStack(spacing: 0) {
                     ForEach(brain.rows) { row in
-                        Rectangle()
-                            .foregroundColor(brain.cell(row, col) ? .white : color)
-                            .cornerRadius(4)
+                        BrainCell(isLive: brain.binding(to: row, col), color: $color)
                     }
                 }
             }
@@ -26,6 +23,16 @@ extension GameOfLife: View {
         .onTapGesture {
             brain.perturb()
         }
+    }
+}
+
+private struct BrainCell: View {
+    
+    @Binding var isLive: Bool
+    @Binding var color: Color
+    
+    var body: some View {
+        (isLive ? .white : color).cornerRadius(4)
     }
 }
 
@@ -43,25 +50,24 @@ private class GameOfLifeBrain: ObservableObject {
 
 extension GameOfLifeBrain {
     
-    func cell(_ row: Int, _ col: Int) -> Bool {
-        brain["cell:\(row):\(col)"].cast(default: false)
+    func binding(to row: Int, _ col: Int) -> Binding<Bool> {
+        brain.binding(to: "cell:\(row):\(col)", default: false)
     }
     
     func commit() {
-        DispatchQueue.main.async {
-            self.brain
+        DispatchQueue.main.async { [self] in
+            brain
                 .peek(signpost: "commit", .begin)
                 .commit()
                 .peek(signpost: "commit", .end)
             
-            if self.brain.didChange {
-                self.objectWillChange.send()
+            if !brain.change.isEmpty {
+                objectWillChange.send()
             }
         }
     }
     
     func perturb() {
-        
         for col in cols {
             for row in rows {
                 if Float.random(in: 0...1) < 0.05 {
@@ -69,8 +75,7 @@ extension GameOfLifeBrain {
                 }
             }
         }
-        
-        if brain.didChange {
+        if !brain.change.isEmpty {
             objectWillChange.send()
         }
     }

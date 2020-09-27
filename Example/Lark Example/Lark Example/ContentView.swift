@@ -1,5 +1,3 @@
-import SwiftUI
-
 struct ContentView: View {
     
     @State var color: Color = .blue

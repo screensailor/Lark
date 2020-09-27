@@ -12,9 +12,9 @@ final public class Brain<Lemma, Signal> where
     public typealias Subject = CurrentValueSubject<Signal, Never>
     public typealias Subjects = DefaultInsertingDictionary<Lemma, Subject>
 
-    private var state: State
-    private var change: [Lemma: Signal] = [:]
-    private var thoughts = State(default: nil)
+    public private(set) var state: State
+    public private(set) var change: [Lemma: Signal] = [:]
+    public private(set) var thoughts = State(default: nil)
     
     private var neurons: [Lemma: Neuron] = [:]
     private var observers: [Lemma: Set<Lemma>] = [:]
@@ -46,8 +46,6 @@ final public class Brain<Lemma, Signal> where
 }
 
 extension Brain {
-    
-    public var didChange: Bool { !change.isEmpty }
 
     public subscript(lemma: Lemma) -> Signal {
         get { state[lemma] }
@@ -137,8 +135,5 @@ extension Brain {
 }
 
 extension Brain: CustomStringConvertible {
-    
-    public var description: String {
-        "\(Self.self)"
-    }
+    public var description: String { "\(Self.self)" }
 }
