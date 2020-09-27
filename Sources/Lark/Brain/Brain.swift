@@ -66,7 +66,7 @@ extension Brain {
     
     @discardableResult
     public func commit(thoughts count: Int = 1) -> [Lemma: Signal] {
-        var writes = change.merging(thoughts[]){ o, x in o.peek(as: .error, "Replacing thought \(x)") }
+        var writes = change.merging(thoughts[]){ o, x in o.peek(as: .info, "Replacing thought \(x)") }
         state[].merge(writes){ _, o in o }
         (0 ..< max(count, 0)).forEach{ _ in
             for lemma in affected(by: writes) {
@@ -119,11 +119,11 @@ extension Brain {
         }
         
         func commit(to brain: Brain) {
-            let x = concept.x.map{ x in brain.state[x] }
+            let x = concept.x.map{ x in brain.state[x] } // TODO: form permanent references instead
             switch ƒ
             {
             case let ƒ as SyncBrainFunction:
-                if let y = Signal.catch({ try ƒ.ƒ(x: x) }) {
+                if let y = Signal.catch({ try ƒ.ƒ(x: x) }) { // TODO: @autoclosure
                     brain.thoughts[lemma] = y
                 }
                 
