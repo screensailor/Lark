@@ -5,21 +5,21 @@ final public class Brain<Lemma, Signal> where
     public typealias Lexicon = [Lemma: Concept]
     public typealias Functions = [Lemma: BrainFunction]
     
-    public let lexicon: [Lemma: Concept]
-    public let functions: [Lemma: BrainFunction]
+    public let lexicon: Lexicon
+    public let functions: Functions
 
     public typealias State = DefaultingDictionary<Lemma, Signal>
     public typealias Subject = CurrentValueSubject<Signal, Never>
     public typealias Subjects = DefaultInsertingDictionary<Lemma, Subject>
 
-    private var state = [Lemma: Signal]().defaulting(to: nil)
+    private var state: State
     private var change: [Lemma: Signal] = [:]
-    private var thoughts = [Lemma: Signal]().defaulting(to: nil)
+    private var thoughts = State(default: nil)
     
     private var neurons: [Lemma: Neuron] = [:]
     private var connections: [Lemma: Set<Lemma>] = [:]
 
-    private lazy var subjects = Subjects([:]){ [weak self] lemma in
+    private lazy var subjects = Subjects { [weak self] lemma in
         guard let self = self else { return Subject(nil) }
         return Subject(self.state[lemma])
     }
