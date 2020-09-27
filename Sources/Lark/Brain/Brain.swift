@@ -17,7 +17,7 @@ final public class Brain<Lemma, Signal> where
     private var thoughts = State(default: nil)
     
     private var neurons: [Lemma: Neuron] = [:]
-    private var connections: [Lemma: Set<Lemma>] = [:]
+    private var observers: [Lemma: Set<Lemma>] = [:]
 
     private lazy var subjects = Subjects { [weak self] lemma in
         guard let self = self else { return Subject(nil) }
@@ -40,7 +40,7 @@ final public class Brain<Lemma, Signal> where
                 throw "Function '\(concept.ƒ)' not found for concept '\(lemma)'".error()
             }
             neurons[lemma] = Neuron(lemma, concept, ƒ)
-            concept.x.forEach{ x in connections[x, default: []].insert(lemma) }
+            concept.x.forEach{ x in observers[x, default: []].insert(lemma) }
         }
     }
 }
@@ -87,7 +87,7 @@ extension Brain {
     }
     
     func affected(by changes: [Lemma: Signal]) -> Set<Lemma> {
-        return changes.keys.reduce(into: Set<Lemma>()){ a, e in a.formUnion(connections[e] ?? []) }
+        return changes.keys.reduce(into: Set<Lemma>()){ a, e in a.formUnion(observers[e] ?? []) }
     }
 }
 
