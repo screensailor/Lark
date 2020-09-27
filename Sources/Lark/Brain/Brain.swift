@@ -32,15 +32,13 @@ final public class Brain<Lemma, Signal> where
         self.state = state.defaulting(to: nil)
         self.lexicon = lexicon
         self.functions = functions
-        try lexicon.keys.forEach{ lemma in
-            
+        for lemma in lexicon.keys {
             guard let concept = lexicon[lemma] else {
                 throw "Missing concept for lemma '\(lemma)'".error()
             }
             guard let ƒ = functions[concept.ƒ] else {
                 throw "Function '\(concept.ƒ)' not found for concept '\(lemma)'".error()
             }
-
             neurons[lemma] = Neuron(lemma, concept, ƒ)
             concept.x.forEach{ x in connections[x, default: []].insert(lemma) }
         }
@@ -49,23 +47,23 @@ final public class Brain<Lemma, Signal> where
 
 extension Brain {
     
-    public var didChange: Bool {
-        !change.isEmpty
-    }
-
-    public subscript() -> [Lemma: Signal] {
-        get { state[] }
-        set { change = newValue }
-    }
+    public var didChange: Bool { !change.isEmpty }
 
     public subscript(lemma: Lemma) -> Signal {
         get { state[lemma] }
         set { change[lemma] = newValue }
     }
     
-    public func subject(_ lemma: Lemma) -> Subject { subjects[lemma] }
-    @inlinable public func state(of lemma: Lemma) -> Signal { self[lemma] }
+    public subscript() -> [Lemma: Signal] {
+        get { state[] }
+        set { change = newValue }
+    }
 
+    public func subject(_ lemma: Lemma) -> Subject { subjects[lemma] }
+}
+
+extension Brain {
+    
     @discardableResult
     public func commit(thoughts count: Int = 1) -> [Lemma: Signal] {
         var writes = change.merging(thoughts[]){ o, x in o.peek(as: .error, "Replacing thought \(x)") }

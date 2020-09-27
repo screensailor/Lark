@@ -6,7 +6,7 @@ extension Brain {
     public func binding(to lemma: Lemma) -> Binding<Signal> {
         Binding(
             get: { [weak self] in
-                self?.state(of: lemma) ?? nil
+                self?[lemma] ?? nil
             },
             set: { [weak self] new in
                 self?[lemma] = new
@@ -18,7 +18,7 @@ extension Brain {
         Binding(
             get: { [weak self] in
                 guard let self = self else { return o }
-                return self.state(of: lemma).as(A.self, default: o)
+                return self[lemma].as(A.self, default: o)
             },
             set: { [weak self] new in
                 guard let self = self else { return }
@@ -37,7 +37,7 @@ extension Brain {
         Binding(
             get: { [weak self] in
                 guard let self = self else { return nil }
-                return try? self.state(of: lemma).as(A.self)
+                return try? self[lemma].as(A.self)
             },
             set: { [weak self] new in
                 guard let self = self else { return }
