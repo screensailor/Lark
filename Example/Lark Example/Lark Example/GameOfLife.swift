@@ -12,7 +12,10 @@ extension GameOfLife: View {
             ForEach(brain.cols) { col in
                 VStack(spacing: 0) {
                     ForEach(brain.rows) { row in
-                        BrainCell(isLive: brain.binding(to: row, col), color: $color)
+                        BrainCell(
+                            isLive: brain.binding(to: row, col),
+                            color: $color
+                        )
                     }
                 }
             }
