@@ -1,5 +1,7 @@
 public extension Decodable {
     
+    // TODO: init(_ yield: @escaping ([CodingKey], AnyType) throws -> ()) throws
+    
     static func defaultDecodingValue() throws -> Self {
         try Self(from: DefaultingDecoder())
     }
