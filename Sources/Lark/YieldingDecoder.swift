@@ -106,33 +106,33 @@ class YieldingDecoder: Decoder {
 
 extension YieldingDecoder.KeyedContainer {
     func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type, forKey key: Key) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
-        throw "❓".error()
+        throw "Not implemented".error()
     }
     func nestedUnkeyedContainer(forKey key: Key) throws -> UnkeyedDecodingContainer {
-        throw "❓".error()
+        throw "Not implemented".error()
     }
     func superDecoder() throws -> Decoder {
-        throw "❓".error()
+        throw "Not implemented".error()
     }
     func superDecoder(forKey key: Key) throws -> Decoder {
-        throw "❓".error()
+        throw "Not implemented".error()
     }
 }
 
 extension YieldingDecoder.UnkeyedContainer {
     mutating func decodeNil() throws -> Bool {
-        throw "❓".error()
+        throw "Not implemented".error()
     }
     mutating func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
-        throw "❓".error()
+        throw "Not implemented".error()
     }
     mutating func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
-        throw "❓".error()
+        throw "Not implemented".error()
     }
     mutating func nestedUnkeyedContainer() throws -> UnkeyedDecodingContainer {
-        throw "❓".error()
+        throw "Not implemented".error()
     }
     mutating func superDecoder() throws -> Decoder {
-        throw "❓".error()
+        throw "Not implemented".error()
     }
 }

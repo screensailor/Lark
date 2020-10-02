@@ -14,6 +14,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/screensailor/Peek.git", .branch("trunk")),
         .package(url: "https://github.com/screensailor/Hope.git", .branch("trunk")),
+        .package(url: "https://github.com/apple/swift-atomics.git", .upToNextMinor(from: "0.0.1")),
         .package(url: "https://github.com/Azoy/Echo.git", from: "0.0.1"),
         .package(name: "SE0000_KeyPathReflection", url: "https://github.com/apple/swift-evolution-staging.git", .branch("reflection"))
     ],
@@ -22,6 +23,7 @@ let package = Package(
             name: "Lark",
             dependencies: [
                 .byName(name: "Peek"),
+                .product(name: "Atomics", package: "swift-atomics"),
                 .byName(name: "Echo"),
                 .product(name: "SE0000_KeyPathReflection", package: "SE0000_KeyPathReflection")
             ]
