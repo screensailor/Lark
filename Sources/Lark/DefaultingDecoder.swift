@@ -1,16 +1,17 @@
 public extension Decodable {
     
-    // TODO: init(_ yield: @escaping ([CodingKey], AnyType) throws -> ()) throws
-    
     static func defaultDecodingValue() throws -> Self {
         try Self(from: DefaultingDecoder())
     }
 }
 
+public protocol SingleValueDecodingContainerDefaulting: Decodable {
+    static var singleValueDecodingContainerDefault: Self { get }
+}
+
 struct DefaultingDecoder: Decoder {
     
     var codingPath: [CodingKey] { [] }
-    
     var userInfo: [CodingUserInfoKey : Any] { [:] }
     
     func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
@@ -22,7 +23,6 @@ struct DefaultingDecoder: Decoder {
         case `default`
         
         var codingPath: [CodingKey] { [] }
-        
         var allKeys: [Key] { [] }
         
         func contains(_ key: Key) -> Bool {
@@ -30,12 +30,11 @@ struct DefaultingDecoder: Decoder {
         }
         
         func decodeNil(forKey key: Key) throws -> Bool {
-            false
+            true
         }
 
         func decode<T>(_ type: T.Type, forKey key: Key) throws -> T where T : Decodable {
-            print("✅", key.stringValue, T.self)
-            return try T(from: DefaultingDecoder())
+            try T(from: DefaultingDecoder())
         }
     }
     
@@ -44,7 +43,9 @@ struct DefaultingDecoder: Decoder {
     }
     
     enum UnkeyedContainer: UnkeyedDecodingContainer {
+        
         case `default`
+        
         var codingPath: [CodingKey] { [] }
         var count: Int? { 0 }
         var isAtEnd: Bool { true }

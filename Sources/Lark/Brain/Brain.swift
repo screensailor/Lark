@@ -64,7 +64,7 @@ extension Brain {
     
     @discardableResult
     public func commit(thoughts count: Int = 1) -> [Lemma: Signal] {
-        var writes = change.merging(thoughts[]){ o, x in o.peek(as: .info, "Replacing thought \(x)") }
+        var writes = change.merging(thoughts[]){ o, x in o.peek("Replacing thought \(x)", as: .info) }
         state[].merge(writes){ _, o in o }
         (0 ..< max(count, 0)).forEach{ _ in
             for lemma in affected(by: writes) {

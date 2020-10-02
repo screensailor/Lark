@@ -1,30 +1,30 @@
 class DefaultingDecoder™: Hopes {
     
-    struct My: Codable {
+    struct My: Codable, Equatable {
         var a = A()
         var a2 = A()
-        var a3 = 3
-        struct A: Codable {
+        var a3 = 0
+        struct A: Codable, Equatable {
             var b = B()
             var b2 = B()
-            var b3 = 3
-            struct B: Codable {
+            var b3 = 0
+            struct B: Codable, Equatable {
                 var c = C()
                 var c2 = C()
-                var c3 = 3
-                struct C: Codable {
-                    var ints: [Int?] = [1,2,3]
-                    var ints2: [Int]? = [1,2,3]
-                    var string: String? = "👋"
+                var c3 = 0
+                struct C: Codable, Equatable {
+                    var ints: [Int?] = []
+                    var ints2: [Int]?
+                    var string: String?
                     var bool = false
-//                    var url: URL? // ← recursive
+                    var url: URL? // ← recursive
                 }
             }
         }
     }
 
     func test() throws {
-        
-        try My.defaultDecodingValue() ¶ "✅"
+        let o = try My.defaultDecodingValue()
+        hope(o) == My()
     }
 }

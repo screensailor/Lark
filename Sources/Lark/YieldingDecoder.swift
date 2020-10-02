@@ -1,5 +1,4 @@
 /// TODO: optionals❗️
-/// TODO: isRecursive❗️
 /// TODO: YieldingDecoderIterator
 
 public typealias YieldingDecoderClosure = (
@@ -15,10 +14,6 @@ public extension Decodable {
     }
 }
 
-public protocol SingleValueDecodingContainerDefaulting: Decodable {
-    static var singleValueDecodingContainerDefault: Self { get }
-}
-
 class YieldingDecoder: Decoder {
 
     /// Developed in collaboration with https://github.com/ollieatkinson
@@ -26,9 +21,7 @@ class YieldingDecoder: Decoder {
     let yield: YieldingDecoderClosure
 
     var codingPath: [CodingKey] = []
-    
     var codingPathTypes: Set<AnyType> = []
-
     var userInfo: [CodingUserInfoKey : Any] { [:] }
     
     init(_ yield: @escaping YieldingDecoderClosure) { self.yield = yield }
@@ -42,7 +35,6 @@ class YieldingDecoder: Decoder {
         case yield(YieldingDecoder)
 
         var codingPath: [CodingKey] { [] }
-
         var allKeys: [Key] { [] }
 
         func contains(_ key: Key) -> Bool {
@@ -54,63 +46,32 @@ class YieldingDecoder: Decoder {
         }
 
         func decode<T>(_ type: T.Type, forKey key: Key) throws -> T where T : Decodable {
-            guard case let .yield(decoder) = self else { fatalError("impossible") }
-            defer {
-                decoder.codingPath.removeLast()
-                decoder.codingPathTypes.remove(T.self)
+            switch self {
+            case .yield(let o):
+                defer {
+                    o.codingPath.removeLast()
+                    o.codingPathTypes.remove(T.self)
+                }
+                o.codingPath.append(key)
+                guard !o.codingPathTypes.contains(T.self) else {
+                    throw "Encountered recursion with type \(T.self) at \(o.codingPath.map(\.stringValue))".error()
+                }
+                o.codingPathTypes.insert(T.self)
+                let ªt = try o.yield(T.self, o.codingPath, { try T.init(from: o) })
+                guard let t = ªt as? T else {
+                    throw "YieldingDecoderClosure did not return a \(T.self), but a \(Swift.type(of: ªt))".error()
+                }
+                return t
             }
-            decoder.codingPath.append(key)
-            guard !decoder.codingPathTypes.contains(T.self) else {
-                // TODO: return nil where optional ❗️
-                throw "Encountered recursion with type \(T.self) at \(decoder.codingPath.map(\.stringValue))".error()
-            }
-            decoder.codingPathTypes.insert(T.self)
-            let ªt = try decoder.yield(T.self, decoder.codingPath, { try T.init(from: decoder) })
-            guard let t = ªt as? T else {
-                throw "YieldingDecoderClosure did not return a \(T.self), but a \(Swift.type(of: ªt))".error()
-            }
-            return t
         }
     }
 
     public func unkeyedContainer() throws -> UnkeyedDecodingContainer {
-        UnkeyedContainer.default
-    }
-
-    enum UnkeyedContainer: UnkeyedDecodingContainer {
-        case `default`
-        var codingPath: [CodingKey] { [] }
-        var count: Int? { 0 }
-        var isAtEnd: Bool { true }
-        var currentIndex: Int { -1 }
+        DefaultingDecoder.UnkeyedContainer.default
     }
 
     public func singleValueContainer() throws -> SingleValueDecodingContainer {
-        SingleValueContainer.default
-    }
-
-    enum SingleValueContainer: SingleValueDecodingContainer {
-
-        case `default`
-
-        var codingPath: [CodingKey] { [] }
-
-        func decodeNil() -> Bool {
-            false
-        }
-
-        func decode<T>(_ type: T.Type) throws -> T where T : Decodable, T : AdditiveArithmetic { .zero }
-        func decode<T>(_ type: T.Type) throws -> T where T : Decodable, T : ExpressibleByNilLiteral { nil }
-        func decode<T>(_ type: T.Type) throws -> T where T : Decodable, T : ExpressibleByBooleanLiteral { false }
-        func decode<T>(_ type: T.Type) throws -> T where T : Decodable, T : ExpressibleByStringLiteral { "" }
-
-        func decode<T>(_ type: T.Type) throws -> T where T : SingleValueDecodingContainerDefaulting {
-            T.singleValueDecodingContainerDefault
-        }
-
-        func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
-            throw "Cannot initialize a default \(T.self) because it is not a SingleValueDecodingContainerDefaulting".error()
-        }
+        DefaultingDecoder.SingleValueContainer.default
     }
 }
 
@@ -125,24 +86,6 @@ extension YieldingDecoder.KeyedContainer {
         throw "Not implemented".error()
     }
     func superDecoder(forKey key: Key) throws -> Decoder {
-        throw "Not implemented".error()
-    }
-}
-
-extension YieldingDecoder.UnkeyedContainer {
-    mutating func decodeNil() throws -> Bool {
-        throw "Not implemented".error()
-    }
-    mutating func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
-        throw "Not implemented".error()
-    }
-    mutating func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
-        throw "Not implemented".error()
-    }
-    mutating func nestedUnkeyedContainer() throws -> UnkeyedDecodingContainer {
-        throw "Not implemented".error()
-    }
-    mutating func superDecoder() throws -> Decoder {
         throw "Not implemented".error()
     }
 }
