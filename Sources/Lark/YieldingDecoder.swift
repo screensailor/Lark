@@ -26,6 +26,8 @@ class YieldingDecoder: Decoder {
     let yield: YieldingDecoderClosure
 
     var codingPath: [CodingKey] = []
+    
+    var codingPathTypes: Set<AnyType> = []
 
     var userInfo: [CodingUserInfoKey : Any] { [:] }
     
@@ -53,8 +55,16 @@ class YieldingDecoder: Decoder {
 
         func decode<T>(_ type: T.Type, forKey key: Key) throws -> T where T : Decodable {
             guard case let .yield(decoder) = self else { fatalError("impossible") }
-            defer { decoder.codingPath.removeLast() }
+            defer {
+                decoder.codingPath.removeLast()
+                decoder.codingPathTypes.remove(T.self)
+            }
             decoder.codingPath.append(key)
+            guard !decoder.codingPathTypes.contains(T.self) else {
+                // TODO: return nil where optional ❗️
+                throw "Encountered recursion with type \(T.self) at \(decoder.codingPath.map(\.stringValue))".error()
+            }
+            decoder.codingPathTypes.insert(T.self)
             let ªt = try decoder.yield(T.self, decoder.codingPath, { try T.init(from: decoder) })
             guard let t = ªt as? T else {
                 throw "YieldingDecoderClosure did not return a \(T.self), but a \(Swift.type(of: ªt))".error()

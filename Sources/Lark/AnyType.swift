@@ -57,10 +57,12 @@ extension Set where Element == AnyType {
         contains(AnyType(T.self))
     }
     
+    @discardableResult
     @inlinable public mutating func insert<T>(_ type: T.Type) -> (inserted: Bool, memberAfterInsert: AnyType) {
         insert(AnyType(T.self))
     }
     
+    @discardableResult
     @inlinable public mutating func remove<T>(_ type: T.Type) -> AnyType? {
         remove(AnyType(T.self))
     }
