@@ -30,8 +30,8 @@ class Reflection™: Hopes {
         
         let my = My()
         
-        let int: Int = try my["a", "b", "c", "int"].hopefully()
+        let int: String = try my["a", "b", "c", "string"].hopefully()
 
-        hope(int) == 3
+        hope(int) == "👍"
     }
 }
