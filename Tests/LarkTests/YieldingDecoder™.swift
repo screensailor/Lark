@@ -3,15 +3,15 @@ class YieldingDecoder™: Hopes {
     struct My: Codable {
         var a: A
         var a2: A
-        var a3: Int
+        var int: Int
         struct A: Codable {
             var b: B
             var b2: B
-            var b3: Int
+            var int: Int
             struct B: Codable {
                 var c: C
                 var c2: C
-                var c3: Int
+                var int: Int
                 struct C: Codable {
                     var ints: [Int?]
                     var ints2: [Int]?
@@ -34,9 +34,12 @@ class YieldingDecoder™: Hopes {
     }
 }
 
+
 /*
  
  prints:
+ 
+ - Note: it currently skips optionals:
  
  ✅ a | A
  ✅ a.b | B

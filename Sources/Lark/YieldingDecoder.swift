@@ -1,4 +1,6 @@
-/// TODO: optionals❗️
+/// Developed in collaboration with https://github.com/ollieatkinson
+
+/// TODO: yield optionals❗️
 /// TODO: YieldingDecoderIterator
 
 public typealias YieldingDecoderClosure = (
@@ -10,13 +12,11 @@ public typealias YieldingDecoderClosure = (
 public extension Decodable {
 
     static func byYielding(to yield: @escaping YieldingDecoderClosure) throws -> Self {
-        try Self.init(from: YieldingDecoder(yield))
+        try Self.init(from: YieldingDecoder<Self>(yield))
     }
 }
 
-class YieldingDecoder: Decoder {
-
-    /// Developed in collaboration with https://github.com/ollieatkinson
+class YieldingDecoder<A>: Decoder {
 
     let yield: YieldingDecoderClosure
 
@@ -24,7 +24,15 @@ class YieldingDecoder: Decoder {
     var codingPathTypes: Set<AnyType> = []
     var userInfo: [CodingUserInfoKey : Any] { [:] }
     
+    lazy var map: [String: PartialKeyPath<A>] = Dictionary(Reflection.allNamedKeyPaths(for: A.self)){ $1 }
+
     init(_ yield: @escaping YieldingDecoderClosure) { self.yield = yield }
+    
+    private init<B>(_ parent: YieldingDecoder<B>) {
+        self.yield = parent.yield
+        self.codingPath = parent.codingPath
+        self.codingPathTypes = parent.codingPathTypes
+    }
 
     public func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
         .init(KeyedContainer.yield(self))
@@ -42,7 +50,14 @@ class YieldingDecoder: Decoder {
         }
 
         func decodeNil(forKey key: Key) throws -> Bool {
-            false
+            switch self {
+            case .yield(let o):
+                guard let path = o.map[key.stringValue] else { return true }
+                
+                print("❗️", key.stringValue, path)
+                
+                return true
+            }
         }
 
         func decode<T>(_ type: T.Type, forKey key: Key) throws -> T where T : Decodable {
@@ -57,7 +72,7 @@ class YieldingDecoder: Decoder {
                     throw "Encountered recursion with type \(T.self) at \(o.codingPath.map(\.stringValue))".error()
                 }
                 o.codingPathTypes.insert(T.self)
-                let ªt = try o.yield(T.self, o.codingPath, { try T.init(from: o) })
+                let ªt = try o.yield(T.self, o.codingPath, { try T.init(from: YieldingDecoder<T>(o)) })
                 guard let t = ªt as? T else {
                     throw "YieldingDecoderClosure did not return a \(T.self), but a \(Swift.type(of: ªt))".error()
                 }
