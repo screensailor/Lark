@@ -16,8 +16,7 @@ public extension Reflection {
     
     static func allNamedKeyPaths<Root>(
         in type: Root.Type,
-        at keyPath: PartialKeyPath<Root> = \.self,
-        and breadcrumbs: [String] = []
+        at: KeyPathInfo<Root> = (\.self, [])
     ) -> [KeyPathInfo<Root>] {
         
         var accumulated: [KeyPathInfo<Root>] = []
@@ -27,20 +26,19 @@ public extension Reflection {
             for (name, path) in Reflection.allNamedKeyPaths(for: A.self) {
                 guard !name.starts(with: "_") else { continue }
                 let child = (
-                    keyPath: keyPath.appending(path: path)!,
-                    breadcrumbs: breadcrumbs + [name]
+                    keyPath: at.keyPath.appending(path: path)!,
+                    breadcrumbs: at.breadcrumbs + [name]
                 )
                 let o = allNamedKeyPaths(
                     in: Root.self,
-                    at: child.keyPath,
-                    and: child.breadcrumbs
+                    at: (child.keyPath, child.breadcrumbs)
                 )
                 accumulated.append(child)
                 accumulated.append(contentsOf: o)
             }
         }
         
-        let type = Swift.type(of: keyPath).valueType
+        let type = Swift.type(of: at.keyPath).valueType
         _openExistential(type, do: ƒ)
 
         return accumulated

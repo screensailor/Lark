@@ -35,10 +35,12 @@ class Reflection™: Hopes {
 
     func test() throws {
         
-        let my = try My.defaultDecodingValue()
+        var my = try My.defaultDecodingValue()
+        
+        my.a.b.c.int = 3
         
         let int: Int = try my["a", "b", "c", "int"].hopefully()
 
-        hope(int) == 0
+        hope(int) == 3
     }
 }
