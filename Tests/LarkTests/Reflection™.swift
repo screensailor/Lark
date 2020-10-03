@@ -26,7 +26,7 @@ class Reflection™: Hopes {
         static let breadcrumbs = Reflection.breadcrumbs(in: My.self)
         static let keyPaths = Dictionary(breadcrumbs.map{ ($1, $0) }){ $1 }
         
-        subscript<A>(breadcrumb: String..., as type: A.Type) -> A? {
+        subscript<A>(breadcrumb: String..., as type: A.Type = A.self) -> A? {
             guard !breadcrumb.isEmpty else { return self as? A }
             guard let k = My.keyPaths[breadcrumb] else { return nil }
             return self[keyPath: k] as? A
@@ -37,7 +37,7 @@ class Reflection™: Hopes {
         
         let my = try My.defaultDecodingValue()
         
-        let int = try my["a", "b", "c", "int", as: Int.self].hopefully()
+        let int: Int = try my["a", "b", "c", "int"].hopefully()
 
         hope(int) == 0
     }
