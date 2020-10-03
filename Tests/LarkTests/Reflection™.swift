@@ -31,11 +31,11 @@ class Reflection™: Hopes {
         
         let my = try My.defaultDecodingValue()
         
-        let k = try My.keyPaths[["a", "b", "c", "bool"]].hopefully()
+        let k = try My.keyPaths[["a", "b", "c", "int"]].hopefully()
         
-        let bool = my[keyPath: k] as? Bool
+        let bool = my[keyPath: k] as? Int
         
-        hope(bool) == false // the default value of Bool
+        hope(bool) == 0
     }
 }
 
