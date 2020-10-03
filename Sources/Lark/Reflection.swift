@@ -1,6 +1,17 @@
 public extension Reflection {
     
-    static func breadcrumbs<Root>(in: Root.Type = Root.self) -> [PartialKeyPath<Root>: [String]] {
+    typealias KeyPathsAndBreadcrumbs<Root> = (
+        keyPaths: [[String]: PartialKeyPath<Root>],
+        breadcrumbs: [PartialKeyPath<Root>: [String]]
+    )
+    
+    static func keyPathsAndBreadcrumbs<Root>(in: Root.Type) -> KeyPathsAndBreadcrumbs<Root> {
+        let breadcrumbs = self.breadcrumbs(in: Root.self)
+        let keyPaths = Dictionary(breadcrumbs.map{ ($1, $0) }){ $1 }
+        return (keyPaths, breadcrumbs)
+    }
+    
+    static func breadcrumbs<Root>(in: Root.Type) -> [PartialKeyPath<Root>: [String]] {
         Dictionary(allNamedKeyPaths(in: Root.self)){ _, last in
             last.peek("Multiple keys found in \(Root.self). Choosing last.", as: .info)
         }

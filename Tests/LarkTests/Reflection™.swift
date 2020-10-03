@@ -23,12 +23,11 @@ class Reflection™: Hopes {
             }
         }
         
-        static let breadcrumbs = Reflection.breadcrumbs(in: My.self)
-        static let keyPaths = Dictionary(breadcrumbs.map{ ($1, $0) }){ $1 }
+        static let reflected = Reflection.keyPathsAndBreadcrumbs(in: My.self)
         
         subscript<A>(breadcrumb: String..., as type: A.Type = A.self) -> A? {
             guard !breadcrumb.isEmpty else { return self as? A }
-            guard let k = My.keyPaths[breadcrumb] else { return nil }
+            guard let k = My.reflected.keyPaths[breadcrumb] else { return nil }
             return self[keyPath: k] as? A
         }
     }
