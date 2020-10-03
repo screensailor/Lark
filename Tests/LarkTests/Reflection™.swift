@@ -1,18 +1,18 @@
 class Reflection™: Hopes {
     
-    struct My {
+    struct My: Codable {
         var a: A
         var a2: A
         var int: Int
-        struct A {
+        struct A: Codable {
             var b: B
             var b2: B
             var int: Int
-            struct B {
+            struct B: Codable {
                 var c: C
                 var c2: C
                 var int: Int
-                struct C {
+                struct C: Codable {
                     var ints: [Int?]
                     var ints2: [Int]?
                     var string: String?
@@ -21,19 +21,24 @@ class Reflection™: Hopes {
                 }
             }
         }
+        
+        static let breadcrumbs = Reflection.breadcrumbs(in: My.self)
+        static let keyPaths = Dictionary(uniqueKeysWithValues: breadcrumbs.map{ ($1, $0) })
     }
 
     func test() throws {
         
-        for o in Reflection.allNamedKeyPaths(in: My.self) {
-            print("✅", o.breadcrumbs.joined(separator: "."), ":", type(of: o.keyPath).valueType)
-        }
+        let my = try My.defaultDecodingValue()
+        
+        let k = try My.keyPaths[["a", "b", "c", "bool"]].hopefully()
+        
+        let bool = my[keyPath: k] as? Bool
+        
+        hope(bool) == false
     }
 }
 
 /*
- Prints:
- 
  ✅ a : A
  ✅ a.b : B
  ✅ a.b.c : C

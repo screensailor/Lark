@@ -1,5 +1,14 @@
 public extension Reflection {
     
+    static func breadcrumbs<Root>(in: Root.Type = Root.self) -> [PartialKeyPath<Root>: [String]] {
+        Dictionary(allNamedKeyPaths(in: Root.self)){ _, last in
+            last.peek("Multiple keys found in \(Root.self). Choosing last.", as: .info)
+        }
+    }
+}
+
+public extension Reflection {
+    
     typealias KeyPathInfo<Root> = (
         keyPath: PartialKeyPath<Root>,
         breadcrumbs: [String]
