@@ -13,17 +13,18 @@ class Reflection™: Hopes {
                 var c2: C
                 var int: Int
                 struct C: Codable {
+                    var int: Int
                     var ints: [Int?]
                     var ints2: [Int]?
                     var string: String?
-                    var bool = false
+                    var bool: Bool
                     var url: URL? // ← recursive
                 }
             }
         }
         
         static let breadcrumbs = Reflection.breadcrumbs(in: My.self)
-        static let keyPaths = Dictionary(uniqueKeysWithValues: breadcrumbs.map{ ($1, $0) })
+        static let keyPaths = Dictionary(breadcrumbs.map{ ($1, $0) }){ $1 }
     }
 
     func test() throws {
@@ -34,7 +35,7 @@ class Reflection™: Hopes {
         
         let bool = my[keyPath: k] as? Bool
         
-        hope(bool) == false
+        hope(bool) == false // the default value of Bool
     }
 }
 
