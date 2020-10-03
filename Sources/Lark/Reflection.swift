@@ -26,6 +26,8 @@ public typealias KeyPathsAndBreadcrumbs<Root> = (
 
 public extension Reflection {
     
+    // TODO: store for all ReflectingdNamedKeyPaths types here ❗️
+    
     static func keyPathsAndBreadcrumbs<Root>(in: Root.Type = Root.self) -> KeyPathsAndBreadcrumbs<Root> {
         let breadcrumbs = self.breadcrumbs(in: Root.self)
         let keyPaths = Dictionary(breadcrumbs.map{ ($1, $0) }){ $1 }
