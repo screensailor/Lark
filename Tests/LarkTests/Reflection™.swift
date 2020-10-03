@@ -1,26 +1,25 @@
 class Reflection™: Hopes {
     
-    struct My: Codable, ReflectingdNamedKeyPaths {
+    struct My: ReflectingdNamedKeyPaths {
         
         static let reflected = My.reflectedNamedKeyPaths()
 
-        var a: A
-        var a2: A
-        var int: Int
-        struct A: Codable {
-            var b: B
-            var b2: B
-            var int: Int
-            struct B: Codable {
-                var c: C
-                var c2: C
-                var int: Int
-                struct C: Codable {
-                    var int: Int
-                    var ints: [Int?]
+        var a = A()
+        var a2 = A()
+        var int = 0
+        struct A {
+            var b = B()
+            var b2 = B()
+            var int = 1
+            struct B {
+                var c = C()
+                var c2 = C()
+                var int = 2
+                struct C {
+                    var int = 3
+                    var ints: [Int?] = [nil, 1, 2]
                     var ints2: [Int]?
-                    var string: String?
-                    var bool: Bool
+                    var string: String? = "👍"
                     var url: URL? // ← recursive
                 }
             }
@@ -29,9 +28,7 @@ class Reflection™: Hopes {
 
     func test() throws {
         
-        var my = try My.defaultDecodingValue()
-        
-        my.a.b.c.int = 3
+        let my = My()
         
         let int: Int = try my["a", "b", "c", "int"].hopefully()
 
