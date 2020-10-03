@@ -1,6 +1,9 @@
 class Reflection™: Hopes {
     
-    struct My: Codable {
+    struct My: Codable, ReflectingdNamedKeyPaths {
+        
+        static let reflected = My.reflectedNamedKeyPaths()
+
         var a: A
         var a2: A
         var int: Int
@@ -21,14 +24,6 @@ class Reflection™: Hopes {
                     var url: URL? // ← recursive
                 }
             }
-        }
-        
-        static let reflected = Reflection.keyPathsAndBreadcrumbs(in: My.self)
-        
-        subscript<A>(breadcrumb: String..., as type: A.Type = A.self) -> A? {
-            guard !breadcrumb.isEmpty else { return self as? A }
-            guard let k = My.reflected.keyPaths[breadcrumb] else { return nil }
-            return self[keyPath: k] as? A
         }
     }
 
