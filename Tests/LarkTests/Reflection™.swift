@@ -34,4 +34,19 @@ class Reflection™: Hopes {
 
         hope(int) == "👍"
     }
+
+    func test_mutation() throws {
+        
+        var my = My()
+        
+        let k = try My.reflected.keyPaths[["a", "b", "c", "int"]].hopefully()
+        
+        let w = try (k as? WritableKeyPath<My, Int>).hopefully()
+        
+        my.a.b.c.int = 3
+        
+        my[keyPath: w] *= 2
+
+        hope(my.a.b.c.int) == 6
+    }
 }

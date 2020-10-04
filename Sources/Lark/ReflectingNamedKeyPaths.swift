@@ -2,6 +2,11 @@ public protocol ReflectingNamedKeyPaths {
     static var reflected: KeyPathsAndBreadcrumbs<Self> { get } // TODO:❗️remove this protocol requirement
 }
 
+public typealias KeyPathsAndBreadcrumbs<Root> = (
+    keyPaths: [[String]: PartialKeyPath<Root>],
+    breadcrumbs: [PartialKeyPath<Root>: [String]]
+)
+
 public extension ReflectingNamedKeyPaths {
     
     static func reflectedNamedKeyPaths() -> KeyPathsAndBreadcrumbs<Self> {
@@ -18,11 +23,6 @@ public extension ReflectingNamedKeyPaths {
         return self[keyPath: k] as? A
     }
 }
-
-public typealias KeyPathsAndBreadcrumbs<Root> = (
-    keyPaths: [[String]: PartialKeyPath<Root>],
-    breadcrumbs: [PartialKeyPath<Root>: [String]]
-)
 
 public extension Reflection {
     
