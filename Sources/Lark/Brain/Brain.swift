@@ -32,7 +32,7 @@ final public class Brain<Lemma, Signal> where
         _ lexicon: Lexicon = [:],
         _ functions: Functions = [:],
         _ state: [Lemma: Signal] = [:],
-        on scheduler: AnySchedulerOf<DispatchQueue> = DispatchQueue.main.eraseToAnyScheduler()
+        on scheduler: AnySchedulerOf<DispatchQueue> = DispatchQueue.main.any
     ) throws {
         self.scheduler = scheduler
         self.state = state.defaulting(to: nil)

@@ -5,7 +5,7 @@ class Brain™_async: Brain™ {
         let lexicon = [
             "alarm": Concept("after", "t", "alarm message"),
         ]
-        let brain = try Brain(lexicon, functions, on: scheduler.eraseToAnyScheduler())
+        let brain = try Brain(lexicon, functions, on: scheduler.any)
         let o = Sink.Var<JSON>(nil)
         
         o ...= brain.subject("alarm")

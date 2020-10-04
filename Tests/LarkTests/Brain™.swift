@@ -10,7 +10,7 @@ class Brain™: Hopes {
         "": Identity(),
         "+": Sum(),
         "*": Product(),
-        "after": After(on: scheduler.eraseToAnyScheduler()),
+        "after": After(on: scheduler.any),
     ]
     
     func test_sum_and_multiply() throws {

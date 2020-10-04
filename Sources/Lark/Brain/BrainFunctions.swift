@@ -44,7 +44,7 @@ public struct After: AsyncBrainFunction {
     public let scheduler: AnySchedulerOf<DispatchQueue>
     
     public init(
-        on scheduler: AnySchedulerOf<DispatchQueue> = DispatchQueue.main.eraseToAnyScheduler()
+        on scheduler: AnySchedulerOf<DispatchQueue> = DispatchQueue.main.any
     ) {
         self.scheduler = scheduler
     }
