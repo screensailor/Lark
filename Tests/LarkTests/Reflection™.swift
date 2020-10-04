@@ -39,13 +39,11 @@ class Reflection™: Hopes {
         
         var my = My()
         
-        let k = try My.reflected.keyPaths[["a", "b", "c", "int"]].hopefully()
-        
-        let w = try (k as? WritableKeyPath<My, Int>).hopefully()
+        let k = try My.writableKeyPath("a", "b", "c", "int", to: Int.self)
         
         my.a.b.c.int = 3
         
-        my[keyPath: w] *= 2
+        my[keyPath: k] *= 2
 
         hope(my.a.b.c.int) == 6
     }

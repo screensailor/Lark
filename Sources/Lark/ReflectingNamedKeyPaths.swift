@@ -13,6 +13,67 @@ public extension ReflectingNamedKeyPaths {
         Reflection.keyPathsAndBreadcrumbs(in: Self.self)
     }
     
+    @inlinable static func keyPath<Value>(
+        _ breadcrumb: String...,
+        to type: Value.Type = Value.self,
+        function: String = #function,
+        file: String = #file,
+        line: Int = #line
+    ) throws -> KeyPath<Self, Value> {
+        try keyPath(breadcrumb, to: type, function: function, file: file, line: line)
+    }
+    
+    @inlinable static func writableKeyPath<Value>(
+        _ breadcrumb: String...,
+        to type: Value.Type = Value.self,
+        function: String = #function,
+        file: String = #file,
+        line: Int = #line
+    ) throws -> WritableKeyPath<Self, Value> {
+        try writableKeyPath(breadcrumb, to: type, function: function, file: file, line: line)
+    }
+    
+    static func keyPath<Value>(
+        _ breadcrumb: [String],
+        to type: Value.Type = Value.self,
+        function: String = #function,
+        file: String = #file,
+        line: Int = #line
+    ) throws -> KeyPath<Self, Value> {
+        guard !breadcrumb.isEmpty else {
+            let o = \Self.self
+            if let k = o as? KeyPath<Self, Value> {
+                return k
+            } else {
+                throw "Empty breadcrumb requires that Value == Self; got \(Value.self) instead".error(function, file, line)
+            }
+        }
+        guard let pk = Self.reflected.keyPaths[breadcrumb] else {
+            throw "'\(breadcrumb.joined(separator: "."))' is not a named key path of \(Self.self)".error(function, file, line)
+        }
+        guard let k = pk as? KeyPath<Self, Value> else {
+            throw "'\(Self.self).\(breadcrumb.joined(separator: "."))' is not a key path to \(Value.self)".error(function, file, line)
+        }
+        return k
+    }
+    
+    static func writableKeyPath<Value>(
+        _ breadcrumb: [String],
+        to type: Value.Type = Value.self,
+        function: String = #function,
+        file: String = #file,
+        line: Int = #line
+    ) throws -> WritableKeyPath<Self, Value> {
+        let k = try keyPath(breadcrumb, to: type)
+        guard let wk = k as? WritableKeyPath<Self, Value> else {
+            throw "'\(Self.self).\(breadcrumb.joined(separator: "."))' is not a writable key path".error(function, file, line)
+        }
+        return wk
+    }
+}
+
+public extension ReflectingNamedKeyPaths {
+    
     subscript<A>(breadcrumb: String..., as type: A.Type = A.self) -> A? {
         self[breadcrumb, as: A.self]
     }
