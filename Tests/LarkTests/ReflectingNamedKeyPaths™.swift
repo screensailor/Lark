@@ -39,6 +39,17 @@ class ReflectingNamedKeyPaths™: Hopes {
         hope(int) == "👍"
     }
 
+    func test_self() throws {
+        
+        var my = My()
+        
+        my.a.b.c.int = 5
+        
+        let ohMy: My = try my[].hopefully()
+
+        hope(ohMy.a.b.c.int) == 5
+    }
+
     func test_dictionary() throws {
         
         let my = My()
