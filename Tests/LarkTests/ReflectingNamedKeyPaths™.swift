@@ -1,4 +1,4 @@
-class Reflection™: Hopes {
+class ReflectingNamedKeyPaths™: Hopes {
     
     struct My: ReflectingNamedKeyPaths {
         
