@@ -2,7 +2,7 @@ class Reflection™: Hopes {
     
     struct My: ReflectingdNamedKeyPaths {
         
-        static let reflected = My.reflectedNamedKeyPaths()
+        static let reflected = Self.reflectedNamedKeyPaths()
 
         var a = A()
         var a2 = A()
