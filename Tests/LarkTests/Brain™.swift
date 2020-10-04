@@ -48,7 +48,7 @@ class Brain™: Hopes {
         hope(o[]) == 5
     }
     
-    func test_infinite_synchronous_recusrsion() throws {
+    func test_infinite_synchronous_recursion() throws {
         let lexicon = [
             "x": Concept("+", "x", "increment")
         ]
@@ -63,14 +63,14 @@ class Brain™: Hopes {
         brain.commit()
         hope(x[]) == 1
         
-//        brain.commit()
-//        hope(x[]) == 2
-//        
-//        brain.commit()
-//        hope(x[]) == 3
-//        
-//        brain.commit(thoughts: 100)
-//        hope(x[]) == 103
+        brain.commit()
+        hope(x[]) == 2
+        
+        brain.commit()
+        hope(x[]) == 3
+        
+        brain.commit(thoughts: 100)
+        hope(x[]) == 103
     }
 
     func test_blank_brain() throws {
