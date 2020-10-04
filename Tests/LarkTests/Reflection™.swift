@@ -21,6 +21,10 @@ class Reflection™: Hopes {
                     var ints2: [Int]?
                     var string: String? = "👍"
                     var url: URL? // ← recursive
+                    var dictionary: [String: Int] = [
+                        "one": 1,
+                        "two": 2
+                    ]
                 }
             }
         }
@@ -33,6 +37,15 @@ class Reflection™: Hopes {
         let int: String = try my["a", "b", "c", "string"].hopefully()
 
         hope(int) == "👍"
+    }
+
+    func test_dictionary() throws {
+        
+        let my = My()
+        
+        let int: Int = try my["a", "b", "c", "dictionary", as: [String: Int].self].hopefully()["one"].hopefully()
+
+        hope(int) == 1
     }
 
     func test_mutation() throws {
