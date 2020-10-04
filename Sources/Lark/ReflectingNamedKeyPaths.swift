@@ -51,10 +51,10 @@ public extension ReflectingNamedKeyPaths {
             }
         }
         guard let pk = Self.reflected.keyPaths[breadcrumb] else {
-            throw "'\(breadcrumb.joined(separator: "."))' is not a named key path of \(Self.self)".error(function, file, line)
+            throw "'\(breadcrumb.joined(separator: "."))' is not a named key path of \(Self.self) type".error(function, file, line)
         }
         guard let k = pk as? KeyPath<Self, Value> else {
-            throw "'\(Self.self).\(breadcrumb.joined(separator: "."))' is not a key path to \(Value.self)".error(function, file, line)
+            throw "'\(Self.self).\(breadcrumb.joined(separator: "."))' is not a key path to \(Value.self) value".error(function, file, line)
         }
         return k
     }
@@ -66,7 +66,7 @@ public extension ReflectingNamedKeyPaths {
         file: String = #file,
         line: Int = #line
     ) throws -> WritableKeyPath<Self, Value> {
-        let k = try keyPath(breadcrumb, to: type)
+        let k = try keyPath(breadcrumb, to: type, function: function, file: file, line: line)
         guard let wk = k as? WritableKeyPath<Self, Value> else {
             throw "'\(Self.self).\(breadcrumb.joined(separator: "."))' is not a writable key path".error(function, file, line)
         }
