@@ -1,5 +1,7 @@
 // TODO: Declared typed parameters and the abstracted argument casting
 
+import CombineSchedulers
+
 public struct Identity: SyncBrainFunction {
     
     public let description = "Expects one element, which is returned unchanged"
@@ -39,13 +41,19 @@ public struct Product: SyncBrainFunction {
 public struct After: AsyncBrainFunction {
     
     public let description = "Returns x[1] after x[0] seconds"
+    public let scheduler: AnySchedulerOf<DispatchQueue>
     
-    public init() {}
+    public init(
+        on scheduler: AnySchedulerOf<DispatchQueue> = DispatchQueue.main.eraseToAnyScheduler()
+    ) {
+        self.scheduler = scheduler
+    }
     
     public func ƒ<X>(x: [X], result: @escaping (() throws -> X) -> ()) where X: BrainWave {
         do {
             guard x.count == 2 else { throw "\(After.self) x.count: \(x.count)".error() }
-            try DispatchQueue.main.asyncAfter(deadline: .now() + x[0].as(TimeInterval.self)) {
+            let t = try x[0].as(TimeInterval.self)
+            scheduler.schedule(after: scheduler.now.advanced(by: t)) {
                 result{ x[1] }
             }
         } catch {

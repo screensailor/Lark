@@ -3,12 +3,14 @@ class Brain™: Hopes {
     typealias Brain = Lark.Brain<String, JSON>
     typealias Lexicon = Brain.Lexicon
     typealias Concept = Brain.Concept
+    
+    let scheduler = DispatchQueue.testScheduler
 
-    let functions: [String: BrainFunction] = [
+    lazy var functions: [String: BrainFunction] = [
         "": Identity(),
         "+": Sum(),
         "*": Product(),
-        "after": After(),
+        "after": After(on: scheduler.eraseToAnyScheduler()),
     ]
     
     func test_sum_and_multiply() throws {

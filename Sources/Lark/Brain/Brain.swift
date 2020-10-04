@@ -1,3 +1,5 @@
+import CombineSchedulers
+
 final public class Brain<Lemma, Signal> where
     Lemma: Hashable,
     Signal: BrainWave
@@ -7,6 +9,8 @@ final public class Brain<Lemma, Signal> where
     
     public let lexicon: Lexicon
     public let functions: Functions
+    
+    public let scheduler: AnySchedulerOf<DispatchQueue>
 
     public typealias State = DefaultingDictionary<Lemma, Signal>
     public typealias Subject = CurrentValueSubject<Signal, Never>
@@ -27,8 +31,10 @@ final public class Brain<Lemma, Signal> where
     public init(
         _ lexicon: Lexicon = [:],
         _ functions: Functions = [:],
-        _ state: [Lemma: Signal] = [:]
+        _ state: [Lemma: Signal] = [:],
+        on scheduler: AnySchedulerOf<DispatchQueue> = DispatchQueue.main.eraseToAnyScheduler()
     ) throws {
+        self.scheduler = scheduler
         self.state = state.defaulting(to: nil)
         self.lexicon = lexicon
         self.functions = functions
@@ -127,7 +133,7 @@ extension Brain {
                 
             default:
                 y = ƒ(x)
-                    .receive(on: RunLoop.main) // TODO: on Brain.queue
+                    .receive(on: brain.scheduler)
                     .assign(to: \.thoughts[lemma], on: brain)
             }
         }
