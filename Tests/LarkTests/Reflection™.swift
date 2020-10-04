@@ -1,8 +1,8 @@
 class Reflection™: Hopes {
     
-    struct My: ReflectingdNamedKeyPaths {
+    struct My: ReflectingNamedKeyPaths {
         
-        static let reflected = Self.reflectedNamedKeyPaths()
+        static let reflected = Self.reflectedNamedKeyPaths() // TODO: remove this protocol requirement
 
         var a = A()
         var a2 = A()

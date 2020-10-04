@@ -1,8 +1,8 @@
-public protocol ReflectingdNamedKeyPaths {
-    static var reflected: KeyPathsAndBreadcrumbs<Self> { get }
+public protocol ReflectingNamedKeyPaths {
+    static var reflected: KeyPathsAndBreadcrumbs<Self> { get } // TODO:❗️remove this protocol requirement
 }
 
-public extension ReflectingdNamedKeyPaths {
+public extension ReflectingNamedKeyPaths {
     
     static func reflectedNamedKeyPaths() -> KeyPathsAndBreadcrumbs<Self> {
         Reflection.keyPathsAndBreadcrumbs(in: Self.self)
@@ -25,8 +25,6 @@ public typealias KeyPathsAndBreadcrumbs<Root> = (
 )
 
 public extension Reflection {
-    
-    // TODO: store for all ReflectingdNamedKeyPaths types here ❗️
     
     static func keyPathsAndBreadcrumbs<Root>(in: Root.Type = Root.self) -> KeyPathsAndBreadcrumbs<Root> {
         let breadcrumbs = self.breadcrumbs(in: Root.self)
