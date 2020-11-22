@@ -71,4 +71,31 @@ class ReflectingNamedKeyPaths™: Hopes {
 
         hope(my.a.b.c.int) == 6
     }
+    
+    func test_point() throws {
+        
+        var p = CGPoint(x: 2, y: 4)
+
+        do {
+            let k = try CGPoint.writableKeyPath("x", to: CGFloat.self)
+            
+            p[keyPath: k] = 3
+            
+            hope(p.x) == 3
+        }
+    }
 }
+
+extension CGPoint: ReflectingNamedKeyPaths {
+    
+    public static let reflected = Self.reflectedNamedKeyPaths()
+}
+
+#if os(iOS)
+import UIKIt
+
+extension UIButton: ReflectingNamedKeyPaths {
+    
+    public static let reflected = Self.reflectedNamedKeyPaths()
+}
+#endif
