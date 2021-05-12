@@ -1,0 +1,52 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "combine-schedulers",
+        "repositoryURL": "https://github.com/screensailor/combine-schedulers.git",
+        "state": {
+          "branch": "trunk",
+          "revision": "f7c27d4eb64f92a42dbe0944c301aaabef9f6031",
+          "version": null
+        }
+      },
+      {
+        "package": "Hope",
+        "repositoryURL": "https://github.com/screensailor/Hope.git",
+        "state": {
+          "branch": "trunk",
+          "revision": "1d606cae908817c6de4bdc0ba595d3c20f5fa4ad",
+          "version": null
+        }
+      },
+      {
+        "package": "Peek",
+        "repositoryURL": "https://github.com/screensailor/Peek.git",
+        "state": {
+          "branch": "trunk",
+          "revision": "a4bf86496ada31f97a30e9e32c85a59f69103221",
+          "version": null
+        }
+      },
+      {
+        "package": "swift-atomics",
+        "repositoryURL": "https://github.com/apple/swift-atomics.git",
+        "state": {
+          "branch": null,
+          "revision": "3e95ba32cd1b4c877f6163e8eea54afc4e63bf9f",
+          "version": "0.0.3"
+        }
+      },
+      {
+        "package": "SE0000_KeyPathReflection",
+        "repositoryURL": "https://github.com/apple/swift-evolution-staging.git",
+        "state": {
+          "branch": "reflection",
+          "revision": "fbfe1007b45afad8faf9ca8eabcbac78c27863b4",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}

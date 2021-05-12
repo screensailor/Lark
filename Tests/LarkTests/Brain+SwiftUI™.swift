@@ -10,7 +10,7 @@ class Brain_and_SwiftUI™: Brain™ {
         }
         
         struct UI: View {
-            @State var brain = try! Brain()
+            @SwiftUI.State var brain = try! Brain()
             var body: some View {
                 Control(text: brain.binding(to: "smile", default: "😞"))
             }
@@ -42,7 +42,7 @@ class Brain_and_SwiftUI™: Brain™ {
         }
         
         struct UI: View {
-            @State var brain = try! Brain()
+            @SwiftUI.State var brain = try! Brain()
             var body: some View {
                 Control(text: brain.binding(to: "smile"))
             }

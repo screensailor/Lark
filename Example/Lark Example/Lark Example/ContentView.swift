@@ -4,27 +4,17 @@ struct ContentView: View {
 
     var body: some View {
         ZStack {
-            GameOfLife(color: $color)
+            GameOfLifeView(color: $color)
             VStack{
                 Text("Game of Lark")
                     .font(.system(.largeTitle, design: .rounded))
-                    .foregroundColor(.white)
-                Text("Tap to bring 5% of cells to life")
+                Text("Tap to bring 10% of cells to life")
                     .font(.system(.callout, design: .rounded))
-                    .foregroundColor(.white)
             }
         }
         .statusBar(hidden: true)
         .background(color)
+        .foregroundColor(.white)
         .ignoresSafeArea()
     }
 }
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        Group {
-            ContentView()
-        }
-    }
-}
-

@@ -31,9 +31,9 @@ let package = Package(
         .testTarget(
             name: "LarkTests",
             dependencies: [
-                .byName(name: "Lark"),
-                .byName(name: "Peek"),
-                .byName(name: "Hope"),
+                "Lark",
+                "Peek",
+                "Hope",
                 .product(name: "CombineSchedulers", package: "combine-schedulers"),
             ]
         ),

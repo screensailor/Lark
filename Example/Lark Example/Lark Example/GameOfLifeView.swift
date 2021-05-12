@@ -1,11 +1,11 @@
 import Lark
 
-struct GameOfLife {
+struct GameOfLifeView {
     @Binding var color: Color
-    @ObservedObject private var brain: GameOfLifeBrain = .shared
+    @ObservedObject private var brain: GameOfLifeState = .shared
 }
 
-extension GameOfLife: View {
+extension GameOfLifeView: View {
 
     var body: some View {
         HStack(spacing: 0) {
@@ -39,9 +39,9 @@ private struct BrainCell: View {
     }
 }
 
-private class GameOfLifeBrain: ObservableObject {
+private class GameOfLifeState: ObservableObject {
     
-    typealias my = GameOfLifeBrain
+    typealias my = GameOfLifeState
     
     let cols = 0 ..< my.cols
     let rows = 0 ..< my.rows
@@ -51,10 +51,10 @@ private class GameOfLifeBrain: ObservableObject {
     private var brain = try! Brain(my.lexicon, my.functions)
 }
 
-extension GameOfLifeBrain {
+extension GameOfLifeState {
     
     func binding(to row: Int, _ col: Int) -> Binding<Bool> {
-        brain.binding(to: "cell:\(row):\(col)", default: false)
+        brain.binding(to: "\(row):\(col)", default: false)
     }
     
     func commit() {
@@ -73,8 +73,8 @@ extension GameOfLifeBrain {
     func perturb() {
         for col in cols {
             for row in rows {
-                if Float.random(in: 0...1) < 0.05 {
-                    brain["cell:\(row):\(col)"] = JSON(true)
+                if Float.random(in: 0...1) < 0.1 {
+                    brain["\(row):\(col)"] = JSON(true)
                 }
             }
         }
@@ -84,9 +84,9 @@ extension GameOfLifeBrain {
     }
 }
 
-extension GameOfLifeBrain {
+extension GameOfLifeState {
     
-    static let shared = GameOfLifeBrain()
+    static let shared = GameOfLifeState()
 
     static let cols = 30
     static let rows = Int((CGFloat(cols) * aspectRatio).rounded(.down))
@@ -95,38 +95,37 @@ extension GameOfLifeBrain {
     static let aspectRatio = size.height / size.width
 }
 
-extension GameOfLifeBrain {
+extension GameOfLifeState {
     typealias Lemma = String
     typealias Brain = Lark.Brain<Lemma, JSON>
-    typealias State = [Lemma: JSON]
     typealias Concept = Brain.Concept
     typealias Lexicon = [Lemma: Concept]
     typealias Functions = [Lemma: BrainFunction]
 }
 
-extension GameOfLifeBrain {
+struct GameOfLife: SyncBrainFunction {
     
-    struct Function: SyncBrainFunction {
-        
-        let description = "Game of Life"
-        
-        func ƒ<X>(x: [X]) throws -> X? where X: BrainWave {
-            let x = x.map{ $0.cast(default: false) ? 1 : 0 }
-            guard let y = try ƒ(x) else { return nil }
-            return try X(y)
-        }
-        
-        private func ƒ(_ x: [Int]) throws -> Bool? {
-            guard x.count == 9 else { throw "GameOfLifeFunction error: x.count = \(x.count)".error() }
-            let isLive = x[4] != 0
-            let n = x.reduce(0, +) - (isLive ? 1 : 0)
-            let y = (isLive && n == 2) || n == 3
-            return y == isLive ? nil : y
-        }
+    let description = "Game of Life"
+    
+    func ƒ<X>(x: [X]) throws -> X? where X: BrainWave {
+        let x = x.map{ $0.cast(default: false) ? 1 : 0 }
+        guard let y = try ƒ(x) else { return nil }
+        return try X(y)
     }
     
+    private func ƒ(_ x: [Int]) throws -> Bool? {
+        guard x.count == 9 else { throw "\(Self.self) error: x.count = \(x.count)".error() }
+        let isLive = x[4] != 0
+        let n = x.reduce(0, +) - (isLive ? 1 : 0)
+        let y = (isLive && n == 2) || n == 3
+        return y == isLive ? nil : y
+    }
+}
+
+extension GameOfLifeState {
+    
     static let functions: Functions = [
-        "Game of Life": Function()
+        "Game of Life": GameOfLife()
     ]
     
     static let lexicon: Lexicon = {
@@ -150,19 +149,19 @@ extension GameOfLifeBrain {
                     next: idx(col + 1, in: cols)
                 )
                 let kernel = [
-                    "cell:\(row.prev):\(col.prev)",
-                    "cell:\(row.prev):\(col.this)",
-                    "cell:\(row.prev):\(col.next)",
+                    "\(row.prev):\(col.prev)",
+                    "\(row.prev):\(col.this)",
+                    "\(row.prev):\(col.next)",
                     
-                    "cell:\(row.this):\(col.prev)",
-                    "cell:\(row.this):\(col.this)",
-                    "cell:\(row.this):\(col.next)",
+                    "\(row.this):\(col.prev)",
+                    "\(row.this):\(col.this)",
+                    "\(row.this):\(col.next)",
                     
-                    "cell:\(row.next):\(col.prev)",
-                    "cell:\(row.next):\(col.this)",
-                    "cell:\(row.next):\(col.next)",
+                    "\(row.next):\(col.prev)",
+                    "\(row.next):\(col.this)",
+                    "\(row.next):\(col.next)",
                 ]
-                o["cell:\(row.this):\(col.this)"] = Concept("Game of Life", kernel)
+                o["\(row.this):\(col.this)"] = Concept("Game of Life", kernel)
             }
         }
         

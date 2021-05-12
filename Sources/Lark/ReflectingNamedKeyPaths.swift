@@ -1,4 +1,4 @@
-// TODO:❗️combine with IntOrString as CodingKey to allow r/w into unkeyed containers
+// TODO:❗️combine with CodingIndex as CodingKey to allow r/w into unkeyed containers
 
 public protocol ReflectingNamedKeyPaths {
     static var reflected: KeyPathsAndBreadcrumbs<Self> { get } // TODO:❗️remove this protocol requirement

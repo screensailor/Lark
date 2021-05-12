@@ -13,7 +13,7 @@
 		077E6B3F2517B22D003F7B99 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 077E6B3E2517B22D003F7B99 /* Assets.xcassets */; };
 		077E6B422517B22D003F7B99 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 077E6B412517B22D003F7B99 /* Preview Assets.xcassets */; };
 		077E6B4C2517B29B003F7B99 /* Lark in Frameworks */ = {isa = PBXBuildFile; productRef = 077E6B4B2517B29B003F7B99 /* Lark */; };
-		07DD12BF251AB3B100C8EF4E /* GameOfLife.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07DD12BE251AB3B100C8EF4E /* GameOfLife.swift */; };
+		07E770C825D1E8DE00BA6FB0 /* GameOfLifeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E770C725D1E8DE00BA6FB0 /* GameOfLifeView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,7 +23,7 @@
 		077E6B3E2517B22D003F7B99 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		077E6B412517B22D003F7B99 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		077E6B432517B22D003F7B99 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		07DD12BE251AB3B100C8EF4E /* GameOfLife.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOfLife.swift; sourceTree = "<group>"; };
+		07E770C725D1E8DE00BA6FB0 /* GameOfLifeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameOfLifeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,7 +61,7 @@
 			children = (
 				077E6B432517B22D003F7B99 /* Info.plist */,
 				077E6B3C2517B22C003F7B99 /* ContentView.swift */,
-				07DD12BE251AB3B100C8EF4E /* GameOfLife.swift */,
+				07E770C725D1E8DE00BA6FB0 /* GameOfLifeView.swift */,
 				077E6B3A2517B22C003F7B99 /* Lark_ExampleApp.swift */,
 				077E6B3E2517B22D003F7B99 /* Assets.xcassets */,
 				077E6B402517B22D003F7B99 /* Preview Content */,
@@ -158,8 +158,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				077E6B3D2517B22C003F7B99 /* ContentView.swift in Sources */,
-				07DD12BF251AB3B100C8EF4E /* GameOfLife.swift in Sources */,
 				077E6B3B2517B22C003F7B99 /* Lark_ExampleApp.swift in Sources */,
+				07E770C825D1E8DE00BA6FB0 /* GameOfLifeView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

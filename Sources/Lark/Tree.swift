@@ -140,7 +140,7 @@ extension Tree where Leaf: ExpressibleByNilLiteral {
     public typealias Index = EitherType<Int, Key>
     public typealias Path = [Index]
 
-//    @inlinable public subscript(path: Index..., default o: Self) -> Self {
+//    @inlinable public subscript(path: Fork..., default o: Self) -> Self {
 //        self[path] ?? o
 //    }
 
@@ -150,7 +150,7 @@ extension Tree where Leaf: ExpressibleByNilLiteral {
     }
     
 //    @inlinable public subscript<Path>(path: Path, default o: Self) -> Self
-//    where Path: Collection, Path.Element == Index
+//    where Path: Collection, Path.Element == Fork
 //    {
 //        self[path] ?? o
 //    }
